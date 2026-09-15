@@ -5,22 +5,22 @@ const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "
 
 const CSS = `
 :root{--paper:#FAF4E8;--surface:#FFFBF3;--surface-2:#F3E9D8;--ink:#241B14;--ink-2:#564636;--ink-3:#897463;
---rule:#E5D9C4;--rule-strong:#C8B69A;--laranja:#C2601A;--vinho:#A62449;--verde:#5A8A24;--azul:#3355A8;color-scheme:light}
+--rule:#E5D9C4;--rule-strong:#C8B69A;--dende:#9C7A16;--vinho:#A62449;--verde:#5A8A24;--azul:#3355A8;color-scheme:light}
 @media (prefers-color-scheme:dark){:root{--paper:#16120F;--surface:#1E1813;--surface-2:#2A221B;--ink:#F7F0E2;
---ink-2:#D5C5AE;--ink-3:#9E8C77;--rule:#342A22;--rule-strong:#4D4033;--laranja:#D4762B;--vinho:#C94A6B;
+--ink-2:#D5C5AE;--ink-3:#9E8C77;--rule:#342A22;--rule-strong:#4D4033;--dende:#C9A63A;--vinho:#C94A6B;
 --verde:#719C31;--azul:#5C7FD0;color-scheme:dark}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.6 Karla,system-ui,-apple-system,Segoe UI,sans-serif}
 .wrap{max-width:1020px;margin:0 auto;padding:26px 20px 70px}
 h1{font-size:26px;margin:0 0 4px;letter-spacing:-.02em}
-h1 span{color:var(--laranja)}
+h1 span{color:var(--dende)}
 .sub{font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
 a{color:inherit;text-decoration-color:var(--rule-strong);text-underline-offset:3px}
 .bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:22px 0 18px;padding-bottom:14px;border-bottom:1px solid var(--rule-strong)}
 .pill{font-size:13px;font-weight:700;border:1px solid var(--rule-strong);border-radius:999px;padding:5px 11px;
   text-decoration:none;color:var(--ink-3)}
 .pill.on{background:var(--surface-2);color:var(--ink);border-color:var(--ink-3)}
-.pill b{font-family:ui-monospace,monospace;font-weight:500;color:var(--laranja)}
+.pill b{font-family:ui-monospace,monospace;font-weight:500;color:var(--dende)}
 .sp{flex:1}
 .msg{border:1px solid var(--rule);background:var(--surface);padding:16px 18px;margin-bottom:14px;border-left:3px solid var(--k)}
 .msg header{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px}
@@ -66,7 +66,7 @@ exports.login = (erro) => pagina("Painel — Feijoada do Master", `
 </div>`);
 
 const COR = {
-  "Correção de informação": "var(--laranja)",
+  "Correção de informação": "var(--dende)",
   "Sugestão ou pauta que falta": "var(--verde)",
   "Comentário": "var(--ink-3)",
   "Direito de resposta (sou citado na página)": "var(--azul)",

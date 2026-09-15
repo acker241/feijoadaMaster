@@ -4,25 +4,25 @@ const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "
 
 const CSS = `
 :root{--paper:#FAF4E8;--surface:#FFFBF3;--surface-2:#F3E9D8;--ink:#241B14;--ink-2:#564636;--ink-3:#897463;
---rule:#E5D9C4;--rule-strong:#C8B69A;--laranja:#C2601A;--vinho:#A62449;--verde:#5A8A24;color-scheme:light}
+--rule:#E5D9C4;--rule-strong:#C8B69A;--dende:#9C7A16;--vinho:#A62449;--verde:#5A8A24;color-scheme:light}
 @media (prefers-color-scheme:dark){:root{--paper:#16120F;--surface:#1E1813;--surface-2:#2A221B;--ink:#F7F0E2;
---ink-2:#D5C5AE;--ink-3:#9E8C77;--rule:#342A22;--rule-strong:#4D4033;--laranja:#D4762B;--vinho:#C94A6B;--verde:#719C31;color-scheme:dark}}
+--ink-2:#D5C5AE;--ink-3:#9E8C77;--rule:#342A22;--rule-strong:#4D4033;--dende:#C9A63A;--vinho:#C94A6B;--verde:#719C31;color-scheme:dark}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.55 Karla,system-ui,-apple-system,Segoe UI,sans-serif}
 .wrap{max-width:1180px;margin:0 auto;padding:24px 18px 80px}
-h1{font-size:24px;margin:0 0 2px;letter-spacing:-.02em}h1 span{color:var(--laranja)}
+h1{font-size:24px;margin:0 0 2px;letter-spacing:-.02em}h1 span{color:var(--dende)}
 .sub{font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
 a{color:inherit}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:20px 0 6px;padding-bottom:12px;border-bottom:1px solid var(--rule-strong)}
 .tab{font-size:13px;font-weight:700;text-decoration:none;color:var(--ink-3);border:1px solid var(--rule-strong);
   border-radius:999px;padding:5px 11px}
 .tab.on{background:var(--surface-2);color:var(--ink);border-color:var(--ink-3)}
-.tab b{font-family:ui-monospace,monospace;font-weight:500;color:var(--laranja)}
+.tab b{font-family:ui-monospace,monospace;font-weight:500;color:var(--dende)}
 .sp{flex:1}
 .busca{display:flex;gap:8px;margin:14px 0 18px}
 .busca input{flex:1;max-width:320px;font:14px Karla,sans-serif;padding:7px 11px;border:1px solid var(--rule-strong);
   background:var(--surface);color:var(--ink);border-radius:999px}
-.aviso{font-size:13px;color:var(--ink-2);border-left:3px solid var(--laranja);background:var(--surface);padding:10px 14px;margin-bottom:18px}
+.aviso{font-size:13px;color:var(--ink-2);border-left:3px solid var(--dende);background:var(--surface);padding:10px 14px;margin-bottom:18px}
 form.reg{border:1px solid var(--rule);background:var(--surface);padding:12px 14px;margin-bottom:10px;display:grid;gap:8px}
 form.reg.novo{border-color:var(--verde);border-left:3px solid var(--verde)}
 .linha{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}

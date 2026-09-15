@@ -147,7 +147,7 @@ const TABELAS = {
     campos: ["rotulo", "valor", "nota", "ordem"], numericos: ["valor", "ordem"], arrays: [] },
   glossario: { tabela: "glossario", chave: "id", rotuloCampo: "termo",
     campos: ["id", "termo", "variantes", "definicao", "verbete", "ordem"],
-    numericos: ["ordem"], arrays: ["variantes"] },
+    numericos: ["ordem"], arrays: ["variantes"], arraysTexto: ["variantes"] },
   resposta: { tabela: "respostas", chave: "id", rotuloCampo: "autor",
     campos: ["verbete", "autor", "tipo", "data_txt", "texto", "fonte", "url", "prioridade", "ordem"],
     numericos: ["ordem"], arrays: [], booleanos: ["prioridade"] },
@@ -160,7 +160,10 @@ function normaliza(def, entrada) {
     if (!(c in entrada)) continue;
     let v = entrada[c];
     if (def.arrays.includes(c)) {
-      out[c] = String(v || "").split(/[,\s]+/).map((s) => s.trim()).filter(Boolean);
+      // campos de texto (ex.: variantes do glossario) aceitam termos com espaco;
+      // listas de ids continuam separadas por espaco ou virgula
+      const sep = (def.arraysTexto || []).includes(c) ? /[,;\n]+/ : /[,\s]+/;
+      out[c] = String(v || "").split(sep).map((s) => s.trim()).filter(Boolean);
     } else if ((def.booleanos || []).includes(c)) {
       out[c] = v === "1" || v === "on" || v === "true" || v === true;
     } else if (def.numericos.includes(c)) {
