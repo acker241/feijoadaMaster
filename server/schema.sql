@@ -119,3 +119,13 @@ CREATE TABLE IF NOT EXISTS respostas (
   ordem       INT NOT NULL DEFAULT 0
 );
 CREATE INDEX IF NOT EXISTS respostas_verbete_idx ON respostas (verbete);
+
+-- ---------- glossario ----------
+CREATE TABLE IF NOT EXISTS glossario (
+  id         TEXT PRIMARY KEY,
+  termo      TEXT NOT NULL,
+  variantes  TEXT[] NOT NULL DEFAULT '{}',
+  definicao  TEXT NOT NULL,
+  verbete    TEXT,
+  ordem      INT NOT NULL DEFAULT 0
+);

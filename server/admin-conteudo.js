@@ -54,7 +54,7 @@ function pagina(titulo, corpo) {
 
 const ENTIDADES = [
   ["verbete", "verbetes"], ["vinculo", "vínculos"], ["evento", "eventos"],
-  ["resposta", "respostas"], ["fase", "fases"], ["fonte", "fontes"], ["barra", "barras"],
+  ["resposta", "respostas"], ["glossario", "glossário"], ["fase", "fases"], ["fonte", "fontes"], ["barra", "barras"],
 ];
 const TIPOS_RESPOSTA = ["Direito de resposta", "Nota oficial", "Manifestação da defesa",
   "Defesa apresentada ao STF", "Posição nos autos", "Recurso ao STF",
@@ -126,6 +126,16 @@ function campos(ent, r, o) {
           <input type="checkbox" name="prioridade" value="1"${r ? (r.prioridade ? " checked" : "") : " checked"}> mostrar acima do texto
         </label></div>
     </div>`;
+  if (ent === "glossario") return `
+    <div class="linha">
+      <div class="campo"><label>id</label><input name="id" value="${esc(v("id"))}" ${r ? "readonly" : "required"} size="10"></div>
+      <div class="campo larg"><label>termo</label><input name="termo" value="${esc(v("termo"))}" required></div>
+      <div class="campo larg"><label>variantes (separadas por vírgula, para o texto ser marcado)</label><input name="variantes" value="${esc((r && Array.isArray(r.variantes) ? r.variantes.join(", ") : ""))}"></div>
+      <div class="campo"><label>verbete ligado</label><select name="verbete"><option value="">— nenhum —</option>${
+        o.verbetes.map((x) => `<option value="${esc(x.id)}"${x.id === v("verbete") ? " selected" : ""}>${esc(x.nome)}</option>`).join("")}</select></div>
+      <div class="campo"><label>ordem</label><input name="ordem" value="${esc(v("ordem"))}" size="4"></div>
+    </div>
+    <div class="campo full"><label>definição em linguagem simples</label><textarea name="definicao" required>${esc(v("definicao"))}</textarea></div>`;
   if (ent === "fonte") return `
     <div class="linha">
       <div class="campo"><label>id</label><input name="id" value="${esc(v("id"))}" ${r ? "readonly" : "required"} size="8"></div>

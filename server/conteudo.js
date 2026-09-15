@@ -43,6 +43,10 @@ async function semear() {
       for (const b of seed.barras) await c.query("INSERT INTO barras (rotulo,valor,nota,ordem) VALUES ($1,$2,$3,$4)", [b.rotulo, b.valor, b.nota, b.ordem]);
       feito.push(`${seed.barras.length} barras`);
     }
+    if (await vazia("glossario")) {
+      for (const g of seed.glossario || []) await c.query("INSERT INTO glossario (id,termo,variantes,definicao,verbete,ordem) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (id) DO NOTHING", [g.id, g.termo, g.variantes || [], g.definicao, g.verbete, g.ordem || 0]);
+      feito.push(`${(seed.glossario || []).length} termos de glossário`);
+    }
     if (await vazia("respostas")) {
       for (const r of seed.respostas || []) await c.query("INSERT INTO respostas (verbete,autor,tipo,data_txt,texto,fonte,url,prioridade,ordem) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)", [r.verbete, r.autor, r.tipo, r.data_txt, r.texto, r.fonte, r.url, r.prioridade !== false, r.ordem || 0]);
       feito.push(`${(seed.respostas || []).length} respostas`);
@@ -64,7 +68,7 @@ function invalidar() { cache = null; }
 
 async function dados() {
   if (cache) return cache;
-  const [fon, cat, ane, tip, bar, fas, eve, ver, vin, err, resp] = await Promise.all([
+  const [fon, cat, ane, tip, bar, fas, eve, ver, vin, err, resp, glo] = await Promise.all([
     pool.query("SELECT * FROM fontes ORDER BY id"),
     pool.query("SELECT * FROM categorias ORDER BY ordem"),
     pool.query("SELECT * FROM aneis ORDER BY nivel"),
@@ -76,6 +80,7 @@ async function dados() {
     pool.query("SELECT * FROM vinculos ORDER BY ordem, id"),
     pool.query("SELECT criado_em, entidade, rotulo, acao, campo, antes, depois, motivo FROM errata WHERE publico ORDER BY criado_em DESC LIMIT 60"),
     pool.query("SELECT * FROM respostas ORDER BY verbete, ordem, id"),
+    pool.query("SELECT * FROM glossario ORDER BY ordem, termo"),
   ]);
   const saida = {
     L: Object.fromEntries(fon.rows.map((f) => [f.id, [f.rotulo, f.url]])),
@@ -101,6 +106,9 @@ async function dados() {
       });
       return acc;
     }, {}),
+    GLOS: glo.rows.map((g) => ({
+      id: g.id, termo: g.termo, vars: g.variantes || [], def: g.definicao, verbete: g.verbete,
+    })),
     atualizado: new Date().toISOString(),
   };
   const corpo = JSON.stringify(saida);
@@ -137,6 +145,9 @@ const TABELAS = {
     campos: ["id", "rotulo", "url"], numericos: [], arrays: [] },
   barra: { tabela: "barras", chave: "id", rotuloCampo: "rotulo",
     campos: ["rotulo", "valor", "nota", "ordem"], numericos: ["valor", "ordem"], arrays: [] },
+  glossario: { tabela: "glossario", chave: "id", rotuloCampo: "termo",
+    campos: ["id", "termo", "variantes", "definicao", "verbete", "ordem"],
+    numericos: ["ordem"], arrays: ["variantes"] },
   resposta: { tabela: "respostas", chave: "id", rotuloCampo: "autor",
     campos: ["verbete", "autor", "tipo", "data_txt", "texto", "fonte", "url", "prioridade", "ordem"],
     numericos: ["ordem"], arrays: [], booleanos: ["prioridade"] },

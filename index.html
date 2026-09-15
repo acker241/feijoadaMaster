@@ -193,6 +193,31 @@ aside.ficha h3{font-size:21px;margin:0 0 2px;letter-spacing:-.015em;text-wrap:ba
 .card p.w{font-family:Fraunces,Georgia,serif;font-style:italic;font-size:13.5px;color:var(--ink-3);margin:8px 0 0;line-height:1.48}
 .card .lk{margin-top:9px;display:flex;gap:12px;flex-wrap:wrap;font-size:12.5px;font-weight:600}
 .card .lk a{color:var(--ink-3)}
+/* glossário e termos clicáveis */
+.tref{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;
+  border-bottom:1px dotted var(--c-reg);text-underline-offset:3px}
+.tref:hover{color:var(--c-reg);border-bottom-style:solid}
+.tref.pessoa{border-bottom-color:var(--laranja)}
+.tref.pessoa:hover{color:var(--laranja)}
+.glos{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:20px}
+.termo{border-top:2px solid var(--c-reg);padding-top:11px}
+.termo h4{font-size:17px;margin:0;font-weight:700;letter-spacing:-.01em}
+.termo p{font-size:14px;color:var(--ink-2);margin:7px 0 0;line-height:1.52}
+.termo .ir{margin-top:8px;font-family:"DM Mono",monospace;font-size:11px}
+.termo .ir button{font:inherit;background:none;border:0;padding:0;color:var(--laranja);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.termo:target,.card:target,.piscar{animation:piscar 1.6s ease-out}
+@keyframes piscar{0%{background:color-mix(in srgb,var(--c-reg) 22%,transparent)}100%{background:transparent}}
+#voltar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));
+  z-index:55;display:none;align-items:center;gap:9px;background:var(--ink);color:var(--paper);border:0;
+  font-family:Karla,sans-serif;font-size:13.5px;font-weight:700;padding:11px 18px;border-radius:999px;
+  cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.3);max-width:calc(100vw - 32px)}
+#voltar[data-on="1"]{display:inline-flex}
+#voltar span{font-family:"DM Mono",monospace;font-size:11px;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* comece aqui */
+.comece{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px;margin-top:6px}
+.comece div{border-left:2px solid var(--laranja);padding:2px 0 2px 14px}
+.comece b{font-family:"DM Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--laranja)}
+.comece p{margin:6px 0 0;font-size:14.5px;color:var(--ink-2);line-height:1.5}
 /* direito de resposta */
 .selo{display:inline-flex;align-items:center;gap:6px;font-family:"DM Mono",monospace;font-size:10px;text-transform:uppercase;
   letter-spacing:.09em;color:var(--c-pol);border:1px solid var(--c-pol);padding:3px 7px;border-radius:2px;margin-bottom:8px}
@@ -267,12 +292,14 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
 <nav>
   <div class="in">
     <span class="brand">Feijoada do Master</span>
+    <a href="#comece">Comece aqui</a>
     <a href="#escala">Escala</a>
     <a href="#linha">Linha do tempo</a>
     <a href="#rede">Rede</a>
     <a href="#quem">Quem é quem</a>
     <a href="#fontes">Fontes</a>
     <a href="#creditos">Imagens e licenças</a>
+    <a href="#glossario">Glossário</a>
     <a href="#errata-sec">Errata</a>
     <a href="#contato">Fale com o site</a>
     <span class="spacer"></span>
@@ -295,6 +322,21 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
     </div>
   </div>
 </header>
+
+<section id="comece">
+  <div class="wrap">
+    <div class="sec-head"><span class="n">00</span><h2>Comece aqui</h2>
+      <p class="sec-note">Cinco parágrafos para quem está chegando agora. Termos técnicos aparecem <button class="tref" data-dest="glos:cdb" type="button">sublinhados</button> — clique para ver o que significam, e use o botão de voltar para retomar a leitura onde parou.</p>
+    </div>
+    <div class="comece">
+      <div><b>O banco</b><p>O Banco Master era um banco médio de São Paulo, controlado por Daniel Vorcaro. Cresceu rápido captando dinheiro do público com CDB que pagava juros bem acima da média — e para honrar esse juro precisava de ativos cada vez mais arriscados.</p></div>
+      <div><b>A venda barrada</b><p>Em 2025 o BRB, banco público do Distrito Federal, anunciou a compra do Master. Passou pelo Cade e pela Câmara Legislativa do DF, e o Banco Central barrou em setembro daquele ano.</p></div>
+      <div><b>O colapso</b><p>Em 17 e 18/11/2025, em 48 horas: uma venda de emergência ao grupo Fictor, a prisão de Vorcaro no aeroporto e a liquidação extrajudicial decretada pelo Banco Central.</p></div>
+      <div><b>A conta</b><p>O FGC, fundo bancado pelos próprios bancos, pagou R$ 40,6 bi a cerca de 800 mil investidores. A apuração central trata de R$ 12,2 bi em carteiras de crédito vendidas ao BRB sob suspeita de não ter lastro.</p></div>
+      <div><b>Por que virou caso do STF</b><p>Autoridades com foro privilegiado apareceram nas mensagens do celular do banqueiro. O inquérito foi para o Supremo e, em setembro de 2026, virou disputa aberta entre ministros.</p></div>
+    </div>
+  </div>
+</section>
 
 <section id="escala">
   <div class="wrap">
@@ -387,9 +429,19 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
   </div>
 </section>
 
+<section id="glossario">
+  <div class="wrap">
+    <div class="sec-head"><span class="n">07</span><h2>Glossário</h2>
+      <p class="sec-note">O vocabulário do caso em linguagem simples. Termo que corresponde a alguém ou a alguma instituição do mapa traz link direto para o verbete.</p>
+    </div>
+    <div class="chips"><input type="search" id="glos-q" placeholder="buscar termo…" aria-label="Buscar termo"><span class="hint" id="glos-n"></span></div>
+    <div class="glos" id="glos"></div>
+  </div>
+</section>
+
 <section id="errata-sec">
   <div class="wrap">
-    <div class="sec-head"><span class="n">07</span><h2>Errata</h2>
+    <div class="sec-head"><span class="n">08</span><h2>Errata</h2>
       <p class="sec-note">Cada correção feita no conteúdo fica registrada aqui, com o valor antigo, o novo e o motivo. É o compromisso da seção 05 cumprido em forma de lista.</p>
     </div>
     <div id="errata"></div>
@@ -398,7 +450,7 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
 
 <section id="contato">
   <div class="wrap">
-    <div class="sec-head"><span class="n">08</span><h2>Fale com o site</h2>
+    <div class="sec-head"><span class="n">09</span><h2>Fale com o site</h2>
       <p class="sec-note">Correção de data, valor ou nome, sugestão do que falta, direito de resposta de quem é citado — e também registro de ameaça ou intimidação. Tudo chega ao responsável pela página.</p>
     </div>
     <form class="form" id="msgform" novalidate>
@@ -464,6 +516,7 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
   </div>
 </footer>
 <div id="tip" role="status"></div>
+<button id="voltar" type="button">← voltar <span id="voltar-de"></span></button>
 
 <script>
 var L={
@@ -925,6 +978,7 @@ var WIKI={
 };
 var ERRATA=[];
 var RESP={};
+var GLOS=[];
 var FONTE_DADOS="página";
 const PHOTO=new Map();   /* id -> {img,ext,url,file} */
 const CRED=new Map();    /* id -> {file,author,license,licenseUrl,page} */
@@ -1120,6 +1174,7 @@ function showNode(d){
    <div class="blk"><button class="fix" data-id="${d.id}" type="button">corrigir este verbete</button></div>
    <p class="warn">Investigado não é condenado. Prisões citadas são cautelares e nenhuma acusação aqui foi julgada.</p>`;
   panel.querySelectorAll(".conn button").forEach(b=>b.onclick=()=>showEdge(cs[+b.dataset.i].l));
+  if(typeof marcarTermos==="function") marcarTermos(panel.querySelector(".txt")?.parentElement||panel);
   panel.scrollTop=0;
 }
 function showEdge(d){
@@ -1197,6 +1252,7 @@ function cardsRender(){
       </div>`}).join("")}</div></div>`;
   }).join("");
   cardsEl.innerHTML=html||`<p class="sec-note">Nada encontrado com esse filtro.</p>`;
+  if(typeof marcarTermos==="function") marcarTermos(cardsEl);
 }
 const qOff=new Set();
 const qf=document.getElementById("q-filters");
@@ -1348,7 +1404,9 @@ const form=document.getElementById("msgform");
 const fOut=document.getElementById("f-out"), fStatus=document.getElementById("f-status");
 const fMsg=document.getElementById("f-msg"), fCnt=document.getElementById("f-cnt");
 const abertoEm=Date.now();
-if(SITEKEY){const w=document.getElementById("ts-wrap"); if(w) w.hidden=false}
+const wrapTS=document.getElementById("ts-wrap");
+if(SITEKEY){ if(wrapTS) wrapTS.hidden=false }
+else if(wrapTS) wrapTS.remove();
 function say(txt,cor){fOut.hidden=false;fOut.style.setProperty("--k",cor||"var(--rule-strong)");fOut.innerHTML=txt}
 function draft(){return {tipo:form.tipo.value,nome:form.nome.value,email:form.email.value,
   referencia:form.referencia.value,mensagem:fMsg.value,autorizaPublicacao:form.autorizaPublicacao.checked}}
@@ -1429,6 +1487,133 @@ document.addEventListener("click",e=>{
   const b=e.target.closest(".fix"); if(b) corrigir(b.dataset.id);
 });
 
+/* ---------- 07 glossário, termos clicáveis e voltar ---------- */
+
+function glosRender(){
+  const alvo=document.getElementById("glos"); if(!alvo) return;
+  const q=(document.getElementById("glos-q")?.value||"").trim().toLowerCase();
+  const lista=GLOS.filter(g=>!q||g.termo.toLowerCase().includes(q)||g.def.toLowerCase().includes(q)
+    ||(g.vars||[]).some(v=>v.toLowerCase().includes(q)));
+  document.getElementById("glos-n").textContent=`${lista.length} de ${GLOS.length} termos`;
+  alvo.innerHTML=lista.length?lista.map(g=>`
+    <div class="termo" id="glos-${g.id}">
+      <h4>${g.termo}</h4>
+      <p>${g.def}</p>
+      ${g.verbete&&byId.has(g.verbete)?`<p class="ir"><button type="button" class="tref pessoa" data-dest="verb:${g.verbete}">ver ${byId.get(g.verbete).n} no mapa →</button></p>`:""}
+    </div>`).join(""):`<p class="sec-note">Nenhum termo com esse filtro.</p>`;
+}
+glosRender();
+document.getElementById("glos-q")?.addEventListener("input",glosRender);
+
+/* --- marcação automática: nomes de verbetes e termos do glossário --- */
+function glosMapa(){ return new Map(GLOS.map(g=>[g.id,g])) }
+function marcarTermos(raiz){
+  if(!raiz) return;
+  const IGNORAR_TAGS=new Set(["A","BUTTON","SCRIPT","STYLE","H1","H2","H3","H4","SELECT","TEXTAREA","INPUT","LABEL","TABLE"]);
+  const entradas=[];
+  N.forEach(d=>{ if(d.n.length>5) entradas.push({re:d.n, dest:"verb:"+d.id, cls:"pessoa"}) });
+  GLOS.forEach(g=>{
+    entradas.push({re:g.termo, dest:"glos:"+g.id, cls:""});
+    (g.vars||[]).forEach(v=>{ if(v.length>3) entradas.push({re:v, dest:"glos:"+g.id, cls:""}) });
+  });
+  entradas.sort((a,b)=>b.re.length-a.re.length);
+  const escapar=t=>t.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+  const padrao=new RegExp("(?<![\\p{L}])("+entradas.map(e=>escapar(e.re)).join("|")+")(?![\\p{L}])","u");
+  const mapa=new Map(entradas.map(e=>[e.re.toLowerCase(),e]));
+  const usados=new Set();
+
+  const andador=document.createTreeWalker(raiz,NodeFilter.SHOW_TEXT,{
+    acceptNode(no){
+      if(!no.nodeValue||no.nodeValue.length<4) return NodeFilter.FILTER_REJECT;
+      let p=no.parentElement;
+      while(p&&p!==raiz){
+        if(IGNORAR_TAGS.has(p.tagName)||p.classList.contains("foot")||p.classList.contains("tref")) return NodeFilter.FILTER_REJECT;
+        p=p.parentElement;
+      }
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  const nos=[]; let n;
+  while((n=andador.nextNode())) nos.push(n);
+
+  nos.forEach(no=>{
+    let texto=no.nodeValue, achou=padrao.exec(texto);
+    if(!achou) return;
+    const frag=document.createDocumentFragment();
+    let resto=texto;
+    while(achou){
+      const antes=resto.slice(0,achou.index);
+      const termo=achou[1];
+      const e=mapa.get(termo.toLowerCase());
+      if(antes) frag.appendChild(document.createTextNode(antes));
+      /* cada termo vira link uma vez por bloco, para não poluir */
+      const chave=(no.parentElement?.id||"")+"|"+(e?e.dest:termo);
+      if(e&&!usados.has(chave)){
+        usados.add(chave);
+        const b=document.createElement("button");
+        b.type="button"; b.className="tref "+(e.cls||""); b.dataset.dest=e.dest; b.textContent=termo;
+        frag.appendChild(b);
+      } else {
+        frag.appendChild(document.createTextNode(termo));
+      }
+      resto=resto.slice(achou.index+termo.length);
+      achou=padrao.exec(resto);
+    }
+    if(resto) frag.appendChild(document.createTextNode(resto));
+    no.parentNode.replaceChild(frag,no);
+  });
+}
+
+/* --- pilha de navegação e botão voltar --- */
+const pilha=[];
+const btVoltar=document.getElementById("voltar");
+const rotuloSecao=()=>{
+  const secs=[...document.querySelectorAll("section[id]")];
+  const meio=scrollY+innerHeight*0.35;
+  let atual=secs[0];
+  secs.forEach(s=>{ if(s.offsetTop<=meio) atual=s });
+  const h=atual?.querySelector(".sec-head h2");
+  return h?h.textContent.trim():"o início";
+};
+function pintarVoltar(){
+  if(!btVoltar) return;
+  const topo=pilha[pilha.length-1];
+  btVoltar.dataset.on=topo?"1":"0";
+  document.getElementById("voltar-de").textContent=topo?`para ${topo.rotulo}`:"";
+}
+function irPara(dest,semPilha){
+  const [tipo,id]=dest.split(":");
+  if(!semPilha) { pilha.push({y:scrollY,rotulo:rotuloSecao()}); pintarVoltar(); }
+  let alvo=null;
+  if(tipo==="verb"){
+    soResp=false; qOff.clear();
+    document.querySelectorAll("#q-filters .chip[data-cat]").forEach(c=>c.setAttribute("aria-pressed","true"));
+    const busca=document.getElementById("q-q"); if(busca) busca.value="";
+    cardsRender();
+    alvo=document.getElementById("c-"+id);
+    if(byId.has(id)) showNode(byId.get(id));
+  } else {
+    const g=glosMapa().get(id);
+    if(g){ const q=document.getElementById("glos-q"); if(q&&q.value){ q.value=""; glosRender() } }
+    alvo=document.getElementById("glos-"+id);
+  }
+  if(alvo){
+    alvo.scrollIntoView({behavior:"smooth",block:"center"});
+    alvo.classList.remove("piscar"); void alvo.offsetWidth; alvo.classList.add("piscar");
+  }
+}
+btVoltar?.addEventListener("click",()=>{
+  const p=pilha.pop(); pintarVoltar();
+  if(p) scrollTo({top:p.y,behavior:"smooth"});
+});
+addEventListener("keydown",e=>{
+  if(e.key==="Escape"&&pilha.length){ e.preventDefault(); btVoltar.click() }
+});
+document.addEventListener("click",e=>{
+  const b=e.target.closest(".tref"); if(!b) return;
+  e.preventDefault(); irPara(b.dataset.dest);
+});
+
 /* ---------- 08 errata ---------- */
 (function errata(){
   const alvo=document.getElementById("errata"); if(!alvo) return;
@@ -1447,6 +1632,12 @@ document.addEventListener("click",e=>{
       <td>${e.motivo?e.motivo:"—"}</td></tr>`}).join("")
    +`</tbody></table></div>`;
 })();
+
+/* marcação nos textos longos da linha do tempo e do bloco inicial */
+if(typeof marcarTermos==="function"){
+  marcarTermos(document.getElementById("timeline"));
+  marcarTermos(document.querySelector("#comece .comece"));
+}
 
 /* origem dos dados no rodapé */
 (function origem(){
@@ -1500,6 +1691,7 @@ secs.forEach(s=>new IntersectionObserver(es=>{
         if(d.WIKI) WIKI=d.WIKI;
         ERRATA = d.ERRATA || [];
         RESP = d.RESP || {};
+        GLOS = d.GLOS || [];
         FONTE_DADOS = "banco";
       }
     }
