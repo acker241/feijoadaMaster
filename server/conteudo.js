@@ -43,10 +43,14 @@ async function semear() {
       for (const b of seed.barras) await c.query("INSERT INTO barras (rotulo,valor,nota,ordem) VALUES ($1,$2,$3,$4)", [b.rotulo, b.valor, b.nota, b.ordem]);
       feito.push(`${seed.barras.length} barras`);
     }
-    if (await vazia("glossario")) {
-      for (const g of seed.glossario || []) await c.query("INSERT INTO glossario (id,termo,variantes,definicao,verbete,ordem) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (id) DO NOTHING", [g.id, g.termo, g.variantes || [], g.definicao, g.verbete, g.ordem || 0]);
-      feito.push(`${(seed.glossario || []).length} termos de glossário`);
+    /* glossario funciona como catalogo: termos novos do seed entram sempre,
+       sem tocar nos que ja existem (o painel continua manda no texto) */
+    let glosNovos = 0;
+    for (const g of seed.glossario || []) {
+      const r = await c.query("INSERT INTO glossario (id,termo,variantes,definicao,verbete,ordem) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (id) DO NOTHING", [g.id, g.termo, g.variantes || [], g.definicao, g.verbete, g.ordem || 0]);
+      glosNovos += r.rowCount;
     }
+    if (glosNovos) feito.push(`${glosNovos} termos de glossário`);
     if (await vazia("respostas")) {
       for (const r of seed.respostas || []) await c.query("INSERT INTO respostas (verbete,autor,tipo,data_txt,texto,fonte,url,prioridade,ordem) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)", [r.verbete, r.autor, r.tipo, r.data_txt, r.texto, r.fonte, r.url, r.prioridade !== false, r.ordem || 0]);
       feito.push(`${(seed.respostas || []).length} respostas`);
