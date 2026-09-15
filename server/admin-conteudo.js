@@ -54,8 +54,11 @@ function pagina(titulo, corpo) {
 
 const ENTIDADES = [
   ["verbete", "verbetes"], ["vinculo", "vínculos"], ["evento", "eventos"],
-  ["fase", "fases"], ["fonte", "fontes"], ["barra", "barras"],
+  ["resposta", "respostas"], ["fase", "fases"], ["fonte", "fontes"], ["barra", "barras"],
 ];
+const TIPOS_RESPOSTA = ["Direito de resposta", "Nota oficial", "Manifestação da defesa",
+  "Defesa apresentada ao STF", "Posição nos autos", "Recurso ao STF",
+  "Decisão judicial a favor", "Retificação do veículo", "Nota pública de apoio"];
 
 function sel(nome, valor, itens, chave, rotulo) {
   return `<select name="${nome}">` + itens.map((i) =>
@@ -105,6 +108,24 @@ function campos(ent, r, o) {
       <div class="campo larg"><label>título</label><input name="titulo" value="${esc(v("titulo"))}" required></div>
     </div>
     <div class="campo full"><label>subtítulo</label><textarea name="subtitulo">${esc(v("subtitulo"))}</textarea></div>`;
+  if (ent === "resposta") return `
+    <div class="linha">
+      <div class="campo"><label>verbete citado</label>${sel("verbete", v("verbete"), o.verbetes, "id", "nome")}</div>
+      <div class="campo larg"><label>quem responde</label><input name="autor" value="${esc(v("autor"))}" required></div>
+      <div class="campo"><label>tipo</label><select name="tipo">${TIPOS_RESPOSTA.map((t) =>
+        `<option${t === v("tipo") ? " selected" : ""}>${esc(t)}</option>`).join("")}</select></div>
+      <div class="campo"><label>data (texto)</label><input name="data_txt" value="${esc(v("data_txt"))}" required size="12"></div>
+      <div class="campo"><label>ordem</label><input name="ordem" value="${esc(v("ordem"))}" size="4"></div>
+    </div>
+    <div class="campo full"><label>teor da resposta — como o citado contesta</label><textarea name="texto" required>${esc(v("texto"))}</textarea></div>
+    <div class="linha">
+      <div class="campo"><label>fonte (id)</label><input name="fonte" value="${esc(v("fonte"))}" size="8"></div>
+      <div class="campo larg"><label>url da resposta</label><input name="url" value="${esc(v("url"))}"></div>
+      <div class="campo"><label>destaque na página</label>
+        <label style="font-family:Karla,sans-serif;font-size:13px;text-transform:none;letter-spacing:0;color:var(--ink-2)">
+          <input type="checkbox" name="prioridade" value="1"${r ? (r.prioridade ? " checked" : "") : " checked"}> mostrar acima do texto
+        </label></div>
+    </div>`;
   if (ent === "fonte") return `
     <div class="linha">
       <div class="campo"><label>id</label><input name="id" value="${esc(v("id"))}" ${r ? "readonly" : "required"} size="8"></div>
@@ -145,7 +166,7 @@ exports.conteudo = (ent, rows, o, contagens, q, errata) => {
   <p class="sub">Painel · conteúdo do site</p>
   <h1>Feijoada <span>do Master</span></h1>
   <div class="tabs">${tabs}<span class="sp"></span><a class="tab" href="/admin">mensagens</a><a class="tab" href="/admin/sair">sair</a></div>
-  <p class="aviso">Toda alteração daqui entra na <b>errata pública</b> da página, com campo, valor antigo, valor novo e o motivo que você escrever. Remoção de verbete apaga também os vínculos dele.</p>
+  <p class="aviso">Em <b>respostas</b> ficam as manifestações de quem é citado — nota oficial, defesa, recurso, decisão judicial favorável, retificação de veículo. Marcadas como destaque, elas aparecem <b>acima</b> do texto do verbete, com selo próprio. Toda alteração daqui entra na <b>errata pública</b> da página, com campo, valor antigo, valor novo e o motivo que você escrever. Remoção de verbete apaga também os vínculos dele.</p>
   <form class="busca" method="get" action="/admin/conteudo">
     <input type="hidden" name="ent" value="${ent}">
     <input type="search" name="q" value="${esc(q || "")}" placeholder="filtrar por texto…">

@@ -23,8 +23,9 @@ async function semear() {
     for (const e of seed.eventos) await c.query("INSERT INTO eventos (fase,ordem,data_txt,categoria,quem,texto) VALUES ($1,$2,$3,$4,$5,$6)", [e.fase, e.ordem, e.data_txt, e.categoria, e.quem, e.texto]);
     for (const v of seed.verbetes) await c.query("INSERT INTO verbetes (id,nome,sigla,papel,categoria,anel,info,fontes,wiki,ordem) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT (id) DO NOTHING", [v.id, v.nome, v.sigla, v.papel, v.categoria, v.anel, v.info, v.fontes, v.wiki, v.ordem]);
     for (const l of seed.vinculos) await c.query("INSERT INTO vinculos (origem,destino,tipo,info,fontes,ordem) VALUES ($1,$2,$3,$4,$5,$6)", [l.origem, l.destino, l.tipo, l.info, l.fontes, l.ordem]);
+    for (const r of seed.respostas || []) await c.query("INSERT INTO respostas (verbete,autor,tipo,data_txt,texto,fonte,url,prioridade,ordem) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)", [r.verbete, r.autor, r.tipo, r.data_txt, r.texto, r.fonte, r.url, r.prioridade !== false, r.ordem || 0]);
     await c.query("COMMIT");
-    console.log(`[conteudo] semeado: ${seed.verbetes.length} verbetes, ${seed.vinculos.length} vínculos, ${seed.eventos.length} eventos`);
+    console.log(`[conteudo] semeado: ${seed.verbetes.length} verbetes, ${seed.vinculos.length} vínculos, ${seed.eventos.length} eventos, ${(seed.respostas || []).length} respostas`);
     return true;
   } catch (e) {
     await c.query("ROLLBACK");
@@ -38,7 +39,7 @@ function invalidar() { cache = null; }
 
 async function dados() {
   if (cache) return cache;
-  const [fon, cat, ane, tip, bar, fas, eve, ver, vin, err] = await Promise.all([
+  const [fon, cat, ane, tip, bar, fas, eve, ver, vin, err, resp] = await Promise.all([
     pool.query("SELECT * FROM fontes ORDER BY id"),
     pool.query("SELECT * FROM categorias ORDER BY ordem"),
     pool.query("SELECT * FROM aneis ORDER BY nivel"),
@@ -49,6 +50,7 @@ async function dados() {
     pool.query("SELECT * FROM verbetes ORDER BY ordem, id"),
     pool.query("SELECT * FROM vinculos ORDER BY ordem, id"),
     pool.query("SELECT criado_em, entidade, rotulo, acao, campo, antes, depois, motivo FROM errata WHERE publico ORDER BY criado_em DESC LIMIT 60"),
+    pool.query("SELECT * FROM respostas ORDER BY verbete, ordem, id"),
   ]);
   const saida = {
     L: Object.fromEntries(fon.rows.map((f) => [f.id, [f.rotulo, f.url]])),
@@ -67,6 +69,13 @@ async function dados() {
       em: e.criado_em, entidade: e.entidade, rotulo: e.rotulo, acao: e.acao,
       campo: e.campo, antes: e.antes, depois: e.depois, motivo: e.motivo,
     })),
+    RESP: resp.rows.reduce((acc, r) => {
+      (acc[r.verbete] = acc[r.verbete] || []).push({
+        autor: r.autor, tipo: r.tipo, data: r.data_txt, texto: r.texto,
+        fonte: r.fonte, url: r.url, prio: r.prioridade,
+      });
+      return acc;
+    }, {}),
     atualizado: new Date().toISOString(),
   };
   const corpo = JSON.stringify(saida);
@@ -103,15 +112,21 @@ const TABELAS = {
     campos: ["id", "rotulo", "url"], numericos: [], arrays: [] },
   barra: { tabela: "barras", chave: "id", rotuloCampo: "rotulo",
     campos: ["rotulo", "valor", "nota", "ordem"], numericos: ["valor", "ordem"], arrays: [] },
+  resposta: { tabela: "respostas", chave: "id", rotuloCampo: "autor",
+    campos: ["verbete", "autor", "tipo", "data_txt", "texto", "fonte", "url", "prioridade", "ordem"],
+    numericos: ["ordem"], arrays: [], booleanos: ["prioridade"] },
 };
 
 function normaliza(def, entrada) {
   const out = {};
+  for (const b of def.booleanos || []) if (!(b in entrada)) entrada[b] = "0";
   for (const c of def.campos) {
     if (!(c in entrada)) continue;
     let v = entrada[c];
     if (def.arrays.includes(c)) {
       out[c] = String(v || "").split(/[,\s]+/).map((s) => s.trim()).filter(Boolean);
+    } else if ((def.booleanos || []).includes(c)) {
+      out[c] = v === "1" || v === "on" || v === "true" || v === true;
     } else if (def.numericos.includes(c)) {
       const n = Number(String(v).replace(",", "."));
       out[c] = Number.isFinite(n) ? n : 0;
@@ -124,7 +139,10 @@ function normaliza(def, entrada) {
 
 async function listar(entidade) {
   const def = TABELAS[entidade];
-  const ordem = def.tabela === "eventos" ? "fase, ordem, id" : def.tabela === "fases" ? "ordem" : "ordem, " + def.chave;
+  const ordem = def.tabela === "eventos" ? "fase, ordem, id"
+    : def.tabela === "fases" ? "ordem"
+    : def.tabela === "respostas" ? "verbete, ordem, id"
+    : "ordem, " + def.chave;
   const { rows } = await pool.query(`SELECT * FROM ${def.tabela} ORDER BY ${ordem}`);
   return rows;
 }

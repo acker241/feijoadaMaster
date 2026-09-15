@@ -193,6 +193,15 @@ aside.ficha h3{font-size:21px;margin:0 0 2px;letter-spacing:-.015em;text-wrap:ba
 .card p.w{font-family:Fraunces,Georgia,serif;font-style:italic;font-size:13.5px;color:var(--ink-3);margin:8px 0 0;line-height:1.48}
 .card .lk{margin-top:9px;display:flex;gap:12px;flex-wrap:wrap;font-size:12.5px;font-weight:600}
 .card .lk a{color:var(--ink-3)}
+/* direito de resposta */
+.selo{display:inline-flex;align-items:center;gap:6px;font-family:"DM Mono",monospace;font-size:10px;text-transform:uppercase;
+  letter-spacing:.09em;color:var(--c-pol);border:1px solid var(--c-pol);padding:3px 7px;border-radius:2px;margin-bottom:8px}
+.selo::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--c-pol)}
+.resposta{border-left:3px solid var(--c-pol);background:var(--surface-2);padding:11px 13px;margin:9px 0 0}
+.resposta .quem{font-family:"DM Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--c-pol)}
+.resposta p{margin:6px 0 0;font-size:13.5px;line-height:1.5;color:var(--ink-2)}
+.resposta a{font-family:"DM Mono",monospace;font-size:11px;color:var(--ink-3)}
+.node circle.resp{fill:none;stroke-width:1.5;stroke-dasharray:3 3}
 .foot{margin-top:10px;font-family:"DM Mono",monospace;font-size:10.5px;color:var(--ink-3);line-height:1.5}
 
 /* tabelas */
@@ -338,7 +347,7 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
 <section id="quem">
   <div class="wrap">
     <div class="sec-head"><span class="n">04</span><h2>Quem é quem</h2>
-      <p class="sec-note">Cada verbete traz o papel no caso, o resumo biográfico da Wikipédia (carregado ao abrir a página) e os links das reportagens. Posição na apuração não é juízo de culpa.</p>
+      <p class="sec-note">Cada verbete traz o papel no caso, o resumo da Wikipédia e os links das reportagens. Quem se manifestou aparece com o selo <b>direito de resposta exercido</b>, e a resposta vem antes do nosso texto. Posição na apuração não é juízo de culpa.</p>
     </div>
     <div class="chips" id="q-filters"></div>
     <div id="cards"></div>
@@ -350,6 +359,7 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
     <div class="sec-head"><span class="n">05</span><h2>Fontes e avisos</h2></div>
     <p class="note" id="disclaimer"><b>O que esta página é.</b> Um <b>agregador</b>: ela reúne, organiza e traduz em linguagem simples e em imagens o que veículos de imprensa e documentos públicos já publicaram sobre o caso, para facilitar o entendimento amplo do público. <b>Não é um site opinativo</b> — não emite juízo próprio, não acusa ninguém e não conclui nada: apenas replica o que está nas fontes, sempre com o link do original ao lado de cada informação.<br><br>
     <b>Feito com inteligência artificial.</b> A organização dos dados, os textos de apoio e os gráficos foram produzidos com auxílio de IA a partir das reportagens listadas abaixo. Isso <b>não transfere nem isenta responsabilidade</b>: a responsabilidade pelo conteúdo original é de cada veículo citado, e a responsabilidade pela réplica, pelo recorte e pela publicação aqui é do proprietário deste site. Erro de leitura, de data ou de atribuição pode existir — a fonte primária prevalece sempre sobre esta página.<br><br>
+    <b>A resposta do citado vem primeiro.</b> Quando alguém citado nesta página se manifesta — nota oficial, defesa nos autos, recurso, decisão judicial favorável — a manifestação entra no verbete <b>acima</b> do nosso texto, com selo próprio, e prevalece sobre a descrição da notícia. O verbete fica marcado na rede e pode ser filtrado na seção 04. Retificação publicada por um veículo tem o mesmo tratamento.<br><br>
     <b>Presunção de inocência.</b> Nenhuma acusação reunida aqui foi julgada. Prisões citadas são cautelares, relatórios policiais são peça de investigação e não sentença, e os citados negam irregularidades ou ainda não apresentaram defesa final. Parte do que veio a público em setembro de 2026 saiu de mensagens de celular divulgadas dentro de uma disputa entre ministros do STF — o que exige cautela adicional sobre contexto e autenticidade de cada trecho. Pedidos de correção ou de resposta devem ser enviados ao responsável pelo site e serão publicados.<br><br>
     <b>Imagens.</b> Os retratos são carregados da Wikipédia e do Wikimedia Commons no navegador de quem acessa, com link para a página de origem de cada pessoa, onde consta a licença da foto. Onde não há imagem livre disponível, a página mostra um monograma. Antes de usar qualquer foto fora deste contexto, verifique a licença no arquivo original.</p>
     <h3 class="subhead">Fontes jornalísticas e documentais</h3>
@@ -914,6 +924,7 @@ var WIKI={
  furtado:"Marcus Vinícius Furtado Coêlho", costa:"Banco de Brasília", cpi:"Comissão parlamentar de inquérito",
 };
 var ERRATA=[];
+var RESP={};
 var FONTE_DADOS="página";
 const PHOTO=new Map();   /* id -> {img,ext,url,file} */
 const CRED=new Map();    /* id -> {file,author,license,licenseUrl,page} */
@@ -1002,6 +1013,8 @@ const node=gNode.selectAll("g").data(N).join("g").attr("class","node")
 node.append("circle").attr("class","av").attr("r",R).attr("fill",d=>CATG[d.c].c);
 node.append("text").attr("class","ini").attr("dy",d=>d.t===0?5:4)
   .attr("font-size",d=>d.t===0?15:d.ab.length>2?9.5:11).text(d=>d.ab);
+node.filter(d=>respostasDe(d.id).length).append("circle").attr("class","resp")
+  .attr("r",d=>R(d)+5).attr("stroke","var(--c-pol)");
 node.append("text").attr("class","lab").attr("font-size",d=>d.t>=3?9.5:10.5)
   .attr("dy",d=>R(d)+12).text(d=>d.n.length>26?d.n.slice(0,24)+"…":d.n);
 
@@ -1048,7 +1061,8 @@ function tipEdge(e,d){
   tip.style.opacity="1";moveTip(e);
 }
 function tipNode(e,d){
-  tip.innerHTML=`<b>${d.r}</b>${d.n} · ${deg.get(d.id)||0} ligações · ${RING[d.t]}`;
+  const r=respostasDe(d.id).length?" · resposta do citado registrada":"";
+  tip.innerHTML=`<b>${d.r}</b>${d.n} · ${deg.get(d.id)||0} ligações · ${RING[d.t]}${r}`;
   tip.style.opacity="1";moveTip(e);
 }
 function moveTip(e){
@@ -1069,6 +1083,17 @@ document.addEventListener("mousemove",e=>{if(tip.style.opacity==="1"&&e.target.c
 
 const panel=document.getElementById("panel");
 function srcHtml(ids){return `<div class="srcl">${ids.map(i=>`<a href="${L[i][1]}" target="_blank" rel="noopener">${L[i][0]} ↗</a>`).join("")}</div>`}
+function respostasDe(id){ return (RESP && RESP[id]) ? RESP[id] : [] }
+function seloResp(id){ return respostasDe(id).length ? `<span class="selo">direito de resposta exercido</span>` : "" }
+function blocoResp(id){
+  const rs=respostasDe(id).filter(r=>r.prio!==false);
+  if(!rs.length) return "";
+  return rs.map(r=>`<div class="resposta">
+     <span class="quem">${r.autor} · ${r.tipo} · ${r.data}</span>
+     <p>${r.texto}</p>
+     ${r.url?`<a href="${r.url}" target="_blank" rel="noopener">ler a íntegra ↗</a>`:""}
+   </div>`).join("");
+}
 function faceHtml(d,size){
   const p=PHOTO.get(d.id);
   return `<div class="face" style="--g:${CATG[d.c].c};width:${size}px;height:${size}px;font-size:${size/3.2}px">`
@@ -1084,6 +1109,8 @@ function showNode(d){
      <div><p class="role" style="--k:${CATG[d.c].c}">${d.r}</p><h3>${d.n}</h3></div>
    </div>
    <p class="meta">${RING[d.t].toUpperCase()} · ${CATG[d.c].n.toUpperCase()} · ${cs.length} LIGAÇÕES</p>
+   ${seloResp(d.id)?`<div style="margin-top:10px">${seloResp(d.id)}</div>`:""}
+   ${blocoResp(d.id)}
    <p class="txt">${d.info}</p>
    ${p&&p.ext?`<p class="txt" style="font-style:italic;color:var(--ink-3)">${p.ext} <a href="${p.url}" target="_blank" rel="noopener">Wikipédia ↗</a></p>`:""}
    ${credLine(d.id)}
@@ -1145,18 +1172,21 @@ gRender();
 
 /* ---------- 04 quem é quem ---------- */
 const cardsEl=document.getElementById("cards");
+let soResp=false;
 function cardsRender(){
   const q=(document.getElementById("q-q")?.value||"").trim().toLowerCase();
   const html=RING.map((rn,t)=>{
-    const list=N.filter(d=>d.t===t&&!qOff.has(d.c)&&(!q||d.n.toLowerCase().includes(q)||d.r.toLowerCase().includes(q)||d.info.toLowerCase().includes(q)));
+    const list=N.filter(d=>d.t===t&&!qOff.has(d.c)&&(!soResp||respostasDe(d.id).length)&&(!q||d.n.toLowerCase().includes(q)||d.r.toLowerCase().includes(q)||d.info.toLowerCase().includes(q)));
     if(!list.length) return "";
     return `<div class="ringgroup"><h3>${rn} · ${list.length}</h3><div class="cards">${list.map(d=>{
       const p=PHOTO.get(d.id);
       return `<div class="card" id="c-${d.id}">
         ${faceHtml(d,62)}
         <div>
+          ${seloResp(d.id)}
           <h4>${d.n}</h4>
           <p class="rl" style="--g:${CATG[d.c].c}">${d.r}</p>
+          ${blocoResp(d.id)}
           <p class="b">${d.info}</p>
           ${p&&p.ext?`<p class="w">${p.ext}</p>`:""}
           ${credLine(d.id)}
@@ -1172,9 +1202,12 @@ const qOff=new Set();
 const qf=document.getElementById("q-filters");
 qf.innerHTML=Object.entries(CATG).map(([k,v])=>
   `<button class="chip" data-cat="${k}" aria-pressed="true" style="--d:${v.c}"><span class="dot"></span>${v.n}</button>`).join("")
+ +`<button class="chip" id="q-resp" aria-pressed="false" style="--d:var(--c-pol)"><span class="dot"></span>só com resposta (${Object.keys(RESP||{}).length})</button>`
  +`<input type="search" id="q-q" placeholder="buscar nome ou papel…" aria-label="Buscar verbete">`
  +`<span class="hint">${N.length} verbetes</span>`;
 qf.addEventListener("click",e=>{
+  const r=e.target.closest("#q-resp");
+  if(r){ soResp=!soResp; r.setAttribute("aria-pressed",soResp); cardsRender(); return }
   const b=e.target.closest(".chip[data-cat]"); if(!b) return;
   const k=b.dataset.cat; qOff.has(k)?qOff.delete(k):qOff.add(k);
   b.setAttribute("aria-pressed",!qOff.has(k)); cardsRender();
@@ -1466,6 +1499,7 @@ secs.forEach(s=>new IntersectionObserver(es=>{
         BARS=d.BARS; PHASES=d.PHASES; N=d.N; E=d.E;
         if(d.WIKI) WIKI=d.WIKI;
         ERRATA = d.ERRATA || [];
+        RESP = d.RESP || {};
         FONTE_DADOS = "banco";
       }
     }

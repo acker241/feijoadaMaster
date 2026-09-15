@@ -104,3 +104,18 @@ CREATE TABLE IF NOT EXISTS meta (
   chave  TEXT PRIMARY KEY,
   valor  TEXT NOT NULL
 );
+
+-- ---------- direito de resposta / notas dos citados ----------
+CREATE TABLE IF NOT EXISTS respostas (
+  id          BIGSERIAL PRIMARY KEY,
+  verbete     TEXT NOT NULL REFERENCES verbetes(id) ON DELETE CASCADE,
+  autor       TEXT NOT NULL,
+  tipo        TEXT NOT NULL,
+  data_txt    TEXT NOT NULL,
+  texto       TEXT NOT NULL,
+  fonte       TEXT,
+  url         TEXT,
+  prioridade  BOOLEAN NOT NULL DEFAULT true,
+  ordem       INT NOT NULL DEFAULT 0
+);
+CREATE INDEX IF NOT EXISTS respostas_verbete_idx ON respostas (verbete);
