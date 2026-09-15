@@ -54,7 +54,8 @@ function pagina(titulo, corpo) {
 
 const ENTIDADES = [
   ["verbete", "verbetes"], ["vinculo", "vínculos"], ["evento", "eventos"],
-  ["resposta", "respostas"], ["glossario", "glossário"], ["fase", "fases"], ["fonte", "fontes"], ["barra", "barras"],
+  ["resposta", "respostas"], ["glossario", "glossário"], ["trilha", "trilhas"], ["passo", "passos"],
+  ["fase", "fases"], ["fonte", "fontes"], ["barra", "barras"],
 ];
 const TIPOS_RESPOSTA = ["Direito de resposta", "Nota oficial", "Manifestação da defesa",
   "Defesa apresentada ao STF", "Posição nos autos", "Recurso ao STF",
@@ -136,6 +137,38 @@ function campos(ent, r, o) {
       <div class="campo"><label>ordem</label><input name="ordem" value="${esc(v("ordem"))}" size="4"></div>
     </div>
     <div class="campo full"><label>definição em linguagem simples</label><textarea name="definicao" required>${esc(v("definicao"))}</textarea></div>`;
+  if (ent === "trilha") return `
+    <div class="linha">
+      <div class="campo"><label>id</label><input name="id" value="${esc(v("id"))}" ${r ? "readonly" : "required"} size="10"></div>
+      <div class="campo larg"><label>nome da trilha</label><input name="nome" value="${esc(v("nome"))}" required></div>
+      <div class="campo"><label>ordem</label><input name="ordem" value="${esc(v("ordem"))}" size="4"></div>
+    </div>
+    <div class="campo full"><label>resumo da trilha</label><textarea name="resumo" required>${esc(v("resumo"))}</textarea></div>
+    <div class="campo larg"><label>fontes (ids separados por espaço)</label><input name="fontes" value="${esc(arr("fontes"))}"></div>`;
+  if (ent === "passo") return `
+    <div class="linha">
+      <div class="campo"><label>id</label><input name="id" value="${esc(v("id"))}" ${r ? "readonly" : "required"} size="12"></div>
+      <div class="campo"><label>trilha</label>${sel("trilha", v("trilha"), o.trilhas || [], "id", "nome")}</div>
+      <div class="campo"><label>ordem</label><input name="ordem" value="${esc(v("ordem"))}" size="4"></div>
+      <div class="campo"><label>status</label><select name="status">${["apuracao", "decidido", "registro"].map((t) =>
+        `<option${t === v("status") ? " selected" : ""}>${t}</option>`).join("")}</select></div>
+    </div>
+    <div class="linha">
+      <div class="campo larg"><label>de (texto)</label><input name="de" value="${esc(v("de"))}" required></div>
+      <div class="campo"><label>de — verbete ligado</label><select name="de_ref"><option value="">— nenhum —</option>${
+        o.verbetes.map((x) => `<option value="${esc(x.id)}"${x.id === v("de_ref") ? " selected" : ""}>${esc(x.nome)}</option>`).join("")}</select></div>
+    </div>
+    <div class="linha">
+      <div class="campo larg"><label>para (texto)</label><input name="para" value="${esc(v("para"))}" required></div>
+      <div class="campo"><label>para — verbete ligado</label><select name="para_ref"><option value="">— nenhum —</option>${
+        o.verbetes.map((x) => `<option value="${esc(x.id)}"${x.id === v("para_ref") ? " selected" : ""}>${esc(x.nome)}</option>`).join("")}</select></div>
+    </div>
+    <div class="linha">
+      <div class="campo larg"><label>valor (texto, como publicado)</label><input name="valor" value="${esc(v("valor"))}"></div>
+      <div class="campo larg"><label>data (texto)</label><input name="data_txt" value="${esc(v("data_txt"))}"></div>
+    </div>
+    <div class="campo full"><label>o que a fonte diz</label><textarea name="info" required>${esc(v("info"))}</textarea></div>
+    <div class="campo larg"><label>fontes (ids separados por espaço)</label><input name="fontes" value="${esc(arr("fontes"))}"></div>`;
   if (ent === "fonte") return `
     <div class="linha">
       <div class="campo"><label>id</label><input name="id" value="${esc(v("id"))}" ${r ? "readonly" : "required"} size="8"></div>
@@ -152,7 +185,8 @@ function campos(ent, r, o) {
 }
 
 exports.conteudo = (ent, rows, o, contagens, q, errata) => {
-  const def = { verbete: "id", vinculo: "id", evento: "id", fase: "ordem", fonte: "id", barra: "id" }[ent];
+  const def = { verbete: "id", vinculo: "id", evento: "id", fase: "ordem", fonte: "id", barra: "id",
+    trilha: "id", passo: "id", glossario: "id", resposta: "id" }[ent] || "id";
   const tabs = ENTIDADES.map(([e, rot]) =>
     `<a class="tab ${e === ent ? "on" : ""}" href="/admin/conteudo?ent=${e}">${rot} <b>${contagens[e] ?? "?"}</b></a>`).join("");
   const form = (r) => `

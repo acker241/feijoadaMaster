@@ -290,6 +290,30 @@ table.lic td.u a{color:var(--ink-3)}
   cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 .fix:hover{color:var(--accent)}
 
+/* caminho do dinheiro */
+.trilha-resumo{font-size:15px;color:var(--ink-2);line-height:1.62;max-width:760px;margin:6px 0 26px}
+.fluxo{display:grid;gap:0;max-width:820px}
+.passo{position:relative;padding:0 0 26px 30px;border-left:2px solid var(--rule)}
+.passo:last-child{border-left-color:transparent;padding-bottom:4px}
+.passo::before{content:"";position:absolute;left:-7px;top:6px;width:12px;height:12px;border-radius:50%;
+  background:var(--dende);border:2px solid var(--paper)}
+.passo.ok::before{background:var(--c-reg)}
+.pcab{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;font-size:16px;line-height:1.35}
+.pcab .pn{font-weight:700;color:var(--ink)}
+.pcab .pa{font-family:"DM Mono",monospace;font-size:13px;color:var(--ink-3)}
+.pcab button.pn{font:inherit;font-weight:700;background:none;border:0;padding:0;cursor:pointer;color:var(--ink);
+  text-decoration:underline;text-decoration-color:var(--dende);text-decoration-thickness:1.5px;text-underline-offset:3px}
+.pcab button.pn:hover{color:var(--dende)}
+.pmeta{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:7px}
+.pval{font-family:"DM Mono",monospace;font-size:14px;font-weight:500;color:var(--ink);
+  background:var(--surface-2);padding:3px 9px;border-radius:2px}
+.pdata{font-family:"DM Mono",monospace;font-size:11.5px;color:var(--ink-3);letter-spacing:.04em}
+.pselo{font-family:"DM Mono",monospace;font-size:10px;text-transform:uppercase;letter-spacing:.09em;
+  border:1px solid var(--rule-strong);color:var(--ink-3);padding:2px 7px;border-radius:2px}
+.passo.ok .pselo{border-color:var(--c-reg);color:var(--c-reg)}
+.pinfo{font-size:14.5px;color:var(--ink-2);line-height:1.6;margin:9px 0 0;max-width:700px}
+.fluxo .srcl,.trilha-resumo .srcl{display:flex;flex-wrap:wrap;gap:4px 18px;margin-top:9px;font-size:12.5px}
+
 .note{background:var(--surface);border-left:3px solid var(--dende);padding:20px 22px;font-size:14.5px;color:var(--ink-2);line-height:1.62}
 .note b{color:var(--ink);font-weight:700}
 footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;color:var(--ink-3);border-top:1px solid var(--rule-strong)}
@@ -299,6 +323,7 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
 #tip b{display:block;font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;opacity:.72;margin-bottom:4px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 @media (max-width:620px){.frow.two{grid-template-columns:1fr}}
+@media (max-width:620px){.passo{padding-left:22px}.pcab{font-size:15px}}
 @media (max-width:900px){
   .graph-shell{grid-template-columns:1fr}
   #stage{height:520px}
@@ -318,6 +343,7 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
     <div id="navlinks">
       <a href="#comece">Comece aqui</a>
       <a href="#rede">Rede</a>
+      <a href="#dinheiro">Dinheiro</a>
       <a href="#escala">Escala</a>
       <a href="#linha">Linha do tempo</a>
       <a href="#quem">Quem é quem</a>
@@ -383,9 +409,20 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
   </div>
 </section>
 
+<section id="dinheiro">
+  <div class="wrap">
+    <div class="sec-head"><span class="n">02</span><h2>Caminho do dinheiro</h2>
+      <p class="sec-note">Quatro trilhas reconstruídas a partir de relatórios oficiais e reportagens: quem pagou, para quem, quanto e quando. Doação registrada no TSE e decisão já publicada aparecem marcadas; o resto é o que a investigação afirma, com a fonte do lado.</p>
+    </div>
+    <div class="chips" id="d-filters"></div>
+    <p class="trilha-resumo" id="d-resumo"></p>
+    <div class="fluxo" id="fluxo"></div>
+  </div>
+</section>
+
 <section id="escala">
   <div class="wrap">
-    <div class="sec-head"><span class="n">02</span><h2>Escala do dano</h2>
+    <div class="sec-head"><span class="n">03</span><h2>Escala do dano</h2>
       <p class="sec-note">Valores apurados ou bloqueados até 15/09/2026, em R$ bilhões. Vêm de fontes diferentes e não se somam.</p>
     </div>
     <div class="bars" id="bars"></div>
@@ -403,7 +440,7 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
 
 <section id="linha">
   <div class="wrap">
-    <div class="sec-head"><span class="n">03</span><h2>Linha do tempo</h2>
+    <div class="sec-head"><span class="n">04</span><h2>Linha do tempo</h2>
       <p class="sec-note">Cinco fases, de 2021 à sessão do plenário do STF de hoje. Filtre por camada para ler uma trilha só.</p>
     </div>
     <div class="chips" id="tl-filters"></div>
@@ -413,7 +450,7 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
 
 <section id="quem">
   <div class="wrap">
-    <div class="sec-head"><span class="n">04</span><h2>Quem é quem</h2>
+    <div class="sec-head"><span class="n">05</span><h2>Quem é quem</h2>
       <p class="sec-note">Cada verbete traz o papel no caso, o resumo da Wikipédia e os links das reportagens. Quem se manifestou aparece com o selo <b>direito de resposta exercido</b>, e a resposta vem antes do nosso texto. Posição na apuração não é juízo de culpa.</p>
     </div>
     <div class="chips" id="q-filters"></div>
@@ -423,7 +460,7 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
 
 <section id="fontes">
   <div class="wrap">
-    <div class="sec-head"><span class="n">05</span><h2>Fontes e avisos</h2></div>
+    <div class="sec-head"><span class="n">06</span><h2>Fontes e avisos</h2></div>
     <p class="note" id="disclaimer"><b>O que esta página é.</b> Um <b>agregador</b>: ela reúne, organiza e traduz em linguagem simples e em imagens o que veículos de imprensa e documentos públicos já publicaram sobre o caso, para facilitar o entendimento amplo do público. <b>Não é um site opinativo</b> — não emite juízo próprio, não acusa ninguém e não conclui nada: apenas replica o que está nas fontes, sempre com o link do original ao lado de cada informação.<br><br>
     <b>Feito com inteligência artificial.</b> A organização dos dados, os textos de apoio e os gráficos foram produzidos com auxílio de IA a partir das reportagens listadas abaixo. Isso <b>não transfere nem isenta responsabilidade</b>: a responsabilidade pelo conteúdo original é de cada veículo citado, e a responsabilidade pela réplica, pelo recorte e pela publicação aqui é do proprietário deste site. Erro de leitura, de data ou de atribuição pode existir — a fonte primária prevalece sempre sobre esta página.<br><br>
     <b>A resposta do citado vem primeiro.</b> Quando alguém citado nesta página se manifesta — nota oficial, defesa nos autos, recurso, decisão judicial favorável — a manifestação entra no verbete <b>acima</b> do nosso texto, com selo próprio, e prevalece sobre a descrição da notícia. O verbete fica marcado na rede e pode ser filtrado na seção 04. Retificação publicada por um veículo tem o mesmo tratamento.<br><br>
@@ -436,7 +473,7 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
 
 <section id="creditos">
   <div class="wrap">
-    <div class="sec-head"><span class="n">06</span><h2>Imagens e licenças</h2>
+    <div class="sec-head"><span class="n">07</span><h2>Imagens e licenças</h2>
       <p class="sec-note">Retratos e logotipos vêm do Wikimedia Commons e da Wikipédia. A tabela é montada com os dados da página de cada arquivo — autor e licença — no momento em que esta página abre.</p>
     </div>
     <div class="tablewrap" id="creds"></div>
@@ -456,7 +493,7 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
 
 <section id="glossario">
   <div class="wrap">
-    <div class="sec-head"><span class="n">07</span><h2>Glossário</h2>
+    <div class="sec-head"><span class="n">08</span><h2>Glossário</h2>
       <p class="sec-note">O vocabulário do caso em linguagem simples. Termo que corresponde a alguém ou a alguma instituição do mapa traz link direto para o verbete.</p>
     </div>
     <div class="chips"><input type="search" id="glos-q" placeholder="buscar termo…" aria-label="Buscar termo"><span class="hint" id="glos-n"></span></div>
@@ -466,7 +503,7 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
 
 <section id="errata-sec">
   <div class="wrap">
-    <div class="sec-head"><span class="n">08</span><h2>Errata</h2>
+    <div class="sec-head"><span class="n">09</span><h2>Errata</h2>
       <p class="sec-note">Cada correção feita no conteúdo fica registrada aqui, com o valor antigo, o novo e o motivo. É o compromisso da seção 05 cumprido em forma de lista.</p>
     </div>
     <div id="errata"></div>
@@ -475,7 +512,7 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
 
 <section id="contato">
   <div class="wrap">
-    <div class="sec-head"><span class="n">09</span><h2>Fale com o site</h2>
+    <div class="sec-head"><span class="n">10</span><h2>Fale com o site</h2>
       <p class="sec-note">Correção de data, valor ou nome, sugestão do que falta, direito de resposta de quem é citado — e também registro de ameaça ou intimidação. Tudo chega ao responsável pela página.</p>
     </div>
     <form class="form" id="msgform" novalidate>
@@ -544,30 +581,7 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
 <button id="voltar" type="button">← voltar <span id="voltar-de"></span></button>
 
 <script>
-var L={
- wpt:["Escândalo do Banco Master — Wikipédia","https://pt.wikipedia.org/wiki/Esc%C3%A2ndalo_do_Banco_Master"],
- wen:["Banco Master scandal — Wikipedia","https://en.wikipedia.org/wiki/Banco_Master_scandal"],
- cnn:["CNN Brasil — relembre a liquidação","https://www.cnnbrasil.com.br/economia/money/macroeconomia/caso-master-relembre-a-liquidacao-do-banco-que-envolve-bc-stf-e-tcu/"],
- cj:["Conjur — o caso no STF (Pet 16.662)","https://conjur.com.br/2026-set-13/para-entender-o-caso-banco-master-vorcaro-no-stf-pet-16-662/"],
- af:["Aos Fatos — as novas revelações","https://www.aosfatos.org/noticias/explicamos-novas-revelacoes-caso-master/"],
- ap:["Agência Pública — crise no STF","https://apublica.org/2026/09/crise-no-stf-e-mensagens-de-moraes-e-vorcaro-como-chegamos-aqui/"],
- ap2:["Agência Pública — 24h de revelações","https://apublica.org/2026/09/analise-as-revelacoes-sobre-master-vorcaro-moraes-e-mendonca/"],
- p360:["Poder360 — o que há em cada documento","https://www.poder360.com.br/poder-justica/master-sem-sigilo-saiba-o-que-ha-em-cada-documento/"],
- im:["InfoMoney — pagamentos do FGC","https://www.infomoney.com.br/minhas-financas/fgc-tudo-o-que-voce-precisa-saber-sobre-os-pagamentos-para-clientes-do-banco-master/"],
- br:["O Brasilianista — desdobramentos","https://obrasilianista.com.br/2026/09/08/justica/leia-todos-os-desdobramentos-do-caso-master"],
- oe:["Revista Oeste — depoimento adiado","https://revistaoeste.com/politica/policia-federal-adia-depoimento-de-daniel-vorcaro-para-24-de-setembro/"],
- ab:["Agência Brasil — BRB e os achados relevantes","https://agenciabrasil.ebc.com.br/economia/noticia/2026-02/brb-diz-ter-encontrado-achados-relevantes-sobre-caso-do-banco-master"],
- ic:["Intercept — Mendonça e Moraes no caso","https://www.intercept.com.br/2026/09/05/mendonca-moraes-sujeira-banco-master/"],
- bd:["Band — PGR apura interferência em relatório","https://www.band.com.br/politica/caso-master-pgr-diz-que-investigara-interferencia-em-relatorio-da-pf"],
- cb:["Correio Braziliense — PGR e o fim do sigilo","https://www.correiobraziliense.com.br/politica/2026/09/7499903-pgr-defende-fim-de-sigilo-em-investigacao-sobre-rede-de-pagamentos-do-master.html"],
- b247:["Brasil 247 — PF prepara indiciamento","https://www.brasil247.com/brasil/pf-prepara-conclusao-do-caso-master-e-indiciamento-de-vorcaro/"],
- ap3:["Agência Pública — a reconstrução completa da fraude","https://apublica.org/2026/03/banco-master-a-reconstrucao-completa-de-como-uma-fraude-capturou-a-republica/"],
- nd:["ND Mais — os principais beneficiários dos pagamentos","https://ndmais.com.br/politica/master-dinheiro-advogados-vorcaro/"],
- tb:["Times Brasil — a liquidação da Sefer","https://timesbrasil.com.br/empresas-e-negocios/bancos-fintechs/liquidacao-sefer-engrenagem-vorcaro-master/"],
- ti:["Transparência Internacional — o caso Master","https://transparenciainternacional.org.br/posts/o-caso-master/"],
- cb2:["Correio Braziliense — Vorcaro troca defesa","https://www.correiobraziliense.com.br/politica/2026/03/7375513-vorcaro-troca-defesa-e-sinaliza-delacao.html"],
- mm:["Monitor Mercantil — fraudes de R$ 12 bi","https://monitormercantil.com.br/pf-prende-dono-do-banco-master-e-bc-decreta-liquidacao-da-master-corretora/"],
-};
+var L={"wpt": ["Escândalo do Banco Master — Wikipédia", "https://pt.wikipedia.org/wiki/Esc%C3%A2ndalo_do_Banco_Master"], "wen": ["Banco Master scandal — Wikipedia", "https://en.wikipedia.org/wiki/Banco_Master_scandal"], "cnn": ["CNN Brasil — relembre a liquidação", "https://www.cnnbrasil.com.br/economia/money/macroeconomia/caso-master-relembre-a-liquidacao-do-banco-que-envolve-bc-stf-e-tcu/"], "cj": ["Conjur — o caso no STF (Pet 16.662)", "https://conjur.com.br/2026-set-13/para-entender-o-caso-banco-master-vorcaro-no-stf-pet-16-662/"], "af": ["Aos Fatos — as novas revelações", "https://www.aosfatos.org/noticias/explicamos-novas-revelacoes-caso-master/"], "ap": ["Agência Pública — crise no STF", "https://apublica.org/2026/09/crise-no-stf-e-mensagens-de-moraes-e-vorcaro-como-chegamos-aqui/"], "ap2": ["Agência Pública — 24h de revelações", "https://apublica.org/2026/09/analise-as-revelacoes-sobre-master-vorcaro-moraes-e-mendonca/"], "p360": ["Poder360 — o que há em cada documento", "https://www.poder360.com.br/poder-justica/master-sem-sigilo-saiba-o-que-ha-em-cada-documento/"], "im": ["InfoMoney — pagamentos do FGC", "https://www.infomoney.com.br/minhas-financas/fgc-tudo-o-que-voce-precisa-saber-sobre-os-pagamentos-para-clientes-do-banco-master/"], "br": ["O Brasilianista — desdobramentos", "https://obrasilianista.com.br/2026/09/08/justica/leia-todos-os-desdobramentos-do-caso-master"], "oe": ["Revista Oeste — depoimento adiado", "https://revistaoeste.com/politica/policia-federal-adia-depoimento-de-daniel-vorcaro-para-24-de-setembro/"], "ab": ["Agência Brasil — BRB e os achados relevantes", "https://agenciabrasil.ebc.com.br/economia/noticia/2026-02/brb-diz-ter-encontrado-achados-relevantes-sobre-caso-do-banco-master"], "ic": ["Intercept — Mendonça e Moraes no caso", "https://www.intercept.com.br/2026/09/05/mendonca-moraes-sujeira-banco-master/"], "bd": ["Band — PGR apura interferência em relatório", "https://www.band.com.br/politica/caso-master-pgr-diz-que-investigara-interferencia-em-relatorio-da-pf"], "cb": ["Correio Braziliense — PGR e o fim do sigilo", "https://www.correiobraziliense.com.br/politica/2026/09/7499903-pgr-defende-fim-de-sigilo-em-investigacao-sobre-rede-de-pagamentos-do-master.html"], "b247": ["Brasil 247 — PF prepara indiciamento", "https://www.brasil247.com/brasil/pf-prepara-conclusao-do-caso-master-e-indiciamento-de-vorcaro/"], "ap3": ["Agência Pública — a reconstrução completa da fraude", "https://apublica.org/2026/03/banco-master-a-reconstrucao-completa-de-como-uma-fraude-capturou-a-republica/"], "nd": ["ND Mais — os principais beneficiários dos pagamentos", "https://ndmais.com.br/politica/master-dinheiro-advogados-vorcaro/"], "tb": ["Times Brasil — a liquidação da Sefer", "https://timesbrasil.com.br/empresas-e-negocios/bancos-fintechs/liquidacao-sefer-engrenagem-vorcaro-master/"], "ti": ["Transparência Internacional — o caso Master", "https://transparenciainternacional.org.br/posts/o-caso-master/"], "cb2": ["Correio Braziliense — Vorcaro troca defesa", "https://www.correiobraziliense.com.br/politica/2026/03/7375513-vorcaro-troca-defesa-e-sinaliza-delacao.html"], "mm": ["Monitor Mercantil — fraudes de R$ 12 bi", "https://monitormercantil.com.br/pf-prende-dono-do-banco-master-e-bc-decreta-liquidacao-da-master-corretora/"], "jgb": ["Jornal Grande Bahia — Moraes chama relatório de farsa", "https://jornalgrandebahia.com.br/2026/09/ministro-alexandre-de-moraes-qualifica-relatorio-da-pf-no-caso-master-de-farsa-acusa-andre-mendonca-de-vinganca-e-nega-dialogos-com-daniel-vorcaro/"], "alb": ["Aliados Brasil — Moraes apresenta defesa ao STF", "https://www.aliadosbrasiloficial.com.br/noticia/caso-master-moraes-apresenta-defesa-ao-stf-e-nega-vazamento-de-informacoes-ou-favorecimento"], "b247b": ["Brasil 247 — defesa de Vorcaro fala em fato inexistente", "https://www.brasil247.com/brasil/defesa-de-daniel-vorcaro-diz-que-investigacao-se-baseia-em-fato-inexistente-e-nega-fraude-bilionaria"], "dj": ["Debate Jurídico — Vorcaro depõe e nega corrupção", "https://debatejuridico.com.br/daniel-vorcaro-depoe-a-pf-sobre-banco-master-e-nega-corrupcao-saiba-o-que-disse-a-defesa/"], "ot2": ["O Tempo — defesa pede filtro de sigilo para dados íntimos", "https://www.otempo.com.br/politica/judiciario/2026/9/13/defesa-de-vorcaro-pede-que-stf-adote-filtro-para-manter-sigilo-em-dados-intimos-no-caso-master"], "oe3": ["Revista Oeste — Jaques Wagner recorre ao STF", "https://revistaoeste.com/no-ponto/caso-master-na-mira-da-pf-jaques-wagner-recorre-ao-stf/"], "ab2": ["Agência Brasil — entidades financeiras defendem o Banco Central", "https://agenciabrasil.ebc.com.br/economia/noticia/2025-12/entidades-financeiras-defendem-atuacao-do-banco-central-no-caso-master"], "fbdec": ["Decisão judicial — remoção de conteúdo falso sobre Flávio Bolsonaro", "https://tagteam.harvard.edu/hub_feeds/3884/feed_items/17269532/content"], "cb3": ["Correio Braziliense — o que é a emenda Master", "https://www.correiobraziliense.com.br/politica/2026/06/7444379-o-que-e-emenda-master-citada-pela-pf-contra-ciro-nogueira-e-jaques-wagner.html"], "jdb": ["Jornal de Brasília — mensagens sobre Mendonça e filhos de Fux e Kassio", "https://jornaldebrasilia.com.br/noticias/politica-e-poder/veja-o-que-dizem-mensagens-no-celular-de-vorcaro-sobre-andre-mendonca-e-filhos-de-fux-e-kassio/"], "ex1": ["Exame — do Master ao fundo nos EUA: o caminho do dinheiro do Dark Horse", "https://exame.com/brasil/do-banco-master-ao-fundo-nos-eua-o-caminho-do-dinheiro-para-o-dark-horse-segundo-a-pf/"], "cnndh": ["CNN Brasil — relatório da PF pede esclarecimento sobre o fundo nos EUA", "https://www.cnnbrasil.com.br/politica/dark-horse-relatorio-da-pf-pede-esclarecimento-sobre-fundo-nos-eua/"], "abdh": ["Agência Brasil — PF aponta cobranças de Flávio a Vorcaro pelo Dark Horse", "https://agenciabrasil.ebc.com.br/justica/noticia/2026-09/pf-aponta-cobrancas-de-flavio-vorcaro-por-filme-dark-horse"], "icdh": ["Intercept — produtora esconde da Ancine quem mandava no dinheiro de Vorcaro", "https://www.intercept.com.br/2026/09/04/produtora-dark-horse-esconde-ancine-quem-mandava-dinheiro-vorcaro/"], "apdh": ["Agência Pública — o escândalo do filme Dark Horse", "https://apublica.org/2026/05/flavio-bolsonaro-vorcaro-master-escandalo-filme-dark-horse-azarao/"], "mope": ["Metrópoles — entenda as operações do Master que chamaram atenção", "https://www.metropoles.com/colunas/dinheiro-e-negocios/entenda-operacoes-do-master-que-chamaram-atencao-das-autoridades"], "mtir": ["Metrópoles — Master comprou R$ 6,7 bi de carteiras, não pagou nada e vendeu ao BRB", "https://www.metropoles.com/colunas/dinheiro-e-negocios/master-comprou-r-67-bilhoes-de-carteiras-podres-nao-pagou-nada-e-vendeu-por-r-122-bilhoes-ao-brb"], "mbrb": ["Metrópoles — BRB comprou R$ 30,4 bilhões em ativos do Master (planilhas)", "https://www.metropoles.com/colunas/demetrio-vecchioli/brb-comprou-r-304-bilhoes-em-ativos-do-banco-master-veja-planilhas"], "mman": ["Metrópoles — as manobras do BRB para pagar bilhões ao Master", "https://www.metropoles.com/colunas/dinheiro-e-negocios/as-manobras-do-brb-para-pagar-bilhoes-ao-master-em-operacoes-fraudulentas"], "moff": ["Metrópoles — BRB procura fundos do Master em Jersey e nas Bahamas e acha contas vazias", "https://www.metropoles.com/colunas/dinheiro-e-negocios/brb-vai-ate-bahamas-e-ilha-jersey-atras-de-fundos-do-master-e-descobre-que-nao-tinham-saldo-nem-liquidez"], "mimo": ["Metrópoles — PF diz que ex-presidente do BRB recebeu R$ 140 milhões em imóveis", "https://www.metropoles.com/brasil/pf-ex-presidente-do-brb-recebeu-r-140-milhoes-em-imoveis-do-master"], "mres": ["Metrópoles — Master não devolveu R$ 12,2 bi por ter sido 'pego de surpresa', disse Vorcaro", "https://www.metropoles.com/colunas/dinheiro-e-negocios/master-nao-devolveu-r-122-bilhoes-ao-brb-por-ter-sido-pego-de-surpresa-disse-vorcaro"], "mrombo": ["Metrópoles — presidente do BRB estima rombo de R$ 8,8 bilhões", "https://www.metropoles.com/colunas/grande-angular/presidente-do-brb-estima-rombo-de-r-88-bilhoes-com-master"], "mvit": ["Metrópoles — BRB comenta a queda do sigilo e diz ser vítima de atos criminosos", "https://www.metropoles.com/colunas/grande-angular/master-brb-comenta-queda-de-sigilo-e-diz-ser-vitima-de-atos-criminosos"], "cnnrio": ["CNN Brasil — como o Rio investiu R$ 3 bi no Master e para onde foi o dinheiro", "https://www.cnnbrasil.com.br/economia/money/macroeconomia/entenda-como-o-rio-investiu-r-3-bi-no-master-e-para-onde-foi-o-dinheiro/"], "imrio": ["InfoMoney — Rioprevidência justifica aporte: 'todo investimento possui riscos'", "https://www.infomoney.com.br/mercados/rioprevidencia-justifica-aporte-no-master-todo-investimento-possui-riscos/"], "imprec": ["InfoMoney — Rioprevidência diz negociar troca das letras do Master por precatórios federais", "https://www.infomoney.com.br/mercados/rioprevidencia-diz-negociar-para-substituir-letras-do-master-por-precatorios-federais/"], "abpge": ["Agência Brasil — PGE-RJ cobra do grupo Master prejuízo de R$ 640 mi ao Rioprevidência", "https://agenciabrasil.ebc.com.br/justica/noticia/2026-07/pge-rj-cobra-grupo-master-por-prejuizo-de-r-640-mi-ao-rioprevidencia"], "mrpps": ["Metrópoles — 18 fundos de previdência investiram quase R$ 2 bilhões no Master", "https://www.metropoles.com/brasil/caso-master-18-fundos-de-previdencia-investiram-quase-r-2-bilhoes"], "imamp": ["InfoMoney — PF apura aporte de R$ 400 milhões da Amprev no Master", "https://www.infomoney.com.br/politica/pf-realiza-operacao-que-apura-aporte-de-r-400-milhoes-da-amprev-no-banco-master/"], "miprev": ["Metrópoles — o dinheiro dos aposentados no caso Iprev Maceió e Banco Master", "https://www.metropoles.com/colunas/matheus-leitao/o-dinheiro-dos-aposentados-e-o-ex-prefeito-jhc-no-caso-iprev-e-banco-master"], "mibaneis": ["Metrópoles — Ibaneis pede para os precatórios ficarem fora da compra do Master", "https://www.metropoles.com/distrito-federal/compra-do-banco-master-ibaneis-pede-para-precatorios-ficarem-de-fora"], "cnntru": ["CNN Brasil — BC decreta liquidação da Trustee e da Banvox", "https://www.cnnbrasil.com.br/economia/money/macroeconomia/bc-decreta-liquidacao-da-trustee-e-da-banvox/"], "apzet": ["Agência Pública — quem é Fabiano Zettel, maior doador de Tarcísio de Freitas", "https://apublica.org/nota/quem-e-fabiano-zettel-maior-doador-de-tarcisio-de-freitas/"], "cnnzet": ["CNN Brasil — alvo da PF doou R$ 5 mi para campanhas de Bolsonaro e Tarcísio em 2022", "https://www.cnnbrasil.com.br/politica/alvo-da-pf-doou-r-5-mi-para-campanhas-de-bolsonaro-e-tarcisio-em-2022/"], "p360kas": ["Poder360 — Vorcaro diz que doações a Tarcísio e Bolsonaro foram propina", "https://www.poder360.com.br/poder-justica/vorcaro-diz-que-doacoes-a-tarcisio-e-bolsonaro-foram-propina/"], "cnnciro": ["CNN Brasil — PF cita 'mesada' de Vorcaro a Ciro Nogueira", "https://www.cnnbrasil.com.br/politica/pagamento-de-500k-ou-300k-pf-cita-mesada-de-vorcaro-a-ciro-nogueira/"], "mrede": ["Metrópoles — PF aperta o cerco à rede de Vorcaro e amplia o mapa de políticos sob suspeita", "https://www.metropoles.com/brasil/pf-aperta-cerco-a-rede-de-vorcaro-e-amplia-mapa-de-politicos-sob-suspeita"], "abbc": ["Agência Brasil — PF diz que ex-chefe de supervisão do BC recebeu R$ 500 mil mensais", "https://agenciabrasil.ebc.com.br/justica/noticia/2026-09/pf-ex-chefe-de-supervisao-do-bc-recebeu-r-500-mil-mensais-de-vorcaro"], "cnnbarci": ["CNN Brasil — Master pagaria R$ 131 mi ao Barci de Moraes; escritório declarou R$ 80,2 mi", "https://www.cnnbrasil.com.br/politica/master-pagaria-r-131-mi-a-barci-de-moraes-escritorio-declarou-r-802-mi/"], "itaig": ["Rádio Itatiaia — R$ 19,2 mi do cunhado de Vorcaro foram para igreja em BH", "https://www.itatiaia.com.br/politica/caso-master-r-192-mi-de-cunhado-de-vorcaro-foram-para-igreja-em-bh/"], "emdoa": ["Estado de Minas — familiares de Vorcaro doaram R$ 60 mil a campanha de ex-deputado", "https://www.em.com.br/politica/2026/03/7367194-familiares-de-vorcaro-doaram-rs-60-mil-para-campanha-de-ex-deputado-mineiro.html"], "imliq": ["InfoMoney — Banco Central decreta a liquidação extrajudicial do Banco Master", "https://www.infomoney.com.br/mercados/banco-central-decreta-liquidacao-extrajudicial-do-banco-master/"]};
 
 var CATG={
  mkt:{n:"Mercado e banco",c:"var(--c-mkt)"},
@@ -1004,6 +1018,7 @@ var WIKI={
 var ERRATA=[];
 var RESP={};
 var GLOS=[];
+var TRILHAS=[{"id": "filme", "nome": "O dinheiro do filme 'Dark Horse'", "resumo": "A trilha que a PF reconstruiu entre o banco e a produção de um filme sobre Bolsonaro: dinheiro do Master em empresas de um operador, remessas a um fundo nos Estados Unidos que estava parado havia quatro anos e, de lá, o financiamento do longa. Flávio Bolsonaro nega irregularidade e chama o caso de 'página virada'; Eduardo Bolsonaro, citado como articulador das transferências, também nega.", "ls": ["ex1", "cnndh", "abdh", "icdh", "apdh"], "passos": [{"de": "Banco Master", "deRef": "master", "para": "Empresas do Grupo Entre", "paraRef": null, "valor": "≈ R$ 614 mi", "data": "2024–2025", "info": "Segundo os documentos da PF divulgados em setembro de 2026, o Master aplicou cerca de R$ 614 milhões em empresas ligadas ao Grupo Entre, de Antônio Carlos Freixo Júnior, o 'Mineiro', que fechou delação premiada em 09/09/2026.", "status": "apuracao", "ls": ["ex1"]}, {"de": "Entre Investimentos e Participações", "deRef": null, "para": "Havengate Development Fund LP (EUA)", "paraRef": null, "valor": "US$ 12,33 mi em sete remessas", "data": "13/02/2025 a nov/2025", "info": "Segundo o relatório da PF, a primeira remessa foi de US$ 2 milhões, em 13/02/2025. Quando Vorcaro teve dificuldade com um pagamento do 'filme', teria orientado que a operação saísse 'via Entre'; Fabiano Zettel depois informou que o dinheiro seguiria para um 'fundo' e enviou o comprovante.", "status": "apuracao", "ls": ["cnndh", "ex1"]}, {"de": "Havengate Development Fund LP", "deRef": null, "para": "Produção do filme 'Dark Horse'", "paraRef": "darkhorse", "valor": "acordo de US$ 24 mi; ≈ R$ 60 mi pagos", "data": "fev a nov/2025", "info": "O fundo foi aberto em 2020 para um empreendimento imobiliário de US$ 21,1 milhões no Texas e ficou, nas palavras do relatório, 'operacionalmente inerte por quase quatro anos' até ser reativado em fevereiro de 2025 para receber o dinheiro do filme. É administrado pelo advogado Paulo Sergio Camin Calixto.", "status": "apuracao", "ls": ["cnndh", "abdh"]}, {"de": "Flávio Bolsonaro (cobrança das parcelas)", "deRef": "flavio", "para": "Daniel Vorcaro", "paraRef": "vorcaro", "valor": "—", "data": "08/09/2025 e 04/09/2026", "info": "Segundo o relatório, em áudio de 08/09/2025 o senador cobrava Vorcaro por parcelas atrasadas do financiamento do filme. Em 04/09/2026, reportagem afirmou que a produtora não informou à Ancine quem controlava o dinheiro de Vorcaro na operação. Flávio nega irregularidade e diz que o caso é 'página virada'.", "status": "apuracao", "ls": ["abdh", "icdh"]}]}, {"id": "brb", "nome": "As carteiras que o BRB comprou", "resumo": "O núcleo do caso. Dinheiro captado do público em CDB, carteiras de crédito compradas de uma empresa recém-criada sem pagamento efetivo, revenda ao banco público do DF com pagamento à vista, e a conta final dividida entre o FGC e o próprio BRB. O BRB diz ter sido vítima de atos criminosos; a defesa de Vorcaro fala em prática comum de mercado.", "ls": ["mtir", "mbrb", "mman", "moff", "mrombo", "mvit"], "passos": [{"de": "Investidores de CDB", "deRef": null, "para": "Banco Master", "paraRef": "master", "valor": "≈ R$ 50 bi emitidos", "data": "até nov/2025", "info": "O CDB do Master pagava juros acima da média — em alguns casos até 40% acima, segundo a investigação — e era o combustível de um balanço cada vez mais dependente de ativos de baixa liquidez.", "status": "apuracao", "ls": ["mope"]}, {"de": "Tirreno Consultoria", "deRef": "tirreno", "para": "Banco Master", "paraRef": "master", "valor": "R$ 6,7 bi em carteiras, sem pagamento efetivo", "data": "contrato em dez/2024, operação em jan/2025", "info": "Segundo a apuração, a Tirreno foi criada em dezembro de 2024, nunca movimentou recursos e não apresentou comprovantes. Em acareação na PF, Vorcaro afirmou que 'não liberou nenhum recurso para a Tirreno, o recurso estava dentro de casa, do Banco Master'.", "status": "apuracao", "ls": ["mtir"]}, {"de": "Banco Master", "deRef": "master", "para": "BRB", "paraRef": "brb", "valor": "R$ 12,2 bi em carteiras cedidas", "data": "início de 2025; cessões em cartório só em mai/2025", "info": "Segundo o laudo da PF, nenhum dos créditos dessas carteiras pôde ser confirmado por falta de lastro. A defesa de Vorcaro sustenta que as carteiras foram compradas de terceiros que originavam crédito, 'prática comum de mercado', e que estavam registradas na B3.", "status": "apuracao", "ls": ["mman", "mtir"]}, {"de": "BRB", "deRef": "brb", "para": "Banco Master", "paraRef": "master", "valor": "R$ 12,2 bi à vista; R$ 30,4 bi no total", "data": "a partir de 01/07/2024", "info": "As planilhas obtidas pela reportagem mostram que o BRB pagou em dinheiro e seguiu comprando: R$ 20,7 bi depois de março de 2025, quando fraudes já teriam sido detectadas, e R$ 1,9 bi mesmo após o Banco Central rejeitar a compra do Master, em setembro de 2025.", "status": "apuracao", "ls": ["mbrb"]}, {"de": "Banco Master", "deRef": "master", "para": "Clientes que resgataram", "paraRef": null, "valor": "≈ R$ 10 bi em resgates", "data": "mar a nov/2025", "info": "Em acareação na PF em 29/01/2026, Vorcaro declarou: 'entre março e novembro, a gente deu resgate de quase R$ 10 bilhões para clientes'.", "status": "apuracao", "ls": ["mres"]}, {"de": "Banco Master / Daniel Vorcaro", "deRef": "master", "para": "Paulo Henrique Costa, ex-presidente do BRB", "paraRef": "costa", "valor": "R$ 146,5 mi em seis imóveis", "data": "negociados em 2024–2025", "info": "Segundo a PF, os imóveis foram propina pela aprovação das compras de carteira. Costa foi preso em 16/04/2026, por ordem do ministro André Mendonça, e pediu ao STF acesso à auditoria para negociar delação.", "status": "apuracao", "ls": ["mimo"]}, {"de": "Banco Master", "deRef": "master", "para": "BRB (ativos em substituição)", "paraRef": "brb", "valor": "≈ R$ 10 bi em ativos substitutos", "data": "mai a nov/2025", "info": "Entre os ativos oferecidos em troca das carteiras estavam dois fundos offshore, em Jersey e em Nassau, que o BRB descobriu não ter saldo nem liquidez — o de Jersey estava sem recursos desde 2023.", "status": "apuracao", "ls": ["moff"]}, {"de": "Banco Central", "deRef": "bc", "para": "Banco Master (liquidação extrajudicial)", "paraRef": "master", "valor": "—", "data": "18/11/2025", "info": "O Banco Central decretou a liquidação ao concluir que não havia plano viável para a recuperação da instituição.", "status": "decidido", "ls": ["imliq"]}, {"de": "FGC", "deRef": "fgc", "para": "Investidores do Master e do Will Bank", "paraRef": null, "valor": "R$ 40,6 bi", "data": "a partir de 21/01/2026", "info": "O FGC, bancado pelos próprios bancos, pagou a cerca de 800 mil investidores, com prazo de resgate até 18/11/2030.", "status": "decidido", "ls": ["im"]}, {"de": "FGC e securitização da dívida do DF", "deRef": null, "para": "BRB", "paraRef": "brb", "valor": "R$ 6,6 bi de empréstimo e R$ 2,2 bi da securitização", "data": "informado em 09/06/2026", "info": "O presidente do BRB informou à CAE do Senado como o banco recompõe a liquidez e estimou perda provável de R$ 8,8 bi, dizendo que R$ 2,6 bi da carteira Tirreno 'não existiam, não tinham lastro nem qualquer respaldo'.", "status": "apuracao", "ls": ["mrombo"]}]}, {"id": "prev", "nome": "Previdência pública e precatórios", "resumo": "Como o dinheiro de aposentados de estados e municípios entrou no Master, em letras financeiras e cotas de fundos, e o que foi feito para tentar trazê-lo de volta. O Rioprevidência afirma que todas as aplicações seguiram as regras vigentes e que o pagamento de aposentadorias está garantido.", "ls": ["cnnrio", "imrio", "mrpps", "abpge", "cnntru"], "passos": [{"de": "Rioprevidência (RJ)", "deRef": "rioprev", "para": "Banco Master (letras financeiras)", "paraRef": "master", "valor": "R$ 970 mi", "data": "out/2023 a jul/2024", "info": "A PF apura os aportes como suspeitos, por concentrarem dinheiro de aposentados em letras de um banco privado. A autarquia afirma que o Master tinha autorização do Banco Central, credenciamento no Ministério da Previdência e rating de grau de investimento à época.", "status": "apuracao", "ls": ["cnnrio", "imrio"]}, {"de": "Rioprevidência (RJ)", "deRef": "rioprev", "para": "Fundos ligados ao grupo (Texas I, Arena, Revolution)", "paraRef": null, "valor": "R$ 2,01 bi", "data": "a partir de jul/2024", "info": "Somados às letras, os aportes sob apuração chegam a cerca de R$ 3 bi; R$ 1,1 bi entrou entre maio e julho de 2024, depois de alertas internos. O TCE-RJ alertou sobre a concentração em maio de 2025 e proibiu novos investimentos em outubro.", "status": "apuracao", "ls": ["cnnrio", "imrio"]}, {"de": "Fundo Texas I (gestora Trustee DTVM)", "deRef": null, "para": "Ações da Ambipar", "paraRef": null, "valor": "R$ 135,1 mi de perda alegada", "data": "jul e ago/2024", "info": "Na ação da PGE-RJ, a gestora teria comprado maciçamente as ações, inflando artificialmente o preço. A Justiça do RJ determinou bloqueio de recursos do grupo em 28/07/2026, sobre prejuízo alegado de R$ 641,4 mi ao Rioprevidência.", "status": "apuracao", "ls": ["abpge"]}, {"de": "18 regimes próprios de previdência", "deRef": null, "para": "Banco Master (letras financeiras)", "paraRef": "master", "valor": "R$ 1,87 bi", "data": "out/2023 a dez/2024", "info": "Amapá R$ 400 mi, Maceió R$ 97 mi, São Roque R$ 93 mi, Cajamar R$ 87 mi, Itaguaí R$ 59,6 mi, entre outros. Depois do caso, o CMN restringiu esses investimentos: só 176 dos 2.133 regimes seguem autorizados a aplicar fora da dívida federal.", "status": "apuracao", "ls": ["mrpps", "imamp", "miprev"]}, {"de": "Rioprevidência (RJ)", "deRef": "rioprev", "para": "União (troca por precatórios federais)", "paraRef": null, "valor": "R$ 960 mi", "data": "anunciado em 18/11/2025", "info": "A autarquia informou que negocia substituir as letras do Master por precatórios federais. Não há registro público de conclusão da troca. O Rioprevidência nega ter aplicado R$ 2,6 bi, número que atribui a cálculo do TCE-RJ.", "status": "apuracao", "ls": ["imprec", "imrio"]}, {"de": "Ibaneis Rocha (pedido)", "deRef": "ibaneis", "para": "Precatórios fora da compra do Master", "paraRef": null, "valor": "—", "data": "14–15/04/2025", "info": "O governador do DF disse ter pedido para deixar a fatia de precatórios do Master fora do negócio, para reduzir o risco do BRB. A reportagem sobre as substituições de carteira afirma que precatórios não foram identificados na documentação.", "status": "apuracao", "ls": ["mibaneis"]}, {"de": "Banco Central", "deRef": "bc", "para": "Trustee DTVM e Banvox DTVM (liquidação)", "paraRef": null, "valor": "—", "data": "03/09/2026", "info": "O BC decretou a liquidação extrajudicial das duas distribuidoras citando graves violações às normas legais. A Trustee administrava fundos da gestora do grupo, entre eles o Texas I.", "status": "decidido", "ls": ["cnntru"]}]}, {"id": "politica", "nome": "Doações, contratos e pagamentos", "resumo": "Doações eleitorais declaradas, contratos milionários e pagamentos citados no relatório da PF. Doação registrada no TSE é fato público; o resto, enquanto não houver decisão, é o que a investigação afirma — e cada citado que respondeu aparece aqui com a sua negativa.", "ls": ["apzet", "cnnzet", "cnnciro", "mrede", "abbc", "cnnbarci", "itaig"], "passos": [{"de": "Fabiano Zettel", "deRef": "cunhado", "para": "Campanha de Jair Bolsonaro (PL)", "paraRef": null, "valor": "R$ 3 mi", "data": "10/10/2022", "info": "Doação declarada ao TSE. Zettel, cunhado de Vorcaro, foi o terceiro maior doador de uma campanha que arrecadou R$ 126,1 mi.", "status": "registro", "ls": ["apzet", "cnnzet"]}, {"de": "Fabiano Zettel", "deRef": "cunhado", "para": "Campanha de Tarcísio de Freitas (Republicanos)", "paraRef": null, "valor": "R$ 2 mi", "data": "13/10/2022", "info": "Doação declarada ao TSE; maior doador pessoa física da campanha. A campanha afirma que foi 'conduzida com total respeito às leis eleitorais' e que o governador não tem vínculo com Zettel nem relação com Vorcaro.", "status": "registro", "ls": ["apzet", "cnnzet"]}, {"de": "Familiares de Vorcaro", "deRef": null, "para": "Campanha de Lucas Gonzalez (Novo-MG)", "paraRef": null, "valor": "R$ 60 mil", "data": "2022", "info": "R$ 50 mil do primo Felipe Cançado Vorcaro e R$ 10 mil de Zettel, segundo as prestações de contas ao TSE. O ex-deputado diz que as doações 'são públicas, devidamente registradas e já aprovadas'.", "status": "registro", "ls": ["emdoa"]}, {"de": "Versão de Vorcaro em proposta de delação", "deRef": "vorcaro", "para": "Doações de 2022 como contrapartida, com intermediação atribuída a Gilberto Kassab", "paraRef": "kassab", "valor": "R$ 5 mi", "data": "versão revelada em 03/09/2026", "info": "A versão consta de proposta de delação rejeitada três vezes por PF e PGR, por 'ausência de ineditismo e elementos de corroboração'. Kassab nega: 'não tenho qualquer relação com Daniel Vorcaro'.", "status": "apuracao", "ls": ["p360kas"]}, {"de": "BRGD (empresa da família Vorcaro)", "deRef": null, "para": "CNLF Empreendimentos (vinculada a Ciro Nogueira)", "paraRef": "ciro", "valor": "R$ 300 a 500 mil por mês, ≈ R$ 6 mi", "data": "jun/2024 a jun/2025", "info": "Segundo o relatório da PF, mensagens apreendidas registram a pergunta 'é para continuar pagando a parceria brgd/cnlf? 300k mes?' e a resposta 'Sim'. A defesa do senador diz que 'não houve mesada' e que ele não participou de atividades ilícitas.", "status": "apuracao", "ls": ["cnnciro", "mrede"]}, {"de": "Empresa ligada ao entorno de Augusto Lima", "deRef": "exsocio", "para": "BN Financeira (apontada como ligada ao entorno de Jaques Wagner)", "paraRef": "wagner", "valor": "R$ 3,5 mi", "data": "período apurado no relatório de jun/2026", "info": "Segundo o relatório da PF. O senador afirma que sua relação com Vorcaro 'é praticamente zero' e que não é réu nem denunciado.", "status": "apuracao", "ls": ["mrede"]}, {"de": "Banco Master / Daniel Vorcaro", "deRef": "master", "para": "Belline Santana, então chefe de supervisão do BC", "paraRef": "belline", "valor": "R$ 500 mil mensais e um pagamento de R$ 760 mil", "data": "relatório com sigilo levantado em 11/09/2026", "info": "Segundo o relatório da PF. Afastado, ele nega ter vazado informações internas do Banco Central e diz poder provar que pagou as próprias despesas.", "status": "apuracao", "ls": ["abbc"]}, {"de": "Banco Master", "deRef": "master", "para": "Escritório Barci de Moraes", "paraRef": "barci", "valor": "contrato de R$ 131 mi; R$ 80,2 mi declarados", "data": "pagamentos até nov/2025", "info": "O contrato previa ampla consultoria jurídica, com entrega de 36 pareceres, em 36 parcelas de R$ 3,6 mi; os pagamentos pararam com a liquidação. O escritório diz não confirmar 'essas informações incorretas e vazadas ilicitamente'.", "status": "apuracao", "ls": ["cnnbarci", "nd"]}, {"de": "Fabiano Zettel", "deRef": "cunhado", "para": "Conta da Igreja Batista da Lagoinha, unidade Belvedere (BH)", "paraRef": null, "valor": "R$ 19,2 mi transferidos; R$ 57,1 mi movimentados", "data": "dez/2024 a dez/2025", "info": "Segundo relatório do Coaf citado pela imprensa, a conta gerida por Zettel movimentou R$ 57,1 mi em 26 transações — cerca de 60 vezes a receita anual presumida da unidade —, com R$ 4,9 mi seguindo para construtoras e incorporadoras. A igreja não se manifestou. A defesa de Zettel afirma que ele tem atividades empresariais lícitas, sem relação com a gestão do banco.", "status": "apuracao", "ls": ["itaig"]}, {"de": "Banco Master", "deRef": "master", "para": "Hugo Motta, presidente da Câmara", "paraRef": "motta", "valor": "hospedagem de ≈ 3 mil euros", "data": "junho de 2024", "info": "Segundo a reportagem sobre o material da PF, houve custeio de hospedagem em Lisboa. Motta não é investigado, diz ter 'muita tranquilidade' e afirma que as relações foram 'corretas e institucionais'.", "status": "apuracao", "ls": ["mrede"]}]}];
 var FONTE_DADOS="página";
 const PHOTO=new Map();   /* id -> {img,ext,url,file} */
 const CRED=new Map();    /* id -> {file,author,license,licenseUrl,page} */
@@ -1062,6 +1077,10 @@ const R=d=>d.t===0?34:d.t===1?20:d.t===2?19:d.t===3?16:14;
 
 const svg=d3.select("#g"), gRoot=svg.append("g");
 const defs=svg.append("defs");
+defs.append("marker").attr("id","seta").attr("viewBox","0 0 10 10")
+  .attr("refX",9).attr("refY",5).attr("markerWidth",5).attr("markerHeight",5)
+  .attr("orient","auto-start-reverse")
+  .append("path").attr("d","M0,1 L9,5 L0,9 z").attr("fill","var(--c-mkt)");
 const gRings=gRoot.append("g"), gLink=gRoot.append("g"), gHit=gRoot.append("g"), gNode=gRoot.append("g");
 gRings.selectAll("circle").data([265,445,625,800]).join("circle").attr("class","ringc").attr("r",d=>d);
 gRings.selectAll("text").data([[265,RING[1]],[445,RING[2]],[625,RING[3]],[800,RING[4]]]).join("text")
@@ -1224,19 +1243,27 @@ const gf=document.getElementById("g-filters");
 gf.innerHTML=Object.entries(CATG).map(([k,v])=>
   `<button class="chip" data-cat="${k}" aria-pressed="true" style="--d:${v.c}"><span class="dot"></span>${v.n}</button>`).join("")
  +`<button class="chip" id="g-far" aria-pressed="true">Anéis externos</button>`
+ +`<button class="chip" id="g-din" aria-pressed="false" style="--d:var(--c-mkt)"><span class="dot"></span>Seguir o dinheiro</button>`
  +`<input type="search" id="g-q" placeholder="buscar nome…" aria-label="Buscar no grafo">`
  +`<span class="hint">arraste os nós · scroll para zoom</span>`;
-const gOff=new Set(); let gFar=true;
+const gOff=new Set(); let gFar=true, soDin=false;
+const idDe=d=>typeof d==="object"?d.id:d;
+const noDin=new Set();
+links.forEach(l=>{ if(l.k==="f"){ noDin.add(idDe(l.source)); noDin.add(idDe(l.target)) } });
 function gVis(d){return (!gOff.has(d.c)&&(gFar||d.t<3))||d.id==="vorcaro"}
+function eVis(l){ return gVis(l.source)&&gVis(l.target)&&(!soDin||l.k==="f") }
 function gRender(){
-  node.style("display",d=>gVis(d)?null:"none");
-  link.style("display",l=>gVis(l.source)&&gVis(l.target)?null:"none")
-      .attr("stroke-opacity",.5).attr("stroke-width",1.4);
-  hit.style("display",l=>gVis(l.source)&&gVis(l.target)?null:"none");
+  node.style("display",d=>gVis(d)&&(!soDin||noDin.has(d.id))?null:"none");
+  link.style("display",l=>eVis(l)?null:"none")
+      .attr("stroke-opacity",l=>soDin&&l.k==="f"?.9:.5)
+      .attr("stroke-width",l=>soDin&&l.k==="f"?2.2:1.4)
+      .attr("marker-end",l=>soDin&&l.k==="f"?"url(#seta)":null);
+  hit.style("display",l=>eVis(l)?null:"none");
 }
 gf.addEventListener("click",e=>{
   const b=e.target.closest(".chip"); if(!b) return;
   if(b.id==="g-far"){gFar=!gFar;b.setAttribute("aria-pressed",gFar)}
+  else if(b.id==="g-din"){soDin=!soDin;b.setAttribute("aria-pressed",soDin)}
   else if(b.dataset.cat){const k=b.dataset.cat; gOff.has(k)?gOff.delete(k):gOff.add(k);
     b.setAttribute("aria-pressed",!gOff.has(k))}
   gRender();
@@ -1249,6 +1276,40 @@ document.getElementById("g-q").addEventListener("input",e=>{
   if(hits.length===1) showNode(hits[0]);
 });
 gRender();
+
+
+/* ---------- 02 caminho do dinheiro ---------- */
+const dFil=document.getElementById("d-filters"), dRes=document.getElementById("d-resumo"), fluxoEl=document.getElementById("fluxo");
+let trAtual=0;
+function nomeNo(txt,ref){
+  if(ref&&byId.has(ref)) return `<button class="pn tref" data-dest="verb:${ref}">${txt}</button>`;
+  return `<span class="pn">${txt}</span>`;
+}
+function fluxoRender(){
+  const t=TRILHAS[trAtual];
+  dFil.querySelectorAll(".chip[data-tr]").forEach(c=>c.setAttribute("aria-pressed",String(Number(c.dataset.tr)===trAtual)));
+  if(!t){ dRes.textContent=""; fluxoEl.innerHTML=`<p class="sec-note">Nenhuma trilha publicada ainda.</p>`; return }
+  dRes.innerHTML=t.resumo+(t.ls&&t.ls.length?srcHtml(t.ls.filter(i=>L[i])):"");
+  fluxoEl.innerHTML=t.passos.map(p=>{
+    const ok=p.status!=="apuracao";
+    const selo=p.status==="registro"?"registro oficial":p.status==="decidido"?"decisão publicada":"em apuração";
+    return `<div class="passo${ok?" ok":""}">
+      <div class="pcab">${nomeNo(p.de,p.deRef)}<span class="pa" aria-label="para">→</span>${nomeNo(p.para,p.paraRef)}</div>
+      <div class="pmeta">${p.valor?`<span class="pval">${p.valor}</span>`:""}${p.data?`<span class="pdata">${p.data}</span>`:""}
+        <span class="pselo">${selo}</span></div>
+      <p class="pinfo">${p.info}</p>
+      ${p.ls&&p.ls.length?srcHtml(p.ls.filter(i=>L[i])):""}
+    </div>`;
+  }).join("")||`<p class="sec-note">Trilha sem passos publicados.</p>`;
+  marcarTermos(fluxoEl);
+}
+dFil.innerHTML=TRILHAS.map((t,i)=>`<button class="chip" data-tr="${i}" aria-pressed="${i===0}">${t.nome}</button>`).join("")
+ +`<span class="hint">${TRILHAS.reduce((a,t)=>a+t.passos.length,0)} passos com fonte</span>`;
+dFil.addEventListener("click",e=>{
+  const b=e.target.closest(".chip[data-tr]"); if(!b) return;
+  trAtual=Number(b.dataset.tr); fluxoRender();
+});
+fluxoRender();
 
 /* ---------- 04 quem é quem ---------- */
 const cardsEl=document.getElementById("cards");
@@ -1731,6 +1792,7 @@ secs.forEach(s=>new IntersectionObserver(es=>{
         BARS=d.BARS; PHASES=d.PHASES; N=d.N; E=d.E;
         if(d.WIKI) WIKI=d.WIKI;
         ERRATA = d.ERRATA || [];
+        if(Array.isArray(d.TRILHAS) && d.TRILHAS.length) TRILHAS = d.TRILHAS;
         RESP = d.RESP || {};
         GLOS = d.GLOS || [];
         FONTE_DADOS = "banco";

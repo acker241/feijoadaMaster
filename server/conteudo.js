@@ -51,6 +51,20 @@ async function semear() {
       glosNovos += r.rowCount;
     }
     if (glosNovos) feito.push(`${glosNovos} termos de glossário`);
+    /* trilhas de dinheiro: entram por id, como o glossario */
+    let trNovos = 0, pasNovos = 0;
+    for (const t of seed.trilhas || []) {
+      const r = await c.query("INSERT INTO trilhas (id,nome,resumo,fontes,ordem) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (id) DO NOTHING", [t.id, t.nome, t.resumo, t.fontes || [], t.ordem || 0]);
+      trNovos += r.rowCount;
+    }
+    for (const p of seed.passos || []) {
+      const r = await c.query("INSERT INTO passos (id,trilha,ordem,de,de_ref,para,para_ref,valor,data_txt,info,status,fontes) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) ON CONFLICT (id) DO NOTHING",
+        [p.id, p.trilha, p.ordem || 0, p.de, p.de_ref || null, p.para, p.para_ref || null, p.valor || null, p.data_txt || null, p.info, p.status || "apuracao", p.fontes || []]);
+      pasNovos += r.rowCount;
+    }
+    if (trNovos) feito.push(`${trNovos} trilhas`);
+    if (pasNovos) feito.push(`${pasNovos} passos de trilha`);
+
     if (await vazia("respostas")) {
       for (const r of seed.respostas || []) await c.query("INSERT INTO respostas (verbete,autor,tipo,data_txt,texto,fonte,url,prioridade,ordem) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)", [r.verbete, r.autor, r.tipo, r.data_txt, r.texto, r.fonte, r.url, r.prioridade !== false, r.ordem || 0]);
       feito.push(`${(seed.respostas || []).length} respostas`);
@@ -72,7 +86,7 @@ function invalidar() { cache = null; }
 
 async function dados() {
   if (cache) return cache;
-  const [fon, cat, ane, tip, bar, fas, eve, ver, vin, err, resp, glo] = await Promise.all([
+  const [fon, cat, ane, tip, bar, fas, eve, ver, vin, err, resp, glo, tri, pas] = await Promise.all([
     pool.query("SELECT * FROM fontes ORDER BY id"),
     pool.query("SELECT * FROM categorias ORDER BY ordem"),
     pool.query("SELECT * FROM aneis ORDER BY nivel"),
@@ -85,6 +99,8 @@ async function dados() {
     pool.query("SELECT criado_em, entidade, rotulo, acao, campo, antes, depois, motivo FROM errata WHERE publico ORDER BY criado_em DESC LIMIT 60"),
     pool.query("SELECT * FROM respostas ORDER BY verbete, ordem, id"),
     pool.query("SELECT * FROM glossario ORDER BY ordem, termo"),
+    pool.query("SELECT * FROM trilhas ORDER BY ordem, id"),
+    pool.query("SELECT * FROM passos ORDER BY trilha, ordem, id"),
   ]);
   const saida = {
     L: Object.fromEntries(fon.rows.map((f) => [f.id, [f.rotulo, f.url]])),
@@ -112,6 +128,14 @@ async function dados() {
     }, {}),
     GLOS: glo.rows.map((g) => ({
       id: g.id, termo: g.termo, vars: g.variantes || [], def: g.definicao, verbete: g.verbete,
+    })),
+    TRILHAS: tri.rows.map((t) => ({
+      id: t.id, nome: t.nome, resumo: t.resumo, ls: t.fontes || [],
+      passos: pas.rows.filter((p) => p.trilha === t.id).map((p) => ({
+        de: p.de, deRef: p.de_ref, para: p.para, paraRef: p.para_ref,
+        valor: p.valor || "", data: p.data_txt || "", info: p.info,
+        status: p.status, ls: p.fontes || [],
+      })),
     })),
     atualizado: new Date().toISOString(),
   };
@@ -152,6 +176,12 @@ const TABELAS = {
   glossario: { tabela: "glossario", chave: "id", rotuloCampo: "termo",
     campos: ["id", "termo", "variantes", "definicao", "verbete", "ordem"],
     numericos: ["ordem"], arrays: ["variantes"], arraysTexto: ["variantes"] },
+  trilha: { tabela: "trilhas", chave: "id", rotuloCampo: "nome",
+    campos: ["id", "nome", "resumo", "fontes", "ordem"],
+    numericos: ["ordem"], arrays: ["fontes"] },
+  passo: { tabela: "passos", chave: "id", rotuloCampo: "info",
+    campos: ["id", "trilha", "ordem", "de", "de_ref", "para", "para_ref", "valor", "data_txt", "info", "status", "fontes"],
+    numericos: ["ordem"], arrays: ["fontes"] },
   resposta: { tabela: "respostas", chave: "id", rotuloCampo: "autor",
     campos: ["verbete", "autor", "tipo", "data_txt", "texto", "fonte", "url", "prioridade", "ordem"],
     numericos: ["ordem"], arrays: [], booleanos: ["prioridade"] },
@@ -261,15 +291,16 @@ async function remover(entidade, chaveValor, motivo) {
 }
 
 async function opcoes() {
-  const [cat, ane, tip, fon, fas, ver] = await Promise.all([
+  const [cat, ane, tip, fon, fas, ver, tri] = await Promise.all([
     pool.query("SELECT id,nome FROM categorias ORDER BY ordem"),
     pool.query("SELECT nivel,nome FROM aneis ORDER BY nivel"),
     pool.query("SELECT id,nome FROM tipos_vinculo ORDER BY id"),
     pool.query("SELECT id,rotulo FROM fontes ORDER BY id"),
     pool.query("SELECT ordem,titulo FROM fases ORDER BY ordem"),
     pool.query("SELECT id,nome FROM verbetes ORDER BY nome"),
+    pool.query("SELECT id,nome FROM trilhas ORDER BY ordem, id"),
   ]);
-  return { categorias: cat.rows, aneis: ane.rows, tipos: tip.rows, fontes: fon.rows, fases: fas.rows, verbetes: ver.rows };
+  return { categorias: cat.rows, aneis: ane.rows, tipos: tip.rows, fontes: fon.rows, fases: fas.rows, verbetes: ver.rows, trilhas: tri.rows };
 }
 
 module.exports = { semear, dados, invalidar, listar, salvar, remover, opcoes, TABELAS };

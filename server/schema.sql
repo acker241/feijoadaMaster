@@ -129,3 +129,28 @@ CREATE TABLE IF NOT EXISTS glossario (
   verbete    TEXT,
   ordem      INT NOT NULL DEFAULT 0
 );
+
+-- ---------- trilhas de dinheiro ----------
+CREATE TABLE IF NOT EXISTS trilhas (
+  id      TEXT PRIMARY KEY,
+  nome    TEXT NOT NULL,
+  resumo  TEXT NOT NULL,
+  fontes  TEXT[] NOT NULL DEFAULT '{}',
+  ordem   INT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS passos (
+  id        TEXT PRIMARY KEY,
+  trilha    TEXT NOT NULL,
+  ordem     INT NOT NULL DEFAULT 0,
+  de        TEXT NOT NULL,
+  de_ref    TEXT,
+  para      TEXT NOT NULL,
+  para_ref  TEXT,
+  valor     TEXT,
+  data_txt  TEXT,
+  info      TEXT NOT NULL,
+  status    TEXT NOT NULL DEFAULT 'apuracao',
+  fontes    TEXT[] NOT NULL DEFAULT '{}'
+);
+CREATE INDEX IF NOT EXISTS passos_trilha_idx ON passos (trilha);
