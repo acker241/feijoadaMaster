@@ -312,6 +312,12 @@ table.lic td.u a{color:var(--ink-3)}
   border:1px solid var(--rule-strong);color:var(--ink-3);padding:2px 7px;border-radius:2px}
 .passo.ok .pselo{border-color:var(--c-reg);color:var(--c-reg)}
 .pinfo{font-size:14.5px;color:var(--ink-2);line-height:1.6;margin:9px 0 0;max-width:700px}
+.pfons{display:inline-flex;gap:5px;align-items:center}
+.pfon{display:inline-flex;width:21px;height:21px;border:1px solid var(--rule-strong);border-radius:50%;
+  align-items:center;justify-content:center;font-size:11px;line-height:1;color:var(--ink-3);
+  text-decoration:none;background:var(--surface);transition:color .12s,border-color .12s}
+.pfon:hover{color:var(--dende);border-color:var(--dende)}
+.trilha-resumo .pfons{margin-left:8px;vertical-align:middle}
 .fluxo .srcl,.trilha-resumo .srcl{display:flex;flex-wrap:wrap;gap:4px 18px;margin-top:9px;font-size:12.5px}
 
 .note{background:var(--surface);border-left:3px solid var(--dende);padding:20px 22px;font-size:14.5px;color:var(--ink-2);line-height:1.62}
@@ -1281,6 +1287,12 @@ gRender();
 /* ---------- 02 caminho do dinheiro ---------- */
 const dFil=document.getElementById("d-filters"), dRes=document.getElementById("d-resumo"), fluxoEl=document.getElementById("fluxo");
 let trAtual=0;
+function icones(ls){
+  const ok=(ls||[]).filter(i=>L[i]);
+  if(!ok.length) return "";
+  return `<span class="pfons">`+ok.map(i=>
+    `<a class="pfon" href="${L[i][1]}" target="_blank" rel="noopener" data-tip="${L[i][0]}" aria-label="Fonte: ${L[i][0]}">↗</a>`).join("")+`</span>`;
+}
 function nomeNo(txt,ref){
   if(ref&&byId.has(ref)) return `<button class="pn tref" data-dest="verb:${ref}">${txt}</button>`;
   return `<span class="pn">${txt}</span>`;
@@ -1289,14 +1301,14 @@ function fluxoRender(){
   const t=TRILHAS[trAtual];
   dFil.querySelectorAll(".chip[data-tr]").forEach(c=>c.setAttribute("aria-pressed",String(Number(c.dataset.tr)===trAtual)));
   if(!t){ dRes.textContent=""; fluxoEl.innerHTML=`<p class="sec-note">Nenhuma trilha publicada ainda.</p>`; return }
-  dRes.textContent=t.resumo;
+  dRes.innerHTML=t.resumo+icones(t.ls);
   fluxoEl.innerHTML=t.passos.map(p=>{
     const ok=p.status!=="apuracao";
     const selo=p.status==="registro"?"registro oficial":p.status==="decidido"?"decisão publicada":"em apuração";
     return `<div class="passo${ok?" ok":""}">
       <div class="pcab">${nomeNo(p.de,p.deRef)}<span class="pa" aria-label="para">→</span>${nomeNo(p.para,p.paraRef)}</div>
       <div class="pmeta">${p.valor?`<span class="pval">${p.valor}</span>`:""}${p.data?`<span class="pdata">${p.data}</span>`:""}
-        <span class="pselo">${selo}</span></div>
+        <span class="pselo">${selo}</span>${icones(p.ls)}</div>
       <p class="pinfo">${p.info}</p>
     </div>`;
   }).join("")||`<p class="sec-note">Trilha sem passos publicados.</p>`;
