@@ -14,10 +14,14 @@ rede de 90 nomes e verbetes "quem é quem". Dados consolidados em 15/09/2026.
 
 Qualquer hospedagem estática serve, sem build:
 
-- **GitHub Pages**: repo novo → subir `index.html` → Settings › Pages › branch `main` / root.
-- **Netlify / Vercel**: arrastar a pasta na interface de deploy.
-- **Cloudflare Pages**: conectar o repo ou usar "Direct Upload".
+- **Railway** (em uso): `Dockerfile` + `Caddyfile` na raiz servem o `index.html` pelo Caddy na
+  porta `$PORT`. Passo a passo, cabeçalhos e CSP em `railway/RAILWAY.md`.
+- **GitHub Pages**: Settings › Pages › branch `main` / root.
+- **Netlify / Cloudflare Pages**: conectar o repo ou arrastar a pasta.
 - **Hospedagem própria**: copiar `index.html` para a raiz do domínio.
+
+Os arquivos de deploy ficam na raiz porque o Railway procura o `Dockerfile` ali; `railway/RAILWAY.md`
+é só documentação.
 
 ## Dependências externas em runtime
 

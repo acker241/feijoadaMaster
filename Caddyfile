@@ -1,0 +1,29 @@
+# Porta vem do Railway ($PORT). Local, cai para 8080.
+:{$PORT:8080} {
+	root * /srv
+	file_server
+	encode zstd gzip
+
+	# Sem arquivo correspondente, entrega a pagina unica.
+	try_files {path} /index.html
+
+	header {
+		# Cache curto: o conteudo muda quando ha correcao.
+		Cache-Control "public, max-age=300, must-revalidate"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		X-Frame-Options "SAMEORIGIN"
+		Permissions-Policy "geolocation=(), microphone=(), camera=()"
+		-Server
+
+		# CSP com exatamente o que a pagina usa hoje.
+		# AO CONFIGURAR A CAIXA DE MENSAGENS: acrescente o host do
+		# endpoint (ex.: https://formspree.io) em connect-src.
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://upload.wikimedia.org https://thumb.wikimedia.org https://commons.wikimedia.org https://pt.wikipedia.org; connect-src 'self' https://pt.wikipedia.org https://commons.wikimedia.org; form-action 'self' mailto:; frame-ancestors 'self'; base-uri 'none'"
+	}
+
+	log {
+		output stdout
+		format console
+	}
+}
