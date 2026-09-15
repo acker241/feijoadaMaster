@@ -8,25 +8,50 @@ const { pool } = require("./db");
 
 /* ---------- semeadura ---------- */
 async function semear() {
-  const { rows } = await pool.query("SELECT count(*)::int AS n FROM verbetes");
-  if (rows[0].n > 0) return false;
   const seed = JSON.parse(fs.readFileSync(path.join(__dirname, "seed.json"), "utf8"));
   const c = await pool.connect();
+  const feito = [];
+  const vazia = async (t) => (await c.query(`SELECT count(*)::int AS n FROM ${t}`)).rows[0].n === 0;
   try {
     await c.query("BEGIN");
+
+    /* catalogos: idempotentes, entram novos itens sem apagar os existentes */
     for (const f of seed.fontes) await c.query("INSERT INTO fontes (id,rotulo,url) VALUES ($1,$2,$3) ON CONFLICT (id) DO NOTHING", [f.id, f.rotulo, f.url]);
     for (const k of seed.categorias) await c.query("INSERT INTO categorias (id,nome,cor,ordem) VALUES ($1,$2,$3,$4) ON CONFLICT (id) DO NOTHING", [k.id, k.nome, k.cor, k.ordem]);
     for (const a of seed.aneis) await c.query("INSERT INTO aneis (nivel,nome) VALUES ($1,$2) ON CONFLICT (nivel) DO NOTHING", [a.nivel, a.nome]);
     for (const t of seed.tipos_vinculo) await c.query("INSERT INTO tipos_vinculo (id,nome,cor) VALUES ($1,$2,$3) ON CONFLICT (id) DO NOTHING", [t.id, t.nome, t.cor]);
-    for (const b of seed.barras) await c.query("INSERT INTO barras (rotulo,valor,nota,ordem) VALUES ($1,$2,$3,$4)", [b.rotulo, b.valor, b.nota, b.ordem]);
-    for (const f of seed.fases) await c.query("INSERT INTO fases (ordem,tag,titulo,subtitulo) VALUES ($1,$2,$3,$4) ON CONFLICT (ordem) DO NOTHING", [f.ordem, f.tag, f.titulo, f.subtitulo]);
-    for (const e of seed.eventos) await c.query("INSERT INTO eventos (fase,ordem,data_txt,categoria,quem,texto) VALUES ($1,$2,$3,$4,$5,$6)", [e.fase, e.ordem, e.data_txt, e.categoria, e.quem, e.texto]);
-    for (const v of seed.verbetes) await c.query("INSERT INTO verbetes (id,nome,sigla,papel,categoria,anel,info,fontes,wiki,ordem) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT (id) DO NOTHING", [v.id, v.nome, v.sigla, v.papel, v.categoria, v.anel, v.info, v.fontes, v.wiki, v.ordem]);
-    for (const l of seed.vinculos) await c.query("INSERT INTO vinculos (origem,destino,tipo,info,fontes,ordem) VALUES ($1,$2,$3,$4,$5,$6)", [l.origem, l.destino, l.tipo, l.info, l.fontes, l.ordem]);
-    for (const r of seed.respostas || []) await c.query("INSERT INTO respostas (verbete,autor,tipo,data_txt,texto,fonte,url,prioridade,ordem) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)", [r.verbete, r.autor, r.tipo, r.data_txt, r.texto, r.fonte, r.url, r.prioridade !== false, r.ordem || 0]);
+
+    /* tabelas de conteudo: so semeia a que estiver vazia, para nao duplicar
+       nem sobrescrever o que foi editado pelo painel */
+    if (await vazia("fases")) {
+      for (const f of seed.fases) await c.query("INSERT INTO fases (ordem,tag,titulo,subtitulo) VALUES ($1,$2,$3,$4) ON CONFLICT (ordem) DO NOTHING", [f.ordem, f.tag, f.titulo, f.subtitulo]);
+      feito.push(`${seed.fases.length} fases`);
+    }
+    if (await vazia("eventos")) {
+      for (const e of seed.eventos) await c.query("INSERT INTO eventos (fase,ordem,data_txt,categoria,quem,texto) VALUES ($1,$2,$3,$4,$5,$6)", [e.fase, e.ordem, e.data_txt, e.categoria, e.quem, e.texto]);
+      feito.push(`${seed.eventos.length} eventos`);
+    }
+    if (await vazia("verbetes")) {
+      for (const v of seed.verbetes) await c.query("INSERT INTO verbetes (id,nome,sigla,papel,categoria,anel,info,fontes,wiki,ordem) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT (id) DO NOTHING", [v.id, v.nome, v.sigla, v.papel, v.categoria, v.anel, v.info, v.fontes, v.wiki, v.ordem]);
+      feito.push(`${seed.verbetes.length} verbetes`);
+    }
+    if (await vazia("vinculos")) {
+      for (const l of seed.vinculos) await c.query("INSERT INTO vinculos (origem,destino,tipo,info,fontes,ordem) VALUES ($1,$2,$3,$4,$5,$6)", [l.origem, l.destino, l.tipo, l.info, l.fontes, l.ordem]);
+      feito.push(`${seed.vinculos.length} vínculos`);
+    }
+    if (await vazia("barras")) {
+      for (const b of seed.barras) await c.query("INSERT INTO barras (rotulo,valor,nota,ordem) VALUES ($1,$2,$3,$4)", [b.rotulo, b.valor, b.nota, b.ordem]);
+      feito.push(`${seed.barras.length} barras`);
+    }
+    if (await vazia("respostas")) {
+      for (const r of seed.respostas || []) await c.query("INSERT INTO respostas (verbete,autor,tipo,data_txt,texto,fonte,url,prioridade,ordem) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)", [r.verbete, r.autor, r.tipo, r.data_txt, r.texto, r.fonte, r.url, r.prioridade !== false, r.ordem || 0]);
+      feito.push(`${(seed.respostas || []).length} respostas`);
+    }
+
     await c.query("COMMIT");
-    console.log(`[conteudo] semeado: ${seed.verbetes.length} verbetes, ${seed.vinculos.length} vínculos, ${seed.eventos.length} eventos, ${(seed.respostas || []).length} respostas`);
-    return true;
+    invalidar();
+    console.log(feito.length ? `[conteudo] semeado: ${feito.join(", ")}` : "[conteudo] nada a semear (catálogos conferidos)");
+    return feito.length > 0;
   } catch (e) {
     await c.query("ROLLBACK");
     throw e;
