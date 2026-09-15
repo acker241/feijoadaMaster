@@ -1,0 +1,1399 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Feijoada do Master: agregador de notícias sobre o caso Banco Master — linha do tempo, escala do dano e rede de 90 nomes, com a fonte de cada informação.">
+<meta name="robots" content="index,follow">
+<meta property="og:title" content="Feijoada do Master">
+<meta property="og:description" content="Linha do tempo, escala do dano e rede de relações do caso Banco Master. Agregador de notícias, com fonte em cada item.">
+<meta property="og:type" content="website">
+<title>Feijoada do Master</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,400..900,0..100,0..1;1,9..144,400..900,0..100,0..1&family=Karla:ital,wght@0,400..800;1,400..600&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<style>
+/* paleta feijoada: feijao-preto, caldo, laranja, couve, pimenta, farofa */
+:root{
+  --paper:#FAF4E8;--surface:#FFFBF3;--surface-2:#F3E9D8;
+  --ink:#241B14;--ink-2:#564636;--ink-3:#897463;
+  --rule:#E5D9C4;--rule-strong:#C8B69A;
+  --c-mkt:#C2601A;--c-pol:#3355A8;--c-reg:#5A8A24;--c-jud:#A62449;
+  --accent:#A62449;--laranja:#C2601A;
+  --ring:#E8DCC7;--halo:#FFFBF3;
+  --bar:#C2601A;--bar-soft:#EBD9BC;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#16120F;--surface:#1E1813;--surface-2:#2A221B;
+  --ink:#F7F0E2;--ink-2:#D5C5AE;--ink-3:#9E8C77;
+  --rule:#342A22;--rule-strong:#4D4033;
+  --c-mkt:#D4762B;--c-pol:#5C7FD0;--c-reg:#719C31;--c-jud:#C94A6B;
+  --accent:#C94A6B;--laranja:#D4762B;
+  --ring:#2B2319;--halo:#1E1813;
+  --bar:#D4762B;--bar-soft:#3B2E1F;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --paper:#16120F;--surface:#1E1813;--surface-2:#2A221B;
+  --ink:#F7F0E2;--ink-2:#D5C5AE;--ink-3:#9E8C77;
+  --rule:#342A22;--rule-strong:#4D4033;
+  --c-mkt:#D4762B;--c-pol:#5C7FD0;--c-reg:#719C31;--c-jud:#C94A6B;
+  --accent:#C94A6B;--laranja:#D4762B;
+  --ring:#2B2319;--halo:#1E1813;
+  --bar:#D4762B;--bar-soft:#3B2E1F;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:Karla,"Helvetica Neue",Arial,sans-serif;font-size:16.5px;line-height:1.62;-webkit-font-smoothing:antialiased}
+img{max-width:100%}
+[hidden]{display:none!important}
+.wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+h1,h2,h3,h4,.disp{font-family:Fraunces,"Iowan Old Style",Georgia,serif;font-variation-settings:"SOFT" 20,"WONK" 1}
+.mono{font-family:"DM Mono",ui-monospace,monospace}
+a{color:inherit;text-decoration-color:var(--rule-strong);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.eyebrow{font-family:"DM Mono",monospace;text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--ink-3)}
+
+/* nav */
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:var(--surface);border-bottom:1px solid var(--rule-strong)}
+nav .in{max-width:1080px;margin:0 auto;padding:8px 22px;display:flex;gap:4px;align-items:center;overflow-x:auto}
+nav .brand{font-family:Fraunces,Georgia,serif;font-weight:800;font-size:16px;margin-right:14px;white-space:nowrap;
+  font-variation-settings:"SOFT" 40,"WONK" 1}
+nav a{font-size:13.5px;font-weight:600;color:var(--ink-3);text-decoration:none;padding:6px 10px;white-space:nowrap;border-radius:3px}
+nav a:hover,nav a.on{color:var(--ink);background:var(--surface-2)}
+nav .spacer{flex:1;min-width:6px}
+#theme{font-family:"DM Mono",monospace;font-size:11.5px;letter-spacing:.04em;background:none;border:1px solid var(--rule-strong);
+  color:var(--ink-2);padding:6px 11px;border-radius:999px;cursor:pointer;white-space:nowrap}
+#theme:hover{color:var(--ink);border-color:var(--ink-3)}
+
+/* hero */
+header.hero{padding-block:58px 34px;border-bottom:1px solid var(--rule-strong);
+  background:radial-gradient(120% 90% at 82% 0%,var(--surface-2) 0%,transparent 62%)}
+h1{font-weight:900;font-size:clamp(46px,10.5vw,104px);line-height:.9;margin:12px 0 0;letter-spacing:-.025em;
+  font-variation-settings:"SOFT" 60,"WONK" 1}
+h1 span,h1 em{display:block;font-style:normal;color:var(--laranja)}
+.quote{font-family:Fraunces,Georgia,serif;font-style:italic;font-weight:500;font-size:clamp(21px,3.6vw,33px);
+  line-height:1.22;margin:28px 0 0;max-width:30ch;font-variation-settings:"SOFT" 80,"WONK" 1}
+.lede{max-width:60ch;margin-top:16px;font-size:17.5px;color:var(--ink-2)}
+.lede strong{color:var(--ink);font-weight:700}
+.stamp{display:inline-block;margin-top:24px;font-family:"DM Mono",monospace;font-size:11px;color:var(--accent);
+  border-bottom:1px solid var(--accent);padding-bottom:2px;letter-spacing:.08em}
+.panelas{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:0 28px;margin-top:40px;
+  border-top:1px solid var(--rule)}
+.panela{padding:14px 0 6px;border-bottom:1px solid var(--rule)}
+.panela b{display:flex;align-items:center;gap:8px;font-family:"DM Mono",monospace;font-size:11px;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--ink-3);font-weight:400}
+.panela b::before{content:"";width:8px;height:8px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:var(--g);flex:none}
+.panela p{margin:8px 0 0;font-size:14.5px;color:var(--ink-2);line-height:1.5}
+
+section{padding-block:56px}
+section+section{border-top:1px solid var(--rule)}
+.sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:26px;flex-wrap:wrap}
+.sec-head h2{font-weight:800;font-size:clamp(25px,4vw,38px);margin:0;letter-spacing:-.02em;font-variation-settings:"SOFT" 40,"WONK" 1}
+.sec-head .n{font-family:"DM Mono",monospace;font-size:12px;color:var(--laranja)}
+.sec-note{font-size:14.5px;color:var(--ink-3);max-width:60ch}
+.subhead{font-family:"DM Mono",monospace;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-3);
+  margin:38px 0 12px;border-bottom:1px solid var(--rule-strong);padding-bottom:9px;font-weight:400}
+
+/* barras */
+.bars{display:grid;gap:9px}
+.bar-row{display:grid;grid-template-columns:minmax(120px,215px) minmax(0,1fr);gap:16px;align-items:center}
+.bar-lab{font-size:14px;color:var(--ink-2);line-height:1.3}
+.bar-track{display:flex;align-items:center;gap:10px}
+.bar-fill{height:20px;background:var(--bar);min-width:2px;transition:filter .15s}
+.bar-row:hover .bar-fill{filter:brightness(1.1)}
+.bar-fill.soft{background:var(--bar-soft)}
+.bar-val{font-family:"DM Mono",monospace;font-size:13.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.axis{display:grid;grid-template-columns:minmax(120px,215px) minmax(0,1fr);gap:16px;margin-top:12px}
+.axis-ticks{display:flex;justify-content:space-between;border-top:1px solid var(--rule);padding-top:6px;
+  font-family:"DM Mono",monospace;font-size:11px;color:var(--ink-3)}
+.ledger{border-top:1px solid var(--rule-strong);margin-top:30px}
+.ledger .row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 20px;align-items:baseline;padding:13px 0;border-bottom:1px solid var(--rule)}
+.ledger .k{font-size:15px;color:var(--ink-2)}
+.ledger .v{font-family:"DM Mono",monospace;font-size:18px;font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* chips */
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:22px;align-items:center}
+.chip{font-family:Karla,sans-serif;font-size:13px;font-weight:700;background:none;color:var(--ink-3);
+  border:1px solid var(--rule-strong);padding:5px 11px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+.chip[aria-pressed="true"]{color:var(--ink);background:var(--surface-2);border-color:var(--ink-3)}
+.chip .dot{width:9px;height:9px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:var(--d,var(--ink-3))}
+input[type=search]{font-family:Karla,sans-serif;font-size:13.5px;padding:6px 12px;border:1px solid var(--rule-strong);
+  border-radius:999px;background:var(--surface);color:var(--ink);width:195px}
+.hint{font-family:"DM Mono",monospace;font-size:11px;color:var(--ink-3)}
+
+/* linha do tempo */
+.phase{margin-top:38px}
+.phase-head{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:4px}
+.phase-head .tag{font-family:"DM Mono",monospace;font-size:11px;color:var(--laranja);letter-spacing:.06em}
+.phase-head h3{font-size:22px;margin:0;font-weight:700;letter-spacing:-.015em}
+.phase-sub{font-size:14.5px;color:var(--ink-3);margin:0 0 16px;max-width:64ch}
+.events{border-left:1px solid var(--rule-strong);margin-left:6px}
+.ev{display:grid;grid-template-columns:106px minmax(0,1fr);gap:18px;padding:13px 0 13px 20px;position:relative;border-bottom:1px solid var(--rule)}
+.ev:last-child{border-bottom:none}
+.ev::before{content:"";position:absolute;left:-6px;top:20px;width:11px;height:11px;
+  border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:var(--dot,var(--ink-3));box-shadow:0 0 0 3px var(--paper)}
+.ev .date{font-family:"DM Mono",monospace;font-size:12.5px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.ev .body{font-size:15.5px}
+.ev .who{font-family:"DM Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--dot,var(--ink-3));display:block;margin-bottom:3px}
+
+/* grafo */
+.graph-shell{display:grid;grid-template-columns:minmax(0,1fr) 322px;border:1px solid var(--rule-strong);background:var(--surface);min-height:0}
+#stage{position:relative;height:700px;background:var(--paper)}
+#g{display:block;width:100%;height:100%;cursor:grab}
+#g:active{cursor:grabbing}
+.ringc{fill:none;stroke:var(--ring);stroke-width:1}
+.ringlab{font-family:"DM Mono",monospace;font-size:10px;fill:var(--ink-3);letter-spacing:.1em}
+.edge{stroke:var(--rule-strong);stroke-width:1.4;fill:none;stroke-opacity:.5}
+.edge.f{stroke:var(--c-mkt)}.edge.i{stroke:var(--c-reg)}.edge.v{stroke:var(--c-jud)}.edge.p{stroke:var(--c-pol)}
+.hit{stroke:transparent;stroke-width:16;fill:none;cursor:pointer}
+.node{cursor:pointer}
+.node circle.av{stroke:var(--halo);stroke-width:2}
+.node circle.rim{fill:none;stroke-width:2.5}
+.node text.ini{font-family:Karla,sans-serif;font-weight:800;fill:var(--halo);text-anchor:middle;pointer-events:none}
+.node text.lab{font-family:Karla,sans-serif;font-weight:600;fill:var(--ink-2);text-anchor:middle;paint-order:stroke;
+  stroke:var(--paper);stroke-width:3.5px;pointer-events:none}
+.dim{opacity:.13}
+aside.ficha{border-left:1px solid var(--rule-strong);overflow-y:auto;padding:20px;max-height:700px}
+aside.ficha h3{font-size:21px;margin:0 0 2px;letter-spacing:-.015em;text-wrap:balance;font-weight:700}
+.role{font-family:"DM Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--k,var(--ink-3))}
+.meta{font-family:"DM Mono",monospace;font-size:10.5px;color:var(--ink-3);margin-top:9px;letter-spacing:.04em}
+.txt{font-size:14.5px;color:var(--ink-2);margin:13px 0 0;line-height:1.56}
+.blk{margin-top:18px;border-top:1px solid var(--rule);padding-top:13px}
+.blk h4{font-family:"DM Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-3);
+  margin:0 0 10px;font-weight:400;font-variation-settings:normal}
+.conn{display:grid;gap:8px}
+.conn button{text-align:left;background:none;border:0;padding:0;font-family:Karla,sans-serif;font-size:13.5px;color:var(--ink-2);
+  cursor:pointer;display:grid;grid-template-columns:10px 1fr;gap:9px;align-items:start;line-height:1.42}
+.conn button:hover{color:var(--ink)}
+.conn i{width:8px;height:8px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:var(--d);margin-top:6px;display:block}
+.srcl{display:grid;gap:8px;font-size:13px}
+.srcl a{color:var(--ink-2)}
+.warn{font-size:12.5px;color:var(--ink-3);margin-top:18px;border-top:1px solid var(--rule);padding-top:13px;line-height:1.5}
+.zoomb{position:absolute;right:12px;bottom:12px;display:grid;gap:6px}
+.zoomb button{width:32px;height:32px;border:1px solid var(--rule-strong);background:var(--surface);color:var(--ink);
+  font-size:15px;cursor:pointer;border-radius:3px;font-family:"DM Mono",monospace}
+
+/* quem e quem */
+.ringgroup{margin-top:38px}
+.ringgroup>h3{font-family:"DM Mono",monospace;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-3);
+  margin:0 0 16px;border-bottom:1px solid var(--rule-strong);padding-bottom:9px;font-weight:400;font-variation-settings:normal}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:22px}
+.card{display:grid;grid-template-columns:64px minmax(0,1fr);gap:15px;align-items:start}
+.face{width:64px;height:64px;border-radius:50%;overflow:hidden;background:var(--g);display:grid;place-items:center;
+  font-family:Karla,sans-serif;font-weight:800;color:var(--halo);font-size:19px}
+.face img{width:100%;height:100%;object-fit:cover;display:block}
+.card h4{font-size:17.5px;margin:0;font-weight:700;letter-spacing:-.01em}
+.card .rl{font-family:"DM Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--g);margin:3px 0 0}
+.card p.b{font-size:14px;color:var(--ink-2);margin:9px 0 0;line-height:1.52}
+.card p.w{font-family:Fraunces,Georgia,serif;font-style:italic;font-size:13.5px;color:var(--ink-3);margin:8px 0 0;line-height:1.48}
+.card .lk{margin-top:9px;display:flex;gap:12px;flex-wrap:wrap;font-size:12.5px;font-weight:600}
+.card .lk a{color:var(--ink-3)}
+.foot{margin-top:10px;font-family:"DM Mono",monospace;font-size:10.5px;color:var(--ink-3);line-height:1.5}
+
+/* tabelas */
+table.lic{width:100%;border-collapse:collapse;font-size:13.5px}
+table.lic th{font-family:"DM Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-3);
+  text-align:left;padding:0 14px 9px 0;border-bottom:1px solid var(--rule-strong);font-weight:400}
+table.lic td{padding:11px 14px 11px 0;border-bottom:1px solid var(--rule);vertical-align:top;color:var(--ink-2)}
+table.lic td.u{font-family:"DM Mono",monospace;font-size:11px;word-break:break-all}
+table.lic td.u a{color:var(--ink-3)}
+.tablewrap{overflow-x:auto}
+.deps{display:grid}
+.deps .dep{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:start;padding:13px 0;border-bottom:1px solid var(--rule)}
+.deps .dep p{margin:0;font-size:14px;color:var(--ink-2);line-height:1.5}
+.deps .dep b{color:var(--ink);font-weight:700}
+.deps .dep .lic{font-family:"DM Mono",monospace;font-size:11.5px;white-space:nowrap;color:var(--ink-3);padding-top:2px}
+
+/* formulario */
+.form{display:grid;gap:17px;max-width:680px}
+.frow{display:grid;gap:7px}
+.frow.two{grid-template-columns:1fr 1fr;gap:16px}
+.form label{font-family:"DM Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-3)}
+.form input[type=text],.form input[type=email],.form select,.form textarea{
+  font-family:Karla,sans-serif;font-size:15px;padding:11px 13px;border:1px solid var(--rule-strong);
+  background:var(--surface);color:var(--ink);border-radius:2px;width:100%}
+.form textarea{min-height:155px;resize:vertical;line-height:1.55}
+.form .chk{display:grid;grid-template-columns:18px 1fr;gap:11px;align-items:start;font-size:13.5px;color:var(--ink-2);line-height:1.45}
+.form .chk input{margin-top:4px;accent-color:var(--laranja)}
+.form .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.form .send{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.form button.go{font-family:Karla,sans-serif;font-size:14.5px;font-weight:800;background:var(--ink);color:var(--paper);
+  border:0;padding:12px 22px;cursor:pointer;border-radius:2px}
+.form button.go:hover{background:var(--accent)}
+.form button.alt{font-family:Karla,sans-serif;font-size:13.5px;font-weight:700;background:none;border:1px solid var(--rule-strong);
+  color:var(--ink-2);padding:11px 15px;cursor:pointer;border-radius:2px}
+.form .msg{font-size:13.5px;padding:11px 14px;border-left:3px solid var(--k,var(--rule-strong));background:var(--surface-2);color:var(--ink-2)}
+.form .cnt{font-family:"DM Mono",monospace;font-size:10.5px;color:var(--ink-3)}
+.fix{font-family:Karla,sans-serif;font-size:12.5px;font-weight:600;color:var(--ink-3);background:none;border:0;padding:0;
+  cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.fix:hover{color:var(--accent)}
+
+.note{background:var(--surface);border-left:3px solid var(--laranja);padding:20px 22px;font-size:14.5px;color:var(--ink-2);line-height:1.62}
+.note b{color:var(--ink);font-weight:700}
+footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;color:var(--ink-3);border-top:1px solid var(--rule-strong)}
+
+#tip{position:fixed;z-index:60;pointer-events:none;opacity:0;transition:opacity .1s;background:var(--ink);color:var(--paper);
+  font-family:Karla,sans-serif;font-size:12.5px;line-height:1.38;padding:9px 11px;max-width:290px;box-shadow:0 3px 12px rgba(0,0,0,.28)}
+#tip b{display:block;font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;opacity:.72;margin-bottom:4px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:620px){.frow.two{grid-template-columns:1fr}}
+@media (max-width:900px){
+  .graph-shell{grid-template-columns:1fr}
+  #stage{height:520px}
+  aside.ficha{border-left:0;border-top:1px solid var(--rule-strong);max-height:none}
+  .ev{grid-template-columns:1fr;gap:5px}
+  .bar-row,.axis{grid-template-columns:1fr;gap:5px}
+}
+</style>
+
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+</head>
+<body>
+<nav>
+  <div class="in">
+    <span class="brand">Feijoada do Master</span>
+    <a href="#escala">Escala</a>
+    <a href="#linha">Linha do tempo</a>
+    <a href="#rede">Rede</a>
+    <a href="#quem">Quem é quem</a>
+    <a href="#fontes">Fontes</a>
+    <a href="#creditos">Imagens e licenças</a>
+    <a href="#contato">Fale com o site</a>
+    <span class="spacer"></span>
+    <button id="theme" type="button" aria-label="Alternar tema claro e escuro">tema: sistema</button>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Agregador de notícias · Sistema financeiro e instituições · Brasil</p>
+    <h1>Feijoada<span>do Master</span></h1>
+    <p class="quote">“Nada acontece (?), feijoada.”</p>
+    <p class="lede">Esta página junta a <strong>linha do tempo</strong>, os <strong>valores listados</strong> e a <strong>rede de possíveis nomes</strong> ligados a Daniel Vorcaro, com a fonte de cada informação.</p>
+    <span class="stamp">Atualizado em 15/09/2026</span>
+    <div class="panelas">
+      <div class="panela" style="--g:var(--c-mkt)"><b>O feijão</b><p>Carteiras de crédito vendidas ao BRB sob suspeita de falta de lastro: R$ 12,2 bi. CCBs sem garantia: cerca de R$ 17 bi.</p></div>
+      <div class="panela" style="--g:var(--c-reg)"><b>A conta</b><p>O FGC pagou R$ 40,6 bi a cerca de 800 mil investidores. O TCU apura se o Banco Central falhou na supervisão.</p></div>
+      <div class="panela" style="--g:var(--c-jud)"><b>A apuração</b><p>Nove fases da Operação Compliance Zero, duas delações rejeitadas e o inquérito remetido ao STF.</p></div>
+      <div class="panela" style="--g:var(--c-pol)"><b>A panela</b><p>Mensagens do celular do banqueiro puseram ministros do STF, senadores e o comando da PF no centro da disputa.</p></div>
+    </div>
+  </div>
+</header>
+
+<section id="escala">
+  <div class="wrap">
+    <div class="sec-head"><span class="n">01</span><h2>Escala do dano</h2>
+      <p class="sec-note">Valores apurados ou bloqueados até 15/09/2026, em R$ bilhões. Vêm de fontes diferentes e não se somam.</p>
+    </div>
+    <div class="bars" id="bars"></div>
+    <div class="axis"><div></div><div class="axis-ticks"><span>0</span><span>10</span><span>20</span><span>30</span><span>40,6</span></div></div>
+    <div class="ledger">
+      <div class="row"><span class="k">Investidores cobertos pelo FGC no Master</span><span class="v">≈ 800 mil</span></div>
+      <div class="row"><span class="k">Pessoas afetadas pelo conjunto das instituições</span><span class="v">≈ 1,6 mi</span></div>
+      <div class="row"><span class="k">Liquidez do FGC antes do pagamento (nov/2025)</span><span class="v">R$ 125 bi</span></div>
+      <div class="row"><span class="k">Material sigiloso liberado pelo STF (10–11/09/2026)</span><span class="v">25,3 GB</span></div>
+      <div class="row"><span class="k">Fases da Operação Compliance Zero até jun/2026</span><span class="v">9</span></div>
+      <div class="row"><span class="k">Pessoas, empresas e instituições mapeadas nesta página</span><span class="v">90</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="linha">
+  <div class="wrap">
+    <div class="sec-head"><span class="n">02</span><h2>Linha do tempo</h2>
+      <p class="sec-note">Cinco fases, de 2021 à sessão do plenário do STF de hoje. Filtre por camada para ler uma trilha só.</p>
+    </div>
+    <div class="chips" id="tl-filters"></div>
+    <div id="timeline"></div>
+  </div>
+</section>
+
+<section id="rede">
+  <div class="wrap">
+    <div class="sec-head"><span class="n">03</span><h2>Rede de relações</h2>
+      <p class="sec-note">Vorcaro no centro, 90 nós em cinco anéis de distância do fato. Passe o mouse em uma linha para ver o que liga os dois; clique para abrir a ficha com as fontes.</p>
+    </div>
+    <div class="chips" id="g-filters"></div>
+    <div class="graph-shell">
+      <div id="stage">
+        <svg id="g" aria-label="Grafo de relações do caso Banco Master"></svg>
+        <div class="zoomb">
+          <button id="zin" title="Aproximar">+</button>
+          <button id="zout" title="Afastar">−</button>
+          <button id="zfit" title="Reenquadrar">⤾</button>
+        </div>
+      </div>
+      <aside class="ficha" id="panel"></aside>
+    </div>
+  </div>
+</section>
+
+<section id="quem">
+  <div class="wrap">
+    <div class="sec-head"><span class="n">04</span><h2>Quem é quem</h2>
+      <p class="sec-note">Cada verbete traz o papel no caso, o resumo biográfico da Wikipédia (carregado ao abrir a página) e os links das reportagens. Posição na apuração não é juízo de culpa.</p>
+    </div>
+    <div class="chips" id="q-filters"></div>
+    <div id="cards"></div>
+  </div>
+</section>
+
+<section id="fontes">
+  <div class="wrap">
+    <div class="sec-head"><span class="n">05</span><h2>Fontes e avisos</h2></div>
+    <p class="note" id="disclaimer"><b>O que esta página é.</b> Um <b>agregador</b>: ela reúne, organiza e traduz em linguagem simples e em imagens o que veículos de imprensa e documentos públicos já publicaram sobre o caso, para facilitar o entendimento amplo do público. <b>Não é um site opinativo</b> — não emite juízo próprio, não acusa ninguém e não conclui nada: apenas replica o que está nas fontes, sempre com o link do original ao lado de cada informação.<br><br>
+    <b>Feito com inteligência artificial.</b> A organização dos dados, os textos de apoio e os gráficos foram produzidos com auxílio de IA a partir das reportagens listadas abaixo. Isso <b>não transfere nem isenta responsabilidade</b>: a responsabilidade pelo conteúdo original é de cada veículo citado, e a responsabilidade pela réplica, pelo recorte e pela publicação aqui é do proprietário deste site. Erro de leitura, de data ou de atribuição pode existir — a fonte primária prevalece sempre sobre esta página.<br><br>
+    <b>Presunção de inocência.</b> Nenhuma acusação reunida aqui foi julgada. Prisões citadas são cautelares, relatórios policiais são peça de investigação e não sentença, e os citados negam irregularidades ou ainda não apresentaram defesa final. Parte do que veio a público em setembro de 2026 saiu de mensagens de celular divulgadas dentro de uma disputa entre ministros do STF — o que exige cautela adicional sobre contexto e autenticidade de cada trecho. Pedidos de correção ou de resposta devem ser enviados ao responsável pelo site e serão publicados.<br><br>
+    <b>Imagens.</b> Os retratos são carregados da Wikipédia e do Wikimedia Commons no navegador de quem acessa, com link para a página de origem de cada pessoa, onde consta a licença da foto. Onde não há imagem livre disponível, a página mostra um monograma. Antes de usar qualquer foto fora deste contexto, verifique a licença no arquivo original.</p>
+    <h3 class="subhead">Fontes jornalísticas e documentais</h3>
+    <div class="tablewrap"><div id="srcs"></div></div>
+  </div>
+</section>
+
+<section id="creditos">
+  <div class="wrap">
+    <div class="sec-head"><span class="n">06</span><h2>Imagens e licenças</h2>
+      <p class="sec-note">Retratos e logotipos vêm do Wikimedia Commons e da Wikipédia. A tabela é montada com os dados da página de cada arquivo — autor e licença — no momento em que esta página abre.</p>
+    </div>
+    <div class="tablewrap" id="creds"></div>
+
+    <h3 class="subhead">Texto, tipografia e código</h3>
+    <div class="deps">
+      <div class="dep"><p><b>Resumos biográficos</b> — trechos iniciais de verbetes da Wikipédia em português, exibidos com link para o verbete.</p><span class="lic"><a href="https://creativecommons.org/licenses/by-sa/4.0/deed.pt-br" target="_blank" rel="noopener">CC BY-SA 4.0 ↗</a></span></div>
+      <div class="dep"><p><b>Fotografias</b> — cada arquivo tem licença própria (CC BY, CC BY-SA, domínio público ou licença de agência pública); autor e licença constam na tabela acima e na página do arquivo.</p><span class="lic">por arquivo</span></div>
+      <div class="dep"><p><b>Fatos, datas e valores</b> — apurados e publicados pelos veículos listados na seção 05; aqui aparecem reescritos em forma resumida, com link para o original. Direito de citação; a fonte primária prevalece.</p><span class="lic">© de cada veículo</span></div>
+      <div class="dep"><p><b>D3.js 7.9.0</b> — biblioteca que desenha o grafo, carregada do cdnjs.</p><span class="lic"><a href="https://github.com/d3/d3/blob/main/LICENSE" target="_blank" rel="noopener">ISC ↗</a></span></div>
+      <div class="dep"><p><b>Fraunces, Karla e DM Mono</b> — tipografia, carregada do Google Fonts.</p><span class="lic"><a href="https://openfontlicense.org/" target="_blank" rel="noopener">SIL OFL 1.1 ↗</a></span></div>
+      <div class="dep"><p><b>Organização, textos de apoio e gráficos</b> — produzidos com auxílio de IA a partir das fontes citadas; responsabilidade editorial do proprietário deste site.</p><span class="lic">uso livre com crédito</span></div>
+    </div>
+    <p class="note" style="margin-top:26px"><b>Antes de reaproveitar.</b> Copiar uma foto desta página para outro lugar exige olhar a licença do arquivo original: quase todas pedem crédito ao autor, algumas exigem manter a mesma licença na obra derivada e outras proíbem uso comercial. Os resumos da Wikipédia podem ser reproduzidos desde que se mantenha o crédito, o link e a licença CC BY-SA 4.0. Os textos de apoio desta página podem ser reutilizados com crédito, mas não substituem a leitura das reportagens originais.</p>
+  </div>
+</section>
+
+<section id="contato">
+  <div class="wrap">
+    <div class="sec-head"><span class="n">07</span><h2>Fale com o site</h2>
+      <p class="sec-note">Correção de data, valor ou nome, sugestão do que falta, direito de resposta de quem é citado — e também registro de ameaça ou intimidação. Tudo chega ao responsável pela página.</p>
+    </div>
+    <form class="form" id="msgform" novalidate>
+      <div class="frow two">
+        <div class="frow">
+          <label for="f-tipo">Tipo de mensagem</label>
+          <select id="f-tipo" name="tipo">
+            <option>Correção de informação</option>
+            <option>Sugestão ou pauta que falta</option>
+            <option>Comentário</option>
+            <option>Direito de resposta (sou citado na página)</option>
+            <option>Ameaça ou intimidação que quero registrar</option>
+            <option>Pedido de remoção / questão jurídica</option>
+            <option>Outro</option>
+          </select>
+        </div>
+        <div class="frow">
+          <label for="f-nome">Nome (opcional)</label>
+          <input type="text" id="f-nome" name="nome" autocomplete="name" placeholder="como quer ser identificado">
+        </div>
+      </div>
+      <div class="frow two">
+        <div class="frow">
+          <label for="f-email">E-mail para resposta (opcional)</label>
+          <input type="email" id="f-email" name="email" autocomplete="email" placeholder="sem e-mail não há como responder">
+        </div>
+        <div class="frow">
+          <label for="f-ref">Verbete, data ou trecho a que se refere</label>
+          <input type="text" id="f-ref" name="referencia" placeholder="ex.: verbete Banco Pleno · 18/02/2026">
+        </div>
+      </div>
+      <div class="frow">
+        <label for="f-msg">Mensagem</label>
+        <textarea id="f-msg" name="mensagem" placeholder="Se for correção, diga o que está errado, o que é o certo e — se possível — a fonte. É o que permite corrigir rápido."></textarea>
+        <span class="cnt" id="f-cnt">0 caracteres</span>
+      </div>
+      <div class="frow">
+        <div class="chk"><input type="checkbox" id="f-pub" name="autorizaPublicacao">
+          <label for="f-pub" style="text-transform:none;letter-spacing:0;font-family:inherit;font-size:13.5px;color:var(--ink-2);font-weight:400">Autorizo a publicação desta mensagem na página, com o nome que informei. Sem marcar, a mensagem é tratada em particular — correções entram no conteúdo, mas sem citar quem apontou.</label>
+        </div>
+      </div>
+      <div class="hp"><label for="f-hp">Não preencha</label><input type="text" id="f-hp" name="_gotcha" tabindex="-1" autocomplete="off"></div>
+      <div class="send">
+        <button type="submit" class="go" id="f-go">Enviar mensagem</button>
+        <button type="button" class="alt" id="f-copy">Copiar texto</button>
+        <span class="cnt" id="f-status"></span>
+      </div>
+      <div class="msg" id="f-out" hidden></div>
+    </form>
+    <p class="note" style="margin-top:28px"><b>O que acontece com a sua mensagem.</b> Correção com fonte é a que anda mais rápido: o conteúdo é ajustado e a alteração fica registrada na própria página. Direito de resposta de quem é citado é publicado na íntegra, junto ao verbete correspondente. Comentário e sugestão podem ou não ser incorporados — e nem tudo é respondido individualmente.<br><br>
+    <b>Ameaça e intimidação.</b> Mensagem com ameaça é preservada com data, horário e conteúdo e pode ser encaminhada às autoridades e a entidades de defesa da liberdade de imprensa. Não é apagada por pedido de quem a enviou.<br><br>
+    <b>Seus dados.</b> Nome, e-mail e mensagem são usados só para responder e para apurar a correção. Nada é vendido, cruzado ou usado para marketing, a página não tem rastreador nem cookie de publicidade, e você pode pedir a exclusão do seu registro pelo mesmo formulário. Sem e-mail, não há como responder — mas a mensagem é lida.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>Feijoada do Master · agregador de notícias sobre o caso Banco Master · dados consolidados em 15/09/2026 · conteúdo organizado com auxílio de IA a partir das fontes listadas acima.</p>
+  </div>
+</footer>
+<div id="tip" role="status"></div>
+
+<script>
+const L={
+ wpt:["Escândalo do Banco Master — Wikipédia","https://pt.wikipedia.org/wiki/Esc%C3%A2ndalo_do_Banco_Master"],
+ wen:["Banco Master scandal — Wikipedia","https://en.wikipedia.org/wiki/Banco_Master_scandal"],
+ cnn:["CNN Brasil — relembre a liquidação","https://www.cnnbrasil.com.br/economia/money/macroeconomia/caso-master-relembre-a-liquidacao-do-banco-que-envolve-bc-stf-e-tcu/"],
+ cj:["Conjur — o caso no STF (Pet 16.662)","https://conjur.com.br/2026-set-13/para-entender-o-caso-banco-master-vorcaro-no-stf-pet-16-662/"],
+ af:["Aos Fatos — as novas revelações","https://www.aosfatos.org/noticias/explicamos-novas-revelacoes-caso-master/"],
+ ap:["Agência Pública — crise no STF","https://apublica.org/2026/09/crise-no-stf-e-mensagens-de-moraes-e-vorcaro-como-chegamos-aqui/"],
+ ap2:["Agência Pública — 24h de revelações","https://apublica.org/2026/09/analise-as-revelacoes-sobre-master-vorcaro-moraes-e-mendonca/"],
+ p360:["Poder360 — o que há em cada documento","https://www.poder360.com.br/poder-justica/master-sem-sigilo-saiba-o-que-ha-em-cada-documento/"],
+ im:["InfoMoney — pagamentos do FGC","https://www.infomoney.com.br/minhas-financas/fgc-tudo-o-que-voce-precisa-saber-sobre-os-pagamentos-para-clientes-do-banco-master/"],
+ br:["O Brasilianista — desdobramentos","https://obrasilianista.com.br/2026/09/08/justica/leia-todos-os-desdobramentos-do-caso-master"],
+ oe:["Revista Oeste — depoimento adiado","https://revistaoeste.com/politica/policia-federal-adia-depoimento-de-daniel-vorcaro-para-24-de-setembro/"],
+ ab:["Agência Brasil — BRB e os achados relevantes","https://agenciabrasil.ebc.com.br/economia/noticia/2026-02/brb-diz-ter-encontrado-achados-relevantes-sobre-caso-do-banco-master"],
+ ic:["Intercept — Mendonça e Moraes no caso","https://www.intercept.com.br/2026/09/05/mendonca-moraes-sujeira-banco-master/"],
+ bd:["Band — PGR apura interferência em relatório","https://www.band.com.br/politica/caso-master-pgr-diz-que-investigara-interferencia-em-relatorio-da-pf"],
+ cb:["Correio Braziliense — PGR e o fim do sigilo","https://www.correiobraziliense.com.br/politica/2026/09/7499903-pgr-defende-fim-de-sigilo-em-investigacao-sobre-rede-de-pagamentos-do-master.html"],
+ b247:["Brasil 247 — PF prepara indiciamento","https://www.brasil247.com/brasil/pf-prepara-conclusao-do-caso-master-e-indiciamento-de-vorcaro/"],
+ ap3:["Agência Pública — a reconstrução completa da fraude","https://apublica.org/2026/03/banco-master-a-reconstrucao-completa-de-como-uma-fraude-capturou-a-republica/"],
+ nd:["ND Mais — os principais beneficiários dos pagamentos","https://ndmais.com.br/politica/master-dinheiro-advogados-vorcaro/"],
+ tb:["Times Brasil — a liquidação da Sefer","https://timesbrasil.com.br/empresas-e-negocios/bancos-fintechs/liquidacao-sefer-engrenagem-vorcaro-master/"],
+ ti:["Transparência Internacional — o caso Master","https://transparenciainternacional.org.br/posts/o-caso-master/"],
+ cb2:["Correio Braziliense — Vorcaro troca defesa","https://www.correiobraziliense.com.br/politica/2026/03/7375513-vorcaro-troca-defesa-e-sinaliza-delacao.html"],
+ mm:["Monitor Mercantil — fraudes de R$ 12 bi","https://monitormercantil.com.br/pf-prende-dono-do-banco-master-e-bc-decreta-liquidacao-da-master-corretora/"],
+};
+
+const CATG={
+ mkt:{n:"Mercado e banco",c:"var(--c-mkt)"},
+ pol:{n:"Política e influência",c:"var(--c-pol)"},
+ reg:{n:"Reguladores",c:"var(--c-reg)"},
+ jud:{n:"Justiça e polícia",c:"var(--c-jud)"},
+};
+
+const CAT={
+ mkt:{n:"Mercado e banco",c:"var(--c-mkt)"},
+ pol:{n:"Política e influência",c:"var(--c-pol)"},
+ reg:{n:"Reguladores",c:"var(--c-reg)"},
+ jud:{n:"Justiça e polícia",c:"var(--c-jud)"},
+};
+
+const RING=["Centro","Estrutura financeira","Instituições e apuração","Órbita política","Entorno citado e beneficiários"];
+
+const RTYPE={f:["Financeiro","var(--c-mkt)"],i:["Institucional","var(--c-reg)"],v:["Investigação","var(--c-jud)"],p:["Político","var(--c-pol)"]};
+
+const BARS=[
+ {l:"Pago pelo FGC a clientes do Master",v:40.6,n:"R$ 40,6 bi a ≈800 mil investidores, a partir de 21/01/2026"},
+ {l:"CCBs falsas ou sem lastro (Pet 15.478)",v:17,n:"≈R$ 17 bi em cédulas de crédito bancário sem garantia, segundo a apuração"},
+ {l:"Fraude apurada Master–BRB",v:12.2,n:"Carteiras de crédito transferidas ao BRB sob suspeita de falta de lastro"},
+ {l:"Cobertura potencial do FGC no Will Bank",v:6.5,n:"Estimativa com dados de set/2025; valor final não definido"},
+ {l:"Bens bloqueados por decisão do STF",v:5.7,n:"Bloqueio determinado no âmbito da Operação Compliance Zero"},
+ {l:"Exposição do BRB ao Master",v:5,n:"Mais de R$ 5 bi comprometidos pelo banco público do DF"},
+ {l:"Rioprevidência em fundos sob apuração",v:3,n:"Investimento do fundo previdenciário do RJ sob investigação"},
+ {l:"Aporte anunciado pela Fictor",v:3,n:"Anunciado em 17/11/2025, horas antes da prisão e da liquidação"},
+];
+
+const PHASES=[
+{t:"Fase 1",h:"Expansão pelo passivo caro",s:"O Master cresce vendendo CDB com juros muito acima da média, distribuídos em corretoras e protegidos pela garantia do FGC — funding caro que exige ativos cada vez mais agressivos.",
+ ev:[
+ {d:"2021–2024",c:"mkt",w:"Banco Master",x:"Crescimento acelerado com captação via CDB de alta remuneração e carteiras de crédito consignado, precatórios e direitos creditórios."},
+ {d:"2024–2025",c:"reg",w:"Banco Central",x:"Supervisão passa a questionar a qualidade dos ativos e o ritmo de captação; restrições começam a apertar o balanço."},
+]},
+{t:"Fase 2",h:"A tentativa de socorro via banco público",s:"A saída desenhada era vender o Master ao BRB, banco público do Distrito Federal. Passou pelo Cade e pela Câmara Legislativa, e travou no regulador.",
+ ev:[
+ {d:"28/03/2025",c:"mkt",w:"BRB",x:"BRB anuncia a compra do Banco Master."},
+ {d:"17/06/2025",c:"reg",w:"Cade",x:"Órgão antitruste aprova a operação."},
+ {d:"19/08/2025",c:"pol",w:"CLDF",x:"Câmara Legislativa do DF aprova o negócio."},
+ {d:"03/09/2025",c:"reg",w:"Banco Central",x:"<b>BC nega a aquisição</b> — o plano de salvamento morre e o Master fica sem comprador."},
+]},
+{t:"Fase 3",h:"Colapso em 48 horas",s:"Entre 17 e 18 de novembro de 2025, uma venda de emergência, uma prisão no aeroporto e a liquidação extrajudicial acontecem em sequência.",
+ ev:[
+ {d:"17/11/2025",c:"mkt",w:"Fictor",x:"Grupo Fictor anuncia a compra com aporte de R$ 3 bi."},
+ {d:"17/11/2025",c:"jud",w:"Polícia Federal",x:"<b>Vorcaro é preso em Guarulhos</b> ao tentar embarcar em jato particular com destino a Malta."},
+ {d:"18/11/2025",c:"jud",w:"Operação Compliance Zero",x:"PF deflagra a operação; hipótese central é a venda de carteiras de crédito sem lastro ao BRB."},
+ {d:"18/11/2025",c:"reg",w:"Banco Central",x:"<b>Liquidação extrajudicial</b> do Banco Master, Master de Investimento, Letsbank e Master Corretora por grave crise de liquidez."},
+ {d:"29/11/2025",c:"jud",w:"TRF",x:"Tribunal manda soltar Vorcaro."},
+ {d:"02–03/12/2025",c:"jud",w:"STF",x:"Caso recebe regime severo de sigilo e as investigações são transferidas ao Supremo; <b>Toffoli assume a relatoria</b>."},
+ {d:"11/12/2025",c:"jud",w:"Contratos",x:"Vem a público contrato de R$ 131 mi (36 meses) entre o Master e o escritório de Viviane Barci, mulher de Alexandre de Moraes; pagamentos cessaram com a liquidação."},
+]},
+{t:"Fase 4",h:"A onda de liquidações e as ramificações políticas",s:"O rombo se espalha por instituições ligadas, o TCU entra no Banco Central, o FGC paga a conta e a operação passa a alcançar políticos.",
+ ev:[
+ {d:"02–05/01/2026",c:"reg",w:"TCU",x:"Tribunal autoriza inspeção presencial em documentos do BC sobre a supervisão do Master."},
+ {d:"15/01/2026",c:"reg",w:"Banco Central",x:"Liquidação de fundo da Reag, também alcançada pela apuração."},
+ {d:"21/01/2026",c:"reg",w:"FGC + BC",x:"<b>FGC começa a pagar R$ 40,6 bi</b> a cerca de 800 mil investidores; no mesmo dia o BC liquida o Will Bank."},
+ {d:"02/02/2026",c:"mkt",w:"Fictor",x:"Braço financeiro do grupo pede recuperação judicial."},
+ {d:"12/02/2026",c:"jud",w:"STF",x:"<b>Toffoli deixa a relatoria</b> após referências a ele no celular de Vorcaro; André Mendonça é sorteado relator."},
+ {d:"25/02/2026",c:"pol",w:"CPI",x:"Comissão aprova convocações e quebras de sigilo, incluindo Roberto Campos Neto e Paulo Guedes."},
+ {d:"04/03/2026",c:"jud",w:"PF",x:"<b>Vorcaro é preso de novo</b> na 3ª fase da Compliance Zero, com cunhado e segurança."},
+ {d:"14/04/2026",c:"pol",w:"CPI",x:"Relatório final pedindo indiciamento de ministros do STF e do PGR é rejeitado por 6 a 4."},
+ {d:"16/04/2026",c:"jud",w:"PF",x:"Ex-presidente do BRB, Paulo Henrique Costa, é preso; investigação aponta R$ 146 mi em imóveis."},
+ {d:"06–20/05/2026",c:"jud",w:"Delação",x:"Vorcaro entrega proposta de delação; <b>PF rejeita</b> por insuficiência de informações novas."},
+ {d:"07/05/2026",c:"pol",w:"Compliance Zero",x:"Senador Ciro Nogueira é alvo; apuração aponta repasses mensais de R$ 300 mil."},
+ {d:"14/05/2026",c:"jud",w:"PF",x:"Henrique Vorcaro, pai do banqueiro, é preso com outras seis pessoas, entre elas dois policiais federais."},
+ {d:"10–15/06/2026",c:"jud",w:"PGR",x:"Segunda proposta de delação é rejeitada pela PF e, formalmente, pela PGR."},
+ {d:"18/06/2026",c:"pol",w:"Compliance Zero",x:"9ª fase alcança o senador Jaques Wagner; 18 mandados na BA, SP e DF."},
+]},
+{t:"Fase 5",h:"A crise institucional",s:"Em setembro de 2026 o caso deixa de ser só bancário: a quebra de sigilo das mensagens de Vorcaro com autoridades põe o próprio STF no centro da disputa.",
+ ev:[
+ {d:"12/08/2026",c:"reg",w:"Banco Central",x:"Diretor de Fiscalização relata à PF suspeitas sobre dois servidores do BC."},
+ {d:"21/08/2026",c:"mkt",w:"Laudo da PF",x:"Novo laudo aponta falhas de governança e concentração de risco na diretoria colegiada do BRB."},
+ {d:"28/08/2026",c:"jud",w:"PF",x:"Vorcaro depõe quase quatro horas sobre suspeitas envolvendo servidores do BC."},
+ {d:"01/09/2026",c:"jud",w:"STF",x:"<b>Mendonça quebra o sigilo das conversas entre Vorcaro e Moraes</b>; mensagens incluem pergunta sobre deixar o país e alteração de contrato de R$ 131 mi. No mesmo dia, reportagem contesta a versão de Flávio Bolsonaro sobre o financiamento do filme \"Dark Horse\"."},
+ {d:"03/09/2026",c:"jud",w:"STF + BC",x:"Presidência do STF abre procedimento de apuração (Pet 16.704); BC liquida duas distribuidoras ligadas a ex-sócio de Vorcaro."},
+ {d:"08/09/2026",c:"jud",w:"STF × PF",x:"<b>Mendonça afasta o diretor-geral da PF e o diretor de Inteligência</b>; Moraes pede investigação contra Mendonça por abuso de autoridade; 13 ex-ministros assinam carta sobre a crise da Corte."},
+ {d:"09/09/2026",c:"jud",w:"STF",x:"Fachin suspende por liminar a decisão de afastamento."},
+ {d:"10–11/09/2026",c:"jud",w:"STF",x:"Levantamento de sigilo de 15 e depois 38 processos — 25,3 GB de documentos, áudios e vídeos vêm a público."},
+ {d:"12/09/2026",c:"jud",w:"STF",x:"<b>Fachin avoca a Pet 16.662 para a Presidência</b> e reserva sessão do plenário só para ela."},
+ {d:"15/09/2026",c:"jud",w:"Hoje",x:"Plenário do STF se reúne sobre a Pet 16.662; depoimento de Vorcaro à PF fica para 24/09."},
+]},
+];
+
+const N=[
+{id:"vorcaro",n:"Daniel Vorcaro",ab:"DV",r:"Controlador do Banco Master",c:"mkt",t:0,
+ info:"Preso em 17/11/2025 no aeroporto de Guarulhos ao tentar embarcar para Malta, e novamente em 04/03/2026 na 3ª fase da Operação Compliance Zero. Duas propostas de delação foram rejeitadas pela PF e pela PGR. Depoimento à PF remarcado para 24/09/2026.",ls:["wpt","wen","oe","b247"]},
+
+{id:"master",n:"Banco Master",ab:"BM",r:"Banco liquidado em 18/11/2025",c:"mkt",t:1,
+ info:"Crescia captando CDB com juros muito acima do mercado e aplicando em ativos de alto risco. O BC decretou liquidação extrajudicial por grave crise de liquidez. Apuração aponta ~R$ 17 bi em CCBs falsas ou sem lastro.",ls:["wpt","mm","p360"]},
+{id:"colig",n:"Letsbank, Will Bank, Master Corretora",ab:"GR",r:"Coligadas liquidadas",c:"mkt",t:1,
+ info:"Liquidadas junto com o Master (18/11/2025) ou em seguida — o Will Bank em 21/01/2026, com cobertura potencial do FGC de até R$ 6,5 bi.",ls:["im","wpt"]},
+{id:"brb",n:"BRB",ab:"BRB",r:"Banco público do DF",c:"mkt",t:1,
+ info:"Tentou comprar o Master em 2025 e ficou com mais de R$ 5 bi de exposição. Em 2026 afastou 12 executivos e admitiu 'achados relevantes' na revisão interna.",ls:["ab","cnn"]},
+{id:"costa",n:"Paulo Henrique Costa",ab:"PC",r:"Ex-presidente do BRB",c:"mkt",t:1,
+ info:"Preso em 16/04/2026; a investigação aponta R$ 146 mi em imóveis recebidos. Nega irregularidade.",ls:["wen","br"]},
+{id:"dirbrb",n:"Diretoria colegiada do BRB",ab:"DC",r:"Governança do banco",c:"mkt",t:1,
+ info:"Laudo da PF de 21/08/2026 aponta falhas de governança e concentração de risco na aprovação das operações com o Master.",ls:["br"]},
+{id:"fictor",n:"Grupo Fictor",ab:"FI",r:"Comprador de última hora",c:"mkt",t:1,
+ info:"Anunciou a compra do Master com aporte de R$ 3 bi em 17/11/2025, horas antes da prisão e da liquidação. Seu braço financeiro pediu recuperação judicial em 02/02/2026.",ls:["wen","wpt"]},
+{id:"reag",n:"Reag Investimentos",ab:"RG",r:"Gestora ligada ao grupo",c:"mkt",t:1,
+ info:"Fundo liquidado pelo BC em 15/01/2026; também citada em apuração sobre fraude no setor de combustíveis.",ls:["wen"]},
+{id:"exsocio",n:"Augusto Lima",ab:"AL",r:"Ex-sócio de Vorcaro",c:"mkt",t:1,
+ info:"Recebeu o Banco Voiter (depois Pleno) em ago/2025. Em 03/09/2026 o BC liquidou duas distribuidoras ligadas a ele.",ls:["br","ap3"]},
+{id:"rioprev",n:"Rioprevidência",ab:"RP",r:"Fundo previdenciário do RJ",c:"mkt",t:1,
+ info:"Aplicação de cerca de R$ 3 bi em fundos ligados ao grupo está sob investigação; a Operação Barco de Papel (23/01/2026) tratou de transações suspeitas.",ls:["wen"]},
+{id:"henrique",n:"Henrique Vorcaro",ab:"HV",r:"Pai de Daniel Vorcaro",c:"mkt",t:1,
+ info:"Preso em 14/05/2026 com outras seis pessoas, entre elas dois policiais federais.",ls:["wen"]},
+{id:"cunhado",n:"Fabiano Zettel",ab:"FZ",r:"Cunhado de Vorcaro",c:"mkt",t:1,
+ info:"Preso em fase da operação junto com o banqueiro. Recebeu R$ 57,1 mi em repasses, parte roteada por uma igreja em Belo Horizonte, e foi grande doador de campanhas em 2022.",ls:["wen","nd","ap3"]},
+
+{id:"bc",n:"Banco Central",ab:"BC",r:"Regulador do sistema financeiro",c:"reg",t:2,
+ info:"Negou a compra do Master pelo BRB em 03/09/2025 e liquidou o banco em 18/11/2025. Depois passou a ser objeto de inspeção do TCU por possível falha de supervisão.",ls:["cnn","mm"]},
+{id:"galipolo",n:"Gabriel Galípolo",ab:"GG",r:"Presidente do Banco Central",c:"reg",t:2,
+ info:"Relatou contatos recebidos no período da operação BRB–Master; nega que o caso tenha sido tratado.",ls:["wen","cnn"]},
+{id:"campos",n:"Roberto Campos Neto",ab:"RC",r:"Ex-presidente do BC",c:"reg",t:2,
+ info:"Convocado pela CPI em 25/02/2026 para explicar a supervisão do Master no período anterior.",ls:["wen"]},
+{id:"psneves",n:"Paulo Sérgio Neves de Souza",ab:"PS",r:"Ex-diretor de Fiscalização do BC",c:"reg",t:2,
+ info:"Citado em relato do Diretor de Fiscalização à PF (12/08/2026) sob suspeita de receber vantagens; a apuração fala em pagamentos mensais. Foco da Petição 15.504.",ls:["br","p360"]},
+{id:"belline",n:"Belline Santana",ab:"BS",r:"Ex-chefe de supervisão do BC",c:"reg",t:2,
+ info:"Citado na mesma apuração sobre corrupção e vazamento de informações de supervisão.",ls:["br","p360"]},
+{id:"fgc",n:"FGC",ab:"FGC",r:"Fundo Garantidor de Créditos",c:"reg",t:2,
+ info:"Começou a pagar em 21/01/2026: R$ 40,6 bi a cerca de 800 mil investidores do Master, com prazo de resgate até 18/11/2030.",ls:["im"]},
+{id:"tcu",n:"TCU",ab:"TCU",r:"Tribunal de Contas da União",c:"reg",t:2,
+ info:"Autorizou em jan/2026 inspeção presencial em documentos do BC sobre a supervisão do Master.",ls:["cnn"]},
+{id:"jhonatan",n:"Jhonatan de Jesus",ab:"JJ",r:"Ministro relator no TCU",c:"reg",t:2,
+ info:"Determinou a inspeção no BC; em 26/03/2026 a PGR pediu apuração sobre sua atuação e sugeriu suspeição.",ls:["wen","cnn"]},
+{id:"cvm",n:"CVM",ab:"CVM",r:"Regulador do mercado de capitais",c:"reg",t:2,
+ info:"Marcou julgamento sobre irregularidades no fundo imobiliário Brazil Realty, ligado ao caso.",ls:["br"]},
+
+{id:"pf",n:"Polícia Federal",ab:"PF",r:"Operação Compliance Zero",c:"jud",t:2,
+ info:"Deflagrou a operação em 18/11/2025 e chegou à 9ª fase em 18/06/2026. Mapeou quatro núcleos: fraude financeira, corrupção de servidores, lavagem por empresas de fachada e obstrução.",ls:["wen","mm","b247"]},
+{id:"andrei",n:"Andrei Rodrigues",ab:"AR",r:"Diretor-geral da PF",c:"jud",t:2,
+ info:"Afastado preventivamente por decisão de Mendonça em 08/09/2026, junto com o diretor de Inteligência; a decisão foi suspensa por Fachin no dia seguinte.",ls:["cj","af"]},
+{id:"stf",n:"STF",ab:"STF",r:"Pet 16.662 e Pet 16.704",c:"jud",t:2,
+ info:"As investigações foram transferidas ao Supremo em 03/12/2025 por causa do foro de autoridades citadas. Sessões do plenário em 15/09 (Pet 16.662) e 23/09 (Pet 16.704).",ls:["cj","p360"]},
+{id:"toffoli",n:"Dias Toffoli",ab:"DT",r:"Primeiro relator no STF",c:"jud",t:2,
+ info:"Assumiu a relatoria em dez/2025 e impôs sigilo severo. Deixou o caso em 12/02/2026 após referências a ele no celular de Vorcaro e informações sobre participação no resort Tayayá, da família. Nega irregularidade.",ls:["cnn","ap"]},
+{id:"mendonca",n:"André Mendonça",ab:"AM",r:"Relator seguinte",c:"jud",t:2,
+ info:"Sorteado relator em 12/02/2026. Determinou o detalhamento das conversas de Vorcaro, quebrou sigilos em setembro e afastou dirigentes da PF — decisões que abriram a crise interna da Corte.",ls:["cj","ic","p360"]},
+{id:"fachin",n:"Edson Fachin",ab:"EF",r:"Presidente do STF",c:"jud",t:2,
+ info:"Suspendeu a decisão de afastamento em 09/09/2026, avocou a Pet 16.662 para a Presidência em 12/09 e reservou sessão do plenário só para ela.",ls:["cj"]},
+{id:"moraes",n:"Alexandre de Moraes",ab:"MO",r:"Ministro do STF",c:"jud",t:2,
+ info:"Citado em 28 mensagens atribuídas a contatos de Vorcaro, divulgadas em 01/09/2026. Nega interferência em favor do banco e pediu investigação contra Mendonça por abuso de autoridade.",ls:["af","ap","ic"]},
+{id:"gilmar",n:"Gilmar Mendes",ab:"GM",r:"Ministro do STF",c:"jud",t:2,
+ info:"Anulou quebra de sigilo de fundo ligado ao caso em 19/03/2026 e enviou ofício em 11/09/2026 questionando procedimentos adotados na investigação.",ls:["wen","cj"]},
+{id:"gonet",n:"Paulo Gonet",ab:"PG",r:"Procurador-geral da República",c:"jud",t:2,
+ info:"Rejeitou formalmente a segunda proposta de delação em 15/06/2026; a PGR passou a apurar interferência em relatório da PF e defendeu o fim do sigilo.",ls:["bd","cb"]},
+{id:"cpi",n:"CPI do Banco Master",ab:"CPI",r:"Comissão parlamentar de inquérito",c:"jud",t:2,
+ info:"Aprovou convocações e quebras de sigilo em 25/02/2026. O relatório final, com pedido de indiciamento de ministros do STF e do PGR, foi rejeitado por 6 a 4 em 14/04/2026.",ls:["wen"]},
+
+{id:"barci",n:"Escritório de Viviane Barci",ab:"VB",r:"Banca de advocacia",c:"pol",t:3,
+ info:"Tinha contrato de R$ 131 mi em 36 meses com o Master, revelado em 11/12/2025; R$ 80 mi confirmados como pagos entre 2024 e 2025. Os pagamentos cessaram com a liquidação.",ls:["cnn","wen"]},
+{id:"turma",n:"'A Turma'",ab:"AT",r:"Policiais supostamente cooptados",c:"jud",t:3,
+ info:"Grupo descrito em relatório de 218 páginas extraído do celular de Vorcaro, na Petição 15.556, junto com contatos com hackers.",ls:["p360"]},
+{id:"projetodv",n:"Projeto DV",ab:"DV",r:"Campanha de imagem",c:"pol",t:3,
+ info:"Inquérito 5.035 apura contratação de influenciadores e amplificação de conteúdo para defender Vorcaro e atacar o Banco Central.",ls:["p360","br"]},
+{id:"darkhorse",n:"Fundo do filme 'Dark Horse'",ab:"DH",r:"Veículo de financiamento",c:"pol",t:3,
+ info:"Fundo de US$ 24 mi que financiou o filme; apuração atribui cerca de US$ 14 mi a Vorcaro. Em 04/09/2026 pediu-se ao STF o levantamento do sigilo sobre o financiamento.",ls:["af","br"]},
+{id:"flavio",n:"Flávio Bolsonaro",ab:"FB",r:"Senador (PL)",c:"pol",t:3,
+ info:"Negociou o financiamento do fundo do filme; reportagens de mai/2026 e set/2026 contestam suas versões sobre a origem do dinheiro. Nega irregularidade.",ls:["af","ap2","wen"]},
+{id:"ciro",n:"Ciro Nogueira",ab:"CN",r:"Senador (PP)",c:"pol",t:3,
+ info:"Alvo da 7ª fase da operação em 07/05/2026; apuração aponta repasses mensais de R$ 300 mil e atuação pela ampliação da garantia do FGC. Nega.",ls:["wen"]},
+{id:"wagner",n:"Jaques Wagner",ab:"JW",r:"Senador (PT)",c:"pol",t:3,
+ info:"Alvo da 9ª fase em 18/06/2026, com 18 mandados na Bahia, em São Paulo e no DF. Nega irregularidade.",ls:["wen"]},
+{id:"castro",n:"Cláudio Castro",ab:"CC",r:"Ex-governador do RJ (PL)",c:"pol",t:3,
+ info:"Alvo em 26/05/2026 pela aplicação de cerca de R$ 3 bi do Rioprevidência em fundos ligados ao grupo. Nega.",ls:["wen"]},
+{id:"kassab",n:"Gilberto Kassab",ab:"GK",r:"Presidente do PSD",c:"pol",t:3,
+ info:"Vorcaro afirma ter negociado R$ 5 mi em doações para campanhas de 2022 como contrapartida por favores. Kassab nega.",ls:["af"]},
+{id:"fabiofaria",n:"Fábio Faria",ab:"FF",r:"Ex-ministro das Comunicações",c:"pol",t:3,
+ info:"Aparece entre os contatos nas mensagens divulgadas em set/2026. Nega irregularidade.",ls:["af"]},
+{id:"nikolas",n:"Nikolas Ferreira",ab:"NF",r:"Deputado federal (PL)",c:"pol",t:3,
+ info:"Citado nas mensagens divulgadas em set/2026. Nega irregularidade.",ls:["af"]},
+{id:"mantega",n:"Guido Mantega",ab:"GM2",r:"Ex-ministro da Fazenda",c:"pol",t:3,
+ info:"Levantamento divulgado na investigação aponta pagamentos mensais de cerca de R$ 1 mi por consultoria. Menção de apuração, sem denúncia julgada.",ls:["wen"]},
+{id:"lewa",n:"Ricardo Lewandowski",ab:"RL",r:"Ministro da Justiça",c:"pol",t:3,
+ info:"A apuração cita repasse de R$ 6 mi a family office ligado à família. Menção de apuração, sem denúncia julgada.",ls:["wen"]},
+{id:"temer",n:"Michel Temer",ab:"MT",r:"Ex-presidente da República",c:"pol",t:3,
+ info:"Pagamentos citados em levantamento divulgado em abr/2026. Menção de apuração, sem denúncia julgada.",ls:["wen"]},
+{id:"acm",n:"ACM Neto",ab:"AN",r:"Ex-prefeito de Salvador",c:"pol",t:3,
+ info:"Pagamentos citados no mesmo levantamento de abr/2026. Nega irregularidade.",ls:["wen"]},
+{id:"rueda",n:"Antônio de Rueda",ab:"AD",r:"Presidente do União Brasil",c:"pol",t:3,
+ info:"Pagamentos citados no levantamento de abr/2026. Nega irregularidade.",ls:["wen"]},
+{id:"guedes",n:"Paulo Guedes",ab:"PGu",r:"Ex-ministro da Economia",c:"pol",t:3,
+ info:"Convocado pela CPI em 25/02/2026 para tratar do ambiente regulatório do período.",ls:["wen"]},
+{id:"vieira",n:"Alessandro Vieira",ab:"AV",r:"Senador, relator da CPI",c:"pol",t:3,
+ info:"Assinou o relatório final que pedia indiciamento de três ministros do STF e do PGR, rejeitado em 14/04/2026.",ls:["wen"]},
+{id:"tirreno",n:"Tirreno",ab:"TI",r:"Empresa de fachada",c:"mkt",t:1,
+ info:"Empresa recém-criada usada, segundo a apuração, para intermediar a venda de R$ 12,2 bi em créditos ao BRB.",ls:["ap3","p360"]},
+{id:"maxima",n:"Banco Máxima",ab:"MX",r:"Origem do Master (2017)",c:"mkt",t:1,
+ info:"Instituição comprada em 2017 e rebatizada de Banco Master; entre os investidores da compra apareceu o espanhol Oliver Martin.",ls:["ap3"]},
+{id:"pleno",n:"Banco Pleno (ex-Voiter)",ab:"PL",r:"Banco ligado ao grupo",c:"mkt",t:1,
+ info:"Transferido a Augusto Lima em ago/2025 e liquidado pelo BC em 18/02/2026.",ls:["ap3"]},
+{id:"sefer",n:"Sefer Investimentos",ab:"SF",r:"Corretora liquidada",c:"mkt",t:1,
+ info:"Ex-Foco DTVM/Indigo. Intermediava captação junto a fundos de previdência desde 2017; liquidada em 26/06/2026 com bloqueio de bens do controlador.",ls:["tb","ap3"]},
+{id:"benjamim",n:"Benjamim Botelho",ab:"BB",r:"Controlador da Sefer",c:"mkt",t:1,
+ info:"Radicado em Portugal desde 2024; apontado como operador da engrenagem financeira, ligado ao Grupo Aquilla e ao Faex Fund.",ls:["tb","ap3"]},
+{id:"faex",n:"Faex Fund",ab:"FX",r:"Offshore nas Bahamas",c:"mkt",t:1,
+ info:"Veículo rastreado pelo liquidante do Master entre os ativos ligados ao grupo.",ls:["tb"]},
+{id:"aquilla",n:"Grupo Aquilla",ab:"AQ",r:"Veículo de investimento",c:"mkt",t:1,
+ info:"Administrado por Benjamim Botelho, com aportes atribuídos a Oliver Martin.",ls:["ap3"]},
+{id:"oliver",n:"Oliver Ortiz de Zarate Martin",ab:"OM",r:"Investidor estrangeiro",c:"mkt",t:1,
+ info:"Espanhol apontado em reportagem como narcotraficante; presente entre os investidores da compra do Banco Máxima em 2017.",ls:["ap3"]},
+{id:"bull",n:"Luiz Antonio Bull",ab:"LB",r:"Diretor de compliance do Master",c:"mkt",t:1,
+ info:"Executivo responsável pela área de compliance no período das operações investigadas.",ls:["ap3"]},
+{id:"iprev",n:"Iprev Maceió",ab:"IP",r:"Fundo municipal de previdência",c:"mkt",t:1,
+ info:"Aplicou cerca de R$ 110 mi em papéis do Master.",ls:["ap3"]},
+{id:"amapa",n:"Previdência do Amapá",ab:"AP",r:"Fundo estadual de previdência",c:"mkt",t:1,
+ info:"Perdeu cerca de R$ 400 mi em papéis do grupo.",ls:["ap3"]},
+
+{id:"aquino",n:"Ailton de Aquino",ab:"AA",r:"Diretor de Fiscalização do BC",c:"reg",t:2,
+ info:"Participou de videoconferência com Vorcaro em 17/11/2025, no dia da prisão; foi dispensado de depor em dez/2025.",ls:["ap3","wen"]},
+{id:"sidnei",n:"Sidnei Marques",ab:"SM",r:"Diretor de Organização do SFN",c:"reg",t:2,
+ info:"Rejeitou pedido do grupo em 2017, antes da aquisição que originou o Master.",ls:["ap3"]},
+
+{id:"kassio",n:"Kassio Nunes Marques",ab:"KN",r:"Ministro do STF",c:"jud",t:3,
+ info:"Aparece como contato na agenda do banqueiro divulgada na apuração. Nega irregularidade.",ls:["ap3"]},
+{id:"marilson",n:"Marilson Roseno da Silva",ab:"MR",r:"Policial federal aposentado",c:"jud",t:3,
+ info:"Apontado como responsável por espionagem a serviço do banqueiro.",ls:["ap3"]},
+{id:"mourao",n:"Luiz Phillipi Mourão",ab:"LP",r:"Apontado como líder de 'A Turma'",c:"jud",t:3,
+ info:"Descrito na apuração como executor de atos de intimidação para o grupo.",ls:["ap3"]},
+{id:"jorn",n:"Jornalistas ameaçados",ab:"JN",r:"Alvos de intimidação",c:"jud",t:3,
+ info:"Colunistas que revelaram o caso foram alvo de ataques coordenados e de ameaças registradas nas mensagens apreendidas.",ls:["ap3"]},
+
+{id:"pec",n:"PEC da garantia do FGC",ab:"PEC",r:"Proposta legislativa",c:"pol",t:3,
+ info:"Ampliava a cobertura do FGC — vantagem direta para quem captava via CDB. Voltou depois em novo projeto na Câmara.",ls:["ap3"]},
+{id:"motta",n:"Hugo Motta",ab:"HM",r:"Presidente da Câmara",c:"pol",t:3,
+ info:"Citado em jantar com o banqueiro. Nega irregularidade.",ls:["ap3"]},
+{id:"alcolumbre",n:"Davi Alcolumbre",ab:"DA",r:"Presidente do Senado",c:"pol",t:3,
+ info:"Citado como próximo ao banqueiro; o fundo de previdência do Amapá perdeu ~R$ 400 mi em papéis do grupo. Nega.",ls:["ap3"]},
+{id:"lira",n:"Arthur Lira",ab:"AL2",r:"Deputado federal (PP)",c:"pol",t:3,
+ info:"Citado como próximo ao banqueiro; indicou Jhonatan de Jesus ao TCU. Nega irregularidade.",ls:["ap3"]},
+{id:"cajado",n:"Cláudio Cajado",ab:"CJ",r:"Deputado federal (PP)",c:"pol",t:3,
+ info:"Encabeçou projeto que mexia no comando do Banco Central durante a crise.",ls:["ap3"]},
+{id:"barros",n:"Filipe Barros",ab:"FBa",r:"Deputado federal (PL)",c:"pol",t:3,
+ info:"Apresentou projeto que retomava a chamada 'emenda Master'.",ls:["ap3"]},
+{id:"bacelar",n:"João Carlos Bacelar",ab:"JB",r:"Deputado federal (PL)",c:"pol",t:3,
+ info:"Envelope com seu nome foi encontrado em endereço do banqueiro. Nega irregularidade.",ls:["ap3"]},
+{id:"ibaneis",n:"Ibaneis Rocha",ab:"IR",r:"Governador do DF",c:"pol",t:3,
+ info:"Reuniu-se com o banqueiro no período da operação com o BRB, banco controlado pelo governo do DF. Nega.",ls:["ap3"]},
+{id:"eduardo",n:"Eduardo Bolsonaro",ab:"EB",r:"Deputado federal (PL)",c:"pol",t:3,
+ info:"Citado nas tratativas do fundo que financiou o filme 'Dark Horse'. Nega irregularidade.",ls:["nd"]},
+{id:"haddad",n:"Fernando Haddad",ab:"FH",r:"Ministro da Fazenda",c:"pol",t:3,
+ info:"Classificou o episódio como a maior fraude bancária da história do país.",ls:["ap3","ti"]},
+{id:"febraban",n:"Febraban (Isaac Sidney)",ab:"FE",r:"Entidade do setor bancário",c:"pol",t:3,
+ info:"Reuniões com o grupo em 2019, na fase de expansão do banco.",ls:["ap3"]},
+{id:"lula",n:"Lula",ab:"LU",r:"Presidente da República",c:"pol",t:4,
+ info:"Recebeu o banqueiro em reunião no Palácio do Planalto em dez/2024.",ls:["ap3"]},
+{id:"doria",n:"João Doria",ab:"JD",r:"Ex-governador de SP",c:"pol",t:4,
+ info:"Aparece como contato na agenda do banqueiro.",ls:["ap3"]},
+{id:"joesley",n:"Joesley Batista",ab:"JO",r:"Empresário",c:"pol",t:4,
+ info:"Citado em episódio de evento patrocinado pelo banco.",ls:["ap3"]},
+{id:"pastore",n:"Luiz Oswaldo Pastore",ab:"LO",r:"Empresário",c:"pol",t:4,
+ info:"Forneceu o jato usado em viagem de Toffoli a Lima em nov/2025, junto com advogado de investigado.",ls:["ap3"]},
+{id:"maridt",n:"Maridt",ab:"MD",r:"Empresa de irmãos de Toffoli",c:"pol",t:4,
+ info:"Sócia em fundo do Master ligado ao resort Tayayá.",ls:["ap3"]},
+{id:"tayaya",n:"Resort Tayayá",ab:"TY",r:"Ativo da família Toffoli",c:"pol",t:4,
+ info:"Fundo do banco movimentou cerca de R$ 6,6 mi em participações no resort.",ls:["ap3","ap"]},
+{id:"monteiro",n:"Monteiro, Rusu, Cameirão e Bercht",ab:"MB",r:"Banca de advocacia",c:"pol",t:4,
+ info:"Recebeu R$ 79 mi; com a Mytra Consultoria (R$ 30 mi), R$ 109 mi. Pagamento documentado não é, por si, prova de crime.",ls:["nd"]},
+{id:"warde",n:"Warde Advogados",ab:"WA",r:"Banca de advocacia",c:"pol",t:4,
+ info:"Recebeu R$ 63,8 mi em pagamentos do grupo.",ls:["nd"]},
+{id:"gabino",n:"Gabino Kruschewsky Advogados",ab:"GB",r:"Banca de advocacia",c:"pol",t:4,
+ info:"Recebeu R$ 54 mi em pagamentos do grupo.",ls:["nd"]},
+{id:"alvescorrea",n:"Alves Corrêa Verissimo",ab:"AC",r:"Banca de advocacia",c:"pol",t:4,
+ info:"Recebeu R$ 32,9 mi em pagamentos do grupo.",ls:["nd"]},
+{id:"furtado",n:"Marcus Vinícius Furtado Coelho",ab:"MV",r:"Advogado, ex-presidente da OAB",c:"pol",t:4,
+ info:"Escritório recebeu R$ 27,5 mi em pagamentos do grupo.",ls:["nd"]},
+{id:"arruda",n:"Augusto Arruda Botelho",ab:"AB",r:"Advogado",c:"pol",t:4,
+ info:"Atuou na defesa do diretor de compliance do Master.",ls:["ap3"]},
+{id:"bancas",n:"Rede de 79 escritórios",ab:"79",r:"Beneficiários de pagamentos",c:"pol",t:4,
+ info:"A investigação mapeou mais de R$ 500 mi pagos a 79 bancas entre 2021 e 2024. Receber pagamento não implica, por si, participação em crime.",ls:["nd"]}
+];
+
+const E=[
+["vorcaro","master","f","Controlador do banco. Segundo a apuração, decidia a captação de CDB caro e a originação dos ativos que sustentavam o balanço.",["wpt","mm"]],
+["master","colig","f","Mesmo conglomerado: liquidadas em 18/11/2025 e, no caso do Will Bank, em 21/01/2026.",["im"]],
+["master","brb","f","Núcleo da fraude: venda de carteiras de crédito ao BRB sob suspeita de falta de lastro — cerca de R$ 12,2 bi (Inquérito 5.026).",["mm","p360","cnn"]],
+["master","fictor","f","Compra anunciada com R$ 3 bi horas antes da prisão e da liquidação; tentativa final de evitar o colapso.",["wen"]],
+["brb","costa","f","Presidia o BRB quando as operações foram aprovadas; preso em 16/04/2026, com R$ 146 mi em imóveis apontados.",["wen","br"]],
+["brb","dirbrb","i","Laudo da PF de 21/08/2026 aponta falhas de governança e concentração de risco nas decisões do colegiado.",["br"]],
+["vorcaro","henrique","f","Pai do banqueiro, preso em 14/05/2026 na mesma investigação, junto com dois policiais federais.",["wen"]],
+["vorcaro","cunhado","f","Cunhado e operador financeiro apontado pela apuração: R$ 57,1 mi em repasses e doações de campanha em 2022.",["nd","ap3"]],
+["master","reag","f","Gestora ligada ao grupo; teve fundo liquidado pelo BC em 15/01/2026.",["wen"]],
+["vorcaro","exsocio","f","Duas distribuidoras do ex-sócio foram liquidadas pelo BC em 03/09/2026.",["br"]],
+["master","rioprev","f","O fundo previdenciário do RJ aplicou cerca de R$ 3 bi em fundos ligados ao grupo.",["wen"]],
+["rioprev","castro","p","Aplicações feitas durante seu governo; alvo da operação em 26/05/2026.",["wen"]],
+["master","bc","i","O BC negou a venda ao BRB em 03/09/2025 e decretou a liquidação extrajudicial em 18/11/2025.",["cnn","mm"]],
+["bc","galipolo","i","Presidente do BC no período; relatou contatos sobre o caso e nega tratativas.",["wen","cnn"]],
+["bc","campos","i","Presidia o BC quando o Master crescia; convocado pela CPI sobre a supervisão.",["wen"]],
+["bc","psneves","v","Servidor citado por suspeita de vantagens em relato do Diretor de Fiscalização à PF (12/08/2026).",["br","p360"]],
+["bc","belline","v","Citado na mesma apuração sobre corrupção e vazamento de informação de supervisão.",["br","p360"]],
+["vorcaro","psneves","v","Petição 15.504: contatos do banqueiro com servidores do BC, sob suspeita de compra de informação.",["p360"]],
+["vorcaro","belline","v","Mesma petição — relação apurada entre o banqueiro e servidores da fiscalização.",["p360"]],
+["bc","fgc","i","A liquidação acionou a garantia: R$ 40,6 bi pagos a ~800 mil investidores a partir de 21/01/2026.",["im"]],
+["master","fgc","f","O CDB do Master era vendido com o argumento da garantia de R$ 250 mil por CPF — o que sustentou a captação.",["im"]],
+["bc","tcu","i","O TCU inspeciona desde jan/2026 se houve falha de supervisão do BC.",["cnn"]],
+["tcu","jhonatan","i","Relator da inspeção; a PGR pediu apuração sobre sua atuação em 26/03/2026.",["wen","cnn"]],
+["master","cvm","i","A CVM julga irregularidades no FII Brazil Realty, ligado ao caso.",["br"]],
+["vorcaro","pf","v","Preso em 17/11/2025 e em 04/03/2026; depôs quase quatro horas em 28/08/2026 e teve duas delações rejeitadas.",["wen","oe"]],
+["pf","master","v","Operação Compliance Zero: nove fases sobre fraude, corrupção de servidores, lavagem e obstrução.",["wen","mm"]],
+["pf","andrei","i","Diretor-geral afastado por Mendonça em 08/09/2026; Fachin suspendeu a decisão no dia seguinte.",["cj","af"]],
+["pf","turma","v","Relatório de 218 páginas do celular de Vorcaro descreve 'A Turma', policiais supostamente cooptados.",["p360"]],
+["vorcaro","turma","v","Grupo apontado como estrutura de intimidação e obtenção de informação a serviço do banqueiro.",["p360"]],
+["vorcaro","projetodv","p","Campanha de defesa pública e ataque ao BC atribuída ao seu entorno (Inquérito 5.035).",["p360","br"]],
+["pf","projetodv","v","Inquérito 5.035 apura a contratação de influenciadores e a amplificação coordenada de conteúdo.",["p360"]],
+["vorcaro","stf","v","As investigações foram remetidas ao Supremo em 03/12/2025 por causa do foro de autoridades citadas.",["cj","cnn"]],
+["stf","toffoli","v","Primeiro relator: assumiu em dez/2025, impôs sigilo severo e deixou o caso em 12/02/2026.",["cnn","ap"]],
+["vorcaro","toffoli","v","Referências ao ministro no celular do banqueiro e negócio no resort Tayayá, da família, motivaram a saída da relatoria.",["ap","wen"]],
+["stf","mendonca","v","Relator sorteado em 12/02/2026; conduziu a quebra de sigilo das conversas.",["cj"]],
+["vorcaro","mendonca","v","Ouviu o banqueiro em gabinete no fim de agosto de 2026 e mandou a PF detalhar suas conversas com autoridades.",["br","cj"]],
+["mendonca","andrei","v","Afastamento preventivo determinado em 08/09/2026, com suspensão de relatórios sobre atos judiciais.",["cj"]],
+["mendonca","moraes","v","Mendonça quebrou o sigilo das mensagens que citam Moraes; Moraes pediu investigação contra ele por abuso de autoridade.",["af","ic","ap2"]],
+["vorcaro","moraes","v","28 mensagens atribuídas ao contato do banqueiro com o ministro, incluindo pergunta sobre deixar o país em 15/11/2025. Moraes nega interferência.",["af","ap","ic"]],
+["moraes","barci","f","O escritório da mulher do ministro tinha contrato de R$ 131 mi com o Master; R$ 80 mi confirmados como pagos.",["cnn","wen"]],
+["master","barci","f","Contratante da banca entre 2024 e 2027, com R$ 3,6 mi mensais; pagamentos cessaram com a liquidação.",["cnn"]],
+["vorcaro","barci","f","Mensagens apontam que a versão do contrato de R$ 131 mi foi editada em perfil identificado como o do ministro.",["af","br"]],
+["moraes","galipolo","i","Registros de ligações e reuniões no período da operação BRB–Master; ambos negam ter tratado do caso.",["wen","cnn"]],
+["stf","fachin","i","Presidente da Corte: suspendeu a decisão de afastamento e avocou a Pet 16.662 em 12/09/2026.",["cj"]],
+["fachin","mendonca","i","Fachin retirou o caso das mãos de Mendonça após as decisões de 08/09 e marcou sessão exclusiva.",["cj"]],
+["stf","gilmar","i","Anulou quebra de sigilo de fundo ligado ao caso e questionou procedimentos em ofício de 11/09/2026.",["wen","cj"]],
+["gonet","vorcaro","v","A PGR rejeitou formalmente a segunda proposta de delação em 15/06/2026.",["wen"]],
+["gonet","mendonca","v","A PGR apura interferência em relatório da PF e defende o fim do sigilo da rede de pagamentos.",["bd","cb"]],
+["cpi","master","p","A CPI apurou a operação BRB–Master e aprovou convocações e quebras de sigilo em 25/02/2026.",["wen"]],
+["cpi","vieira","p","Relator do parecer final, rejeitado por 6 a 4 em 14/04/2026.",["wen"]],
+["cpi","guedes","p","Convocado em 25/02/2026 para tratar do ambiente regulatório.",["wen"]],
+["cpi","campos","p","Convocado no mesmo pacote para explicar a supervisão do BC.",["wen"]],
+["cpi","toffoli","p","A comissão aprovou a convocação de irmãos do ministro em 25/02/2026.",["wen"]],
+["vorcaro","ciro","p","Alvo da 7ª fase (07/05/2026): apuração aponta R$ 300 mil mensais e atuação pela PEC que ampliava a garantia do FGC.",["wen"]],
+["ciro","fgc","p","A emenda defendida ampliaria a cobertura do fundo — vantagem direta para quem captava via CDB.",["wen"]],
+["vorcaro","wagner","p","Alvo da 9ª fase, em 18/06/2026, com 18 mandados em três estados.",["wen"]],
+["vorcaro","flavio","p","Negociação de US$ 24 mi para o fundo do filme; cerca de US$ 14 mi atribuídos ao banqueiro.",["af","ap2"]],
+["flavio","darkhorse","p","Fundo que financiou o filme, hoje no centro do pedido de levantamento de sigilo.",["af","br"]],
+["vorcaro","darkhorse","f","Transferências verificadas entre fev e mai/2025 ligam o banqueiro ao veículo de financiamento.",["wen","af"]],
+["vorcaro","kassab","p","Vorcaro afirma ter negociado R$ 5 mi em doações de campanha em 2022 como contrapartida. Kassab nega.",["af"]],
+["vorcaro","fabiofaria","p","Aparece entre os contatos nas mensagens divulgadas em set/2026.",["af"]],
+["vorcaro","nikolas","p","Citado nas mensagens divulgadas em set/2026.",["af"]],
+["vorcaro","mantega","p","Levantamento da apuração aponta consultoria de cerca de R$ 1 mi por mês.",["wen"]],
+["vorcaro","lewa","p","A apuração cita R$ 6 mi repassados a family office ligado à família.",["wen"]],
+["vorcaro","temer","p","Pagamentos citados em levantamento divulgado em abr/2026.",["wen"]],
+["vorcaro","acm","p","Pagamentos citados no mesmo levantamento de abr/2026.",["wen"]],
+["vorcaro","rueda","p","Pagamentos citados no levantamento de abr/2026.",["wen"]],
+["andrei","gonet","i","A apuração sobre interferência no relatório da PF corre na PGR após os afastamentos.",["bd"]],
+["vorcaro","tirreno","f","Empresa criada às pressas e usada, segundo a apuração, para empacotar os créditos vendidos ao BRB.",["ap3","p360"]],
+["tirreno","brb","f","Destino dos R$ 12,2 bi em créditos apontados como sem lastro.",["ap3"]],
+["master","tirreno","f","Veículo dentro do próprio grupo para a operação com o banco público.",["ap3"]],
+["vorcaro","maxima","f","Comprou o Banco Máxima em 2017 — a instituição que virou Banco Master.",["ap3"]],
+["maxima","master","f","Mesma instituição, rebatizada depois da aquisição.",["ap3"]],
+["oliver","maxima","f","Apareceu entre os investidores da compra de 2017.",["ap3"]],
+["oliver","aquilla","f","Aportes atribuídos a ele no veículo administrado por Benjamim Botelho.",["ap3"]],
+["aquilla","benjamim","f","Grupo administrado pelo controlador da Sefer.",["ap3"]],
+["benjamim","sefer","f","Controlador da corretora, com bens bloqueados na liquidação de 26/06/2026.",["tb"]],
+["sefer","master","f","Intermediava, desde 2017, captações do grupo junto a fundos de previdência.",["tb","ap3"]],
+["sefer","faex","f","Offshore bahamense ligada ao controlador, rastreada pelo liquidante do Master.",["tb"]],
+["sefer","bc","i","Liquidada pelo BC em 26/06/2026 por comprometimento financeiro e violação de normas.",["tb"]],
+["exsocio","pleno","f","Recebeu o Banco Voiter, depois Pleno, em ago/2025; liquidado em 18/02/2026.",["ap3"]],
+["pleno","bc","i","Liquidado pelo Banco Central em 18/02/2026.",["ap3"]],
+["master","bull","i","Diretor de compliance no período das operações investigadas.",["ap3"]],
+["bull","arruda","p","Defendido pelo advogado na apuração.",["ap3"]],
+["master","iprev","f","Fundo municipal de Maceió aplicou cerca de R$ 110 mi em papéis do banco.",["ap3"]],
+["master","amapa","f","Fundo de previdência do Amapá perdeu cerca de R$ 400 mi em papéis do grupo.",["ap3"]],
+["amapa","alcolumbre","p","Fundo do estado que ele representa no Senado; é citado como próximo ao banqueiro.",["ap3"]],
+["turma","marilson","v","Policial federal aposentado apontado como responsável pela espionagem do grupo.",["ap3"]],
+["turma","mourao","v","Apontado na apuração como líder do grupo de intimidação.",["ap3"]],
+["turma","jorn","v","Ameaças e ataques a jornalistas que revelaram o caso constam do material apreendido.",["ap3"]],
+["vorcaro","jorn","v","Mensagens registram intenção de agredir colunistas e campanhas de desinformação contra quem apurava o caso.",["ap3"]],
+["bc","aquino","i","Diretor de Fiscalização que participou de videoconferência com o banqueiro em 17/11/2025.",["ap3"]],
+["vorcaro","aquino","v","Contato direto no dia da prisão e da liquidação, sob apuração.",["ap3","wen"]],
+["bc","sidnei","i","Diretor que rejeitou pedido do grupo em 2017, antes da aquisição.",["ap3"]],
+["campos","psneves","i","Segundo a apuração, indicou servidores depois apontados como cooptados.",["ap3"]],
+["vorcaro","kassio","v","Ministro aparece como contato na agenda do banqueiro.",["ap3"]],
+["toffoli","maridt","f","Empresa de irmãos do ministro, sócia em fundo do Master.",["ap3"]],
+["maridt","tayaya","f","Sociedade no fundo ligado ao resort da família.",["ap3"]],
+["master","tayaya","f","Fundo do banco movimentou ~R$ 6,6 mi em participações no resort.",["ap3","ap"]],
+["toffoli","pastore","p","Jato do empresário usado na viagem do ministro a Lima, em nov/2025, junto a advogado de investigado.",["ap3"]],
+["master","monteiro","f","R$ 79 mi à banca; com a Mytra Consultoria, R$ 109 mi.",["nd"]],
+["master","warde","f","R$ 63,8 mi em pagamentos.",["nd"]],
+["master","gabino","f","R$ 54 mi em pagamentos.",["nd"]],
+["master","alvescorrea","f","R$ 32,9 mi em pagamentos.",["nd"]],
+["master","furtado","f","R$ 27,5 mi ao escritório do ex-presidente nacional da OAB.",["nd"]],
+["master","bancas","f","Mais de R$ 500 mi a 79 bancas entre 2021 e 2024, segundo a investigação.",["nd"]],
+["barci","bancas","f","O contrato de R$ 131 mi é o maior dessa rede de pagamentos a advogados.",["nd"]],
+["vorcaro","motta","p","Citado em jantar com o banqueiro. Nega irregularidade.",["ap3"]],
+["vorcaro","alcolumbre","p","Citado como próximo ao banqueiro no material da apuração.",["ap3"]],
+["vorcaro","lira","p","Citado como próximo ao banqueiro no material da apuração.",["ap3"]],
+["lira","jhonatan","p","Indicou ao TCU o relator que depois tentou questionar a liquidação.",["ap3"]],
+["cajado","bc","p","Encabeçou projeto que mexia no comando do Banco Central durante a crise.",["ap3"]],
+["ciro","pec","p","Autor da proposta que ampliava a garantia do FGC.",["ap3","wen"]],
+["barros","pec","p","Retomou a proposta em novo projeto depois da liquidação.",["ap3"]],
+["pec","fgc","p","Ampliação da cobertura do fundo beneficiava diretamente quem captava via CDB.",["ap3"]],
+["vorcaro","bacelar","p","Envelope com o nome do deputado encontrado em endereço do banqueiro. Nega.",["ap3"]],
+["vorcaro","ibaneis","p","Reuniões no período da operação com o BRB. Nega irregularidade.",["ap3"]],
+["ibaneis","brb","p","O governo do DF é o controlador do banco público que comprou as carteiras.",["ap3"]],
+["rueda","ibaneis","p","Apontado como o interlocutor que aproximou o banqueiro do governador.",["ap3"]],
+["eduardo","darkhorse","p","Citado nas tratativas do fundo que financiou o filme.",["nd"]],
+["vorcaro","lula","p","Reunião no Palácio do Planalto em dez/2024.",["ap3"]],
+["vorcaro","doria","p","Contato registrado na agenda do banqueiro.",["ap3"]],
+["vorcaro","joesley","p","Episódio em evento patrocinado pelo banco.",["ap3"]],
+["vorcaro","febraban","p","Reuniões com a entidade do setor em 2019, na fase de expansão.",["ap3"]],
+["master","haddad","i","O ministro da Fazenda classificou o caso como a maior fraude bancária da história do país.",["ap3","ti"]]
+];
+
+
+/* =========================================================================
+   CAIXA DE MENSAGENS — configure aqui antes de publicar
+   endpoint : URL que recebe o POST. Vazio = a página usa o modo e-mail.
+              Formspree:  https://formspree.io/f/SEU_ID
+              Apps Script / webhook próprio: a URL do seu endpoint
+   formato  : "formspree" (form-data) ou "json" (POST application/json)
+   email    : e-mail do responsável, usado quando não há endpoint
+              (a página monta a mensagem e abre o cliente de e-mail)
+   ========================================================================= */
+const CONTATO={ endpoint:"", formato:"formspree", email:"" };
+
+/* ---------- títulos na Wikipédia (pt) para foto + resumo ---------- */
+const WIKI={
+ vorcaro:"Daniel Vorcaro", master:"Banco Master", brb:"Banco de Brasília", bc:"Banco Central do Brasil",
+ fgc:"Fundo Garantidor de Créditos", tcu:"Tribunal de Contas da União", cvm:"Comissão de Valores Mobiliários",
+ pf:"Polícia Federal (Brasil)", stf:"Supremo Tribunal Federal", febraban:"Febraban", maxima:"Banco Máxima",
+ moraes:"Alexandre de Moraes", toffoli:"Dias Toffoli", mendonca:"André Mendonça", fachin:"Edson Fachin",
+ gilmar:"Gilmar Mendes", kassio:"Kassio Nunes Marques", gonet:"Paulo Gonet", galipolo:"Gabriel Galípolo",
+ campos:"Roberto Campos Neto", andrei:"Andrei Rodrigues", jhonatan:"Jhonatan de Jesus",
+ ciro:"Ciro Nogueira", wagner:"Jaques Wagner", flavio:"Flávio Bolsonaro", eduardo:"Eduardo Bolsonaro",
+ castro:"Cláudio Castro", kassab:"Gilberto Kassab", fabiofaria:"Fábio Faria", nikolas:"Nikolas Ferreira",
+ mantega:"Guido Mantega", lewa:"Ricardo Lewandowski", temer:"Michel Temer", acm:"ACM Neto",
+ rueda:"Antonio Rueda", guedes:"Paulo Guedes", vieira:"Alessandro Vieira", motta:"Hugo Motta",
+ alcolumbre:"Davi Alcolumbre", lira:"Arthur Lira", cajado:"Cláudio Cajado", barros:"Filipe Barros",
+ bacelar:"João Carlos Bacelar", ibaneis:"Ibaneis Rocha", lula:"Luiz Inácio Lula da Silva",
+ doria:"João Doria", joesley:"Joesley Batista", haddad:"Fernando Haddad",
+ furtado:"Marcus Vinícius Furtado Coêlho", costa:"Banco de Brasília", cpi:"Comissão parlamentar de inquérito",
+};
+const PHOTO=new Map();   /* id -> {img,ext,url,file} */
+const CRED=new Map();    /* id -> {file,author,license,licenseUrl,page} */
+
+/* ---------- 01 escala ---------- */
+const MAXBAR=40.6;
+document.getElementById("bars").innerHTML=BARS.map(b=>`
+ <div class="bar-row">
+   <div class="bar-lab">${b.l}</div>
+   <div class="bar-track">
+     <div class="bar-fill${b.v<6?" soft":""}" style="width:${(b.v/MAXBAR*100).toFixed(1)}%" data-tip="${b.n}"></div>
+     <span class="bar-val">R$ ${b.v.toFixed(1).replace(".",",")} bi</span>
+   </div>
+ </div>`).join("");
+
+/* ---------- 02 linha do tempo ---------- */
+const tl=document.getElementById("timeline");
+tl.innerHTML=PHASES.map(p=>`
+ <div class="phase">
+  <div class="phase-head"><span class="tag">${p.t}</span><h3>${p.h}</h3></div>
+  <p class="phase-sub">${p.s}</p>
+  <div class="events">
+   ${p.ev.map(e=>`<div class="ev" data-cat="${e.c}" style="--dot:${CAT[e.c].c}">
+     <span class="date">${e.d}</span>
+     <div class="body"><span class="who">${e.w}</span>${e.x}</div>
+   </div>`).join("")}
+  </div>
+ </div>`).join("");
+
+const tlf=document.getElementById("tl-filters");
+tlf.innerHTML=Object.entries(CAT).map(([k,v])=>
+  `<button class="chip" data-cat="${k}" aria-pressed="true" style="--d:${v.c}"><span class="dot"></span>${v.n}</button>`).join("")
+  +`<span class="hint">${PHASES.reduce((a,p)=>a+p.ev.length,0)} eventos datados</span>`;
+const tlOff=new Set();
+function tlRender(){
+  document.querySelectorAll("#timeline .ev").forEach(e=>{e.hidden=tlOff.has(e.dataset.cat)});
+  document.querySelectorAll("#timeline .phase").forEach(p=>{
+    p.hidden=[...p.querySelectorAll(".ev")].every(e=>e.hidden);
+  });
+}
+tlf.addEventListener("click",e=>{
+  const b=e.target.closest(".chip[data-cat]"); if(!b) return;
+  const k=b.dataset.cat;
+  if(tlOff.has(k)) tlOff.delete(k); else if(tlOff.size<3) tlOff.add(k);
+  b.setAttribute("aria-pressed",!tlOff.has(k));
+  tlRender();
+});
+
+/* ---------- 03 rede ---------- */
+const byId=new Map(N.map(d=>[d.id,d]));
+const links=E.map(([s,t,k,x,ls])=>({source:s,target:t,k,info:x,ls}));
+const deg=new Map(); links.forEach(l=>{deg.set(l.source,(deg.get(l.source)||0)+1);deg.set(l.target,(deg.get(l.target)||0)+1)});
+const RAD=[0,265,445,625,800];
+const R=d=>d.t===0?34:d.t===1?20:d.t===2?19:d.t===3?16:14;
+
+const svg=d3.select("#g"), gRoot=svg.append("g");
+const defs=svg.append("defs");
+const gRings=gRoot.append("g"), gLink=gRoot.append("g"), gHit=gRoot.append("g"), gNode=gRoot.append("g");
+gRings.selectAll("circle").data([265,445,625,800]).join("circle").attr("class","ringc").attr("r",d=>d);
+gRings.selectAll("text").data([[265,RING[1]],[445,RING[2]],[625,RING[3]],[800,RING[4]]]).join("text")
+  .attr("class","ringlab").attr("x",4).attr("y",d=>-d[0]+14).text(d=>d[1].toUpperCase());
+
+byId.get("vorcaro").fx=0; byId.get("vorcaro").fy=0;
+const sim=d3.forceSimulation(N)
+ .force("link",d3.forceLink(links).id(d=>d.id).distance(l=>70+Math.abs(RAD[l.target.t]-RAD[l.source.t])*.5).strength(.12))
+ .force("charge",d3.forceManyBody().strength(-540))
+ .force("r",d3.forceRadial(d=>RAD[d.t],0,0).strength(d=>d.t===0?1:.9))
+ .force("collide",d3.forceCollide(d=>R(d)+15))
+ .force("x",d3.forceX(0).strength(.02)).force("y",d3.forceY(0).strength(.02));
+
+const link=gLink.selectAll("line").data(links).join("line").attr("class",d=>"edge "+d.k);
+const hit=gHit.selectAll("line").data(links).join("line").attr("class","hit")
+ .on("mouseenter",(e,d)=>{tipEdge(e,d);focusEdge(d)})
+ .on("mousemove",moveTip).on("mouseleave",()=>{hideTip();clearFocus()})
+ .on("click",(e,d)=>showEdge(d));
+
+const node=gNode.selectAll("g").data(N).join("g").attr("class","node")
+ .on("mouseenter",(e,d)=>{tipNode(e,d);focusNode(d)})
+ .on("mousemove",moveTip).on("mouseleave",()=>{hideTip();clearFocus()})
+ .on("click",(e,d)=>showNode(d))
+ .call(d3.drag()
+   .on("start",(e,d)=>{if(!e.active)sim.alphaTarget(.2).restart();d.fx=d.x;d.fy=d.y})
+   .on("drag",(e,d)=>{d.fx=e.x;d.fy=e.y})
+   .on("end",(e,d)=>{if(!e.active)sim.alphaTarget(0);if(d.id!=="vorcaro"){d.fx=null;d.fy=null}}));
+node.append("circle").attr("class","av").attr("r",R).attr("fill",d=>CATG[d.c].c);
+node.append("text").attr("class","ini").attr("dy",d=>d.t===0?5:4)
+  .attr("font-size",d=>d.t===0?15:d.ab.length>2?9.5:11).text(d=>d.ab);
+node.append("text").attr("class","lab").attr("font-size",d=>d.t>=3?9.5:10.5)
+  .attr("dy",d=>R(d)+12).text(d=>d.n.length>26?d.n.slice(0,24)+"…":d.n);
+
+sim.on("tick",()=>{
+  link.attr("x1",d=>d.source.x).attr("y1",d=>d.source.y).attr("x2",d=>d.target.x).attr("y2",d=>d.target.y);
+  hit.attr("x1",d=>d.source.x).attr("y1",d=>d.source.y).attr("x2",d=>d.target.x).attr("y2",d=>d.target.y);
+  node.attr("transform",d=>`translate(${d.x},${d.y})`);
+});
+
+const zoom=d3.zoom().scaleExtent([.14,3.2]).on("zoom",e=>gRoot.attr("transform",e.transform));
+svg.call(zoom);
+function stageBox(){const b=document.getElementById("stage").getBoundingClientRect();
+  return {w:b.width||900,h:b.height||600}}
+function fit(anim){
+  const {w,h}=stageBox();
+  const k=Math.max(.16,Math.min(w/1960,h/1860,1.1));
+  const t=d3.zoomIdentity.translate(w/2,h/2).scale(k);
+  anim?svg.transition().duration(350).call(zoom.transform,t):svg.call(zoom.transform,t);
+}
+let fitted=false;
+new ResizeObserver(()=>{const {w,h}=stageBox(); if(!fitted&&w>60&&h>60){fitted=true;fit(false)}})
+  .observe(document.getElementById("stage"));
+requestAnimationFrame(()=>{const {w,h}=stageBox(); if(!fitted&&w>60&&h>60){fitted=true;fit(false)}});
+d3.select("#zin").on("click",()=>svg.transition().call(zoom.scaleBy,1.35));
+d3.select("#zout").on("click",()=>svg.transition().call(zoom.scaleBy,.72));
+d3.select("#zfit").on("click",()=>fit(true));
+
+function focusNode(d){
+  const keep=new Set([d.id]);
+  links.forEach(l=>{if(l.source.id===d.id)keep.add(l.target.id);if(l.target.id===d.id)keep.add(l.source.id)});
+  node.classed("dim",n=>!keep.has(n.id));
+  link.attr("stroke-opacity",l=>(l.source.id===d.id||l.target.id===d.id)?.95:.07)
+      .attr("stroke-width",l=>(l.source.id===d.id||l.target.id===d.id)?2.4:1.4);
+}
+function focusEdge(d){
+  node.classed("dim",n=>n.id!==d.source.id&&n.id!==d.target.id);
+  link.attr("stroke-opacity",l=>l===d?1:.06).attr("stroke-width",l=>l===d?3:1.4);
+}
+function clearFocus(){node.classed("dim",false);gRender()}
+
+const tip=document.getElementById("tip");
+function tipEdge(e,d){
+  tip.innerHTML=`<b>${RTYPE[d.k][0]} · ${byId.get(d.source.id||d.source).n} ↔ ${byId.get(d.target.id||d.target).n}</b>${d.info}`;
+  tip.style.opacity="1";moveTip(e);
+}
+function tipNode(e,d){
+  tip.innerHTML=`<b>${d.r}</b>${d.n} · ${deg.get(d.id)||0} ligações · ${RING[d.t]}`;
+  tip.style.opacity="1";moveTip(e);
+}
+function moveTip(e){
+  const w=tip.offsetWidth,h=tip.offsetHeight;
+  tip.style.left=Math.min(innerWidth-w-10,e.clientX+14)+"px";
+  tip.style.top=Math.max(8,e.clientY-h-12)+"px";
+}
+function hideTip(){tip.style.opacity="0"}
+document.addEventListener("mouseover",e=>{
+  const t=e.target.closest("[data-tip]");
+  if(t){tip.innerHTML=t.dataset.tip;tip.style.opacity="1";moveTip(e)}
+  else if(!e.target.closest("#stage")) hideTip();
+});
+document.addEventListener("mouseleave",hideTip);
+addEventListener("scroll",hideTip,{passive:true});
+addEventListener("blur",hideTip);
+document.addEventListener("mousemove",e=>{if(tip.style.opacity==="1"&&e.target.closest("[data-tip]"))moveTip(e)});
+
+const panel=document.getElementById("panel");
+function srcHtml(ids){return `<div class="srcl">${ids.map(i=>`<a href="${L[i][1]}" target="_blank" rel="noopener">${L[i][0]} ↗</a>`).join("")}</div>`}
+function faceHtml(d,size){
+  const p=PHOTO.get(d.id);
+  return `<div class="face" style="--g:${CATG[d.c].c};width:${size}px;height:${size}px;font-size:${size/3.2}px">`
+   +(p&&p.img?`<img src="${p.img}" alt="${d.n}" loading="lazy">`:d.ab)+`</div>`;
+}
+function showNode(d){
+  const cs=links.filter(l=>l.source.id===d.id||l.target.id===d.id)
+    .map(l=>({o:byId.get(l.source.id===d.id?l.target.id:l.source.id),l}));
+  const p=PHOTO.get(d.id);
+  panel.innerHTML=`
+   <div style="display:grid;grid-template-columns:54px 1fr;gap:12px;align-items:start">
+     ${faceHtml(d,54)}
+     <div><p class="role" style="--k:${CATG[d.c].c}">${d.r}</p><h3>${d.n}</h3></div>
+   </div>
+   <p class="meta">${RING[d.t].toUpperCase()} · ${CATG[d.c].n.toUpperCase()} · ${cs.length} LIGAÇÕES</p>
+   <p class="txt">${d.info}</p>
+   ${p&&p.ext?`<p class="txt" style="font-style:italic;color:var(--ink-3)">${p.ext} <a href="${p.url}" target="_blank" rel="noopener">Wikipédia ↗</a></p>`:""}
+   ${credLine(d.id)}
+   <div class="blk"><h4>Ligações</h4><div class="conn">${cs.map((c,i)=>
+     `<button data-i="${i}"><i style="--d:${RTYPE[c.l.k][1]}"></i><span><b>${c.o.n}</b> — ${c.l.info}</span></button>`).join("")}</div></div>
+   <div class="blk"><h4>Fontes</h4>${srcHtml(d.ls)}</div>
+   <div class="blk"><button class="fix" data-id="${d.id}" type="button">corrigir este verbete</button></div>
+   <p class="warn">Investigado não é condenado. Prisões citadas são cautelares e nenhuma acusação aqui foi julgada.</p>`;
+  panel.querySelectorAll(".conn button").forEach(b=>b.onclick=()=>showEdge(cs[+b.dataset.i].l));
+  panel.scrollTop=0;
+}
+function showEdge(d){
+  const a=byId.get(d.source.id||d.source), b=byId.get(d.target.id||d.target);
+  panel.innerHTML=`
+   <p class="role" style="--k:${RTYPE[d.k][1]}">Vínculo ${RTYPE[d.k][0].toLowerCase()}</p>
+   <h3>${a.n} ↔ ${b.n}</h3>
+   <p class="txt">${d.info}</p>
+   <div class="blk"><h4>Fontes do vínculo</h4>${srcHtml(d.ls)}</div>
+   <div class="blk"><h4>Abrir ficha</h4><div class="conn">
+     <button id="pa"><i style="--d:${CATG[a.c].c}"></i><span><b>${a.n}</b> — ${a.r}</span></button>
+     <button id="pb"><i style="--d:${CATG[b.c].c}"></i><span><b>${b.n}</b> — ${b.r}</span></button>
+   </div></div>
+   <p class="warn">O vínculo descrito reflete o que consta de investigações em curso e de reportagens — não uma conclusão judicial.</p>`;
+  panel.querySelector("#pa").onclick=()=>showNode(a);
+  panel.querySelector("#pb").onclick=()=>showNode(b);
+  panel.scrollTop=0;
+}
+showNode(byId.get("vorcaro"));
+
+const gf=document.getElementById("g-filters");
+gf.innerHTML=Object.entries(CATG).map(([k,v])=>
+  `<button class="chip" data-cat="${k}" aria-pressed="true" style="--d:${v.c}"><span class="dot"></span>${v.n}</button>`).join("")
+ +`<button class="chip" id="g-far" aria-pressed="true">Anéis externos</button>`
+ +`<input type="search" id="g-q" placeholder="buscar nome…" aria-label="Buscar no grafo">`
+ +`<span class="hint">arraste os nós · scroll para zoom</span>`;
+const gOff=new Set(); let gFar=true;
+function gVis(d){return (!gOff.has(d.c)&&(gFar||d.t<3))||d.id==="vorcaro"}
+function gRender(){
+  node.style("display",d=>gVis(d)?null:"none");
+  link.style("display",l=>gVis(l.source)&&gVis(l.target)?null:"none")
+      .attr("stroke-opacity",.5).attr("stroke-width",1.4);
+  hit.style("display",l=>gVis(l.source)&&gVis(l.target)?null:"none");
+}
+gf.addEventListener("click",e=>{
+  const b=e.target.closest(".chip"); if(!b) return;
+  if(b.id==="g-far"){gFar=!gFar;b.setAttribute("aria-pressed",gFar)}
+  else if(b.dataset.cat){const k=b.dataset.cat; gOff.has(k)?gOff.delete(k):gOff.add(k);
+    b.setAttribute("aria-pressed",!gOff.has(k))}
+  gRender();
+});
+document.getElementById("g-q").addEventListener("input",e=>{
+  const q=e.target.value.trim().toLowerCase();
+  if(!q){node.classed("dim",false);return}
+  const hits=N.filter(d=>d.n.toLowerCase().includes(q)||d.r.toLowerCase().includes(q));
+  node.classed("dim",d=>!hits.includes(d));
+  if(hits.length===1) showNode(hits[0]);
+});
+gRender();
+
+/* ---------- 04 quem é quem ---------- */
+const cardsEl=document.getElementById("cards");
+function cardsRender(){
+  const q=(document.getElementById("q-q")?.value||"").trim().toLowerCase();
+  const html=RING.map((rn,t)=>{
+    const list=N.filter(d=>d.t===t&&!qOff.has(d.c)&&(!q||d.n.toLowerCase().includes(q)||d.r.toLowerCase().includes(q)||d.info.toLowerCase().includes(q)));
+    if(!list.length) return "";
+    return `<div class="ringgroup"><h3>${rn} · ${list.length}</h3><div class="cards">${list.map(d=>{
+      const p=PHOTO.get(d.id);
+      return `<div class="card" id="c-${d.id}">
+        ${faceHtml(d,62)}
+        <div>
+          <h4>${d.n}</h4>
+          <p class="rl" style="--g:${CATG[d.c].c}">${d.r}</p>
+          <p class="b">${d.info}</p>
+          ${p&&p.ext?`<p class="w">${p.ext}</p>`:""}
+          ${credLine(d.id)}
+          <div class="lk"><button class="fix" data-id="${d.id}" type="button">corrigir este verbete</button></div>
+          <div class="lk">${d.ls.map(i=>`<a href="${L[i][1]}" target="_blank" rel="noopener">${L[i][0].split(" — ")[0]} ↗</a>`).join("")}
+          ${p&&p.url?`<a href="${p.url}" target="_blank" rel="noopener">Wikipédia ↗</a>`:""}</div>
+        </div>
+      </div>`}).join("")}</div></div>`;
+  }).join("");
+  cardsEl.innerHTML=html||`<p class="sec-note">Nada encontrado com esse filtro.</p>`;
+}
+const qOff=new Set();
+const qf=document.getElementById("q-filters");
+qf.innerHTML=Object.entries(CATG).map(([k,v])=>
+  `<button class="chip" data-cat="${k}" aria-pressed="true" style="--d:${v.c}"><span class="dot"></span>${v.n}</button>`).join("")
+ +`<input type="search" id="q-q" placeholder="buscar nome ou papel…" aria-label="Buscar verbete">`
+ +`<span class="hint">${N.length} verbetes</span>`;
+qf.addEventListener("click",e=>{
+  const b=e.target.closest(".chip[data-cat]"); if(!b) return;
+  const k=b.dataset.cat; qOff.has(k)?qOff.delete(k):qOff.add(k);
+  b.setAttribute("aria-pressed",!qOff.has(k)); cardsRender();
+});
+qf.addEventListener("input",e=>{if(e.target.id==="q-q")cardsRender()});
+cardsRender();
+
+/* ---------- fontes ---------- */
+const usoFonte=id=>{
+  const nos=N.filter(d=>d.ls.includes(id)).length, vin=links.filter(l=>l.ls.includes(id)).length;
+  const ev=[]; if(!nos&&!vin) return "consulta geral";
+  return [nos?nos+" verbete"+(nos>1?"s":""):"",vin?vin+" vínculo"+(vin>1?"s":""):""].filter(Boolean).join(" · ");
+};
+document.getElementById("srcs").innerHTML=`<table class="lic"><thead><tr><th>Fonte</th><th>Endereço</th><th>Sustenta</th></tr></thead><tbody>`
+ +Object.entries(L).map(([id,[t,u]])=>{
+   const nome=t.split(" — ")[0], tit=t.split(" — ")[1]||t;
+   return `<tr><td><b>${nome}</b><br><span style="color:var(--ink-3);font-size:12.5px">${tit}</span></td>
+    <td class="u"><a href="${u}" target="_blank" rel="noopener">${u}</a></td>
+    <td style="white-space:nowrap">${usoFonte(id)}</td></tr>`}).join("")
+ +`</tbody></table>`;
+
+/* ---------- fotos e resumos (Wikipédia, no navegador do leitor) ---------- */
+function fileFromUrl(u){
+  if(!u) return null;
+  try{
+    const parts=new URL(u).pathname.split("/").filter(Boolean);
+    const name=u.includes("/thumb/")?parts[parts.length-2]:parts[parts.length-1];
+    return {name:decodeURIComponent(name), commons:u.includes("/wikipedia/commons/")};
+  }catch(e){return null}
+}
+function cacheGet(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null}catch(e){return null}}
+function cacheSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+async function fetchWiki(id,title){
+  const key="fm2:"+title;
+  let d=cacheGet(key);
+  if(!d){
+    try{
+      const r=await fetch("https://pt.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(title)+"?redirect=true");
+      if(!r.ok) return;
+      const j=await r.json();
+      if(j.type==="disambiguation") return;
+      d={img:(j.thumbnail&&j.thumbnail.source)||null,
+         file:fileFromUrl((j.thumbnail&&j.thumbnail.source)||""),
+         ext:(j.extract||"").split(/(?<=\.)\s/).slice(0,2).join(" "),
+         url:(j.content_urls&&j.content_urls.desktop&&j.content_urls.desktop.page)||("https://pt.wikipedia.org/wiki/"+encodeURIComponent(title))};
+      cacheSet(key,d);
+    }catch(e){return}
+  }
+  if(!d) return;
+  if(!d.file&&d.img) d.file=fileFromUrl(d.img);
+  PHOTO.set(id,d);
+  paintNode(id,d);
+}
+function paintNode(id,d){
+  if(!d.img) return;
+  const g=node.filter(n=>n.id===id);
+  if(g.empty()) return;
+  const n=g.datum(), r=R(n), cid="clip-"+id;
+  defs.append("clipPath").attr("id",cid).append("circle").attr("r",r);
+  g.select("text.ini").remove();
+  g.insert("image","text.lab").attr("href",d.img).attr("x",-r).attr("y",-r)
+    .attr("width",r*2).attr("height",r*2).attr("preserveAspectRatio","xMidYMid slice")
+    .attr("clip-path","url(#"+cid+")").attr("pointer-events","none");
+  g.append("circle").attr("class","rim").attr("r",r).attr("stroke",CATG[n.c].c);
+}
+(async function loadWiki(){
+  const jobs=Object.entries(WIKI).filter(([id])=>byId.has(id));
+  const queue=jobs.slice();
+  const workers=Array.from({length:5},async()=>{
+    while(queue.length){const [id,title]=queue.shift(); await fetchWiki(id,title)}
+  });
+  await Promise.all(workers);
+  cardsRender();
+  if(PHOTO.has("vorcaro")) showNode(byId.get("vorcaro"));
+  await fetchLicenses();
+  credsRender();
+  cardsRender();
+})();
+
+/* ---------- licenças das imagens ---------- */
+function stripTags(h){const d=document.createElement("div");d.innerHTML=h||"";return (d.textContent||"").trim()}
+async function fetchLicenses(){
+  const groups={commons:[],pt:[]};
+  PHOTO.forEach((d,id)=>{if(d&&d.file&&d.file.name)(d.file.commons?groups.commons:groups.pt).push([id,d.file.name])});
+  for(const [host,list] of [["commons.wikimedia.org",groups.commons],["pt.wikipedia.org",groups.pt]]){
+    for(let i=0;i<list.length;i+=25){
+      const chunk=list.slice(i,i+25);
+      const titles=chunk.map(([,n])=>"File:"+n).join("|");
+      const key="fml2:"+host+":"+titles;
+      let pages=cacheGet(key);
+      if(!pages){
+        try{
+          const r=await fetch("https://"+host+"/w/api.php?action=query&format=json&origin=*&prop=imageinfo&iiprop=extmetadata|url&titles="+encodeURIComponent(titles));
+          if(!r.ok) continue;
+          const j=await r.json();
+          pages=Object.values((j.query&&j.query.pages)||{}).map(pg=>{
+            const ii=(pg.imageinfo&&pg.imageinfo[0])||{}, m=ii.extmetadata||{};
+            return {t:pg.title,
+              author:stripTags(m.Artist&&m.Artist.value)||"autor não informado",
+              license:(m.LicenseShortName&&m.LicenseShortName.value)||"licença não informada",
+              licenseUrl:(m.LicenseUrl&&m.LicenseUrl.value)||"",
+              page:ii.descriptionurl||("https://"+host+"/wiki/"+encodeURIComponent(pg.title))};
+          });
+          cacheSet(key,pages);
+        }catch(e){continue}
+      }
+      const norm=t=>(t||"").replace(/^(File|Arquivo|Ficheiro):/i,"").replace(/_/g," ").trim().toLowerCase();
+      chunk.forEach(([id,name])=>{
+        const hit=pages.find(x=>norm(x.t)===norm(name));
+        if(hit) CRED.set(id,{file:name,author:hit.author,license:hit.license,licenseUrl:hit.licenseUrl,page:hit.page});
+      });
+    }
+  }
+}
+function credLine(id){
+  const c=CRED.get(id), p=PHOTO.get(id);
+  if(!p||!p.img) return "";
+  const foto=c?`Foto: ${c.author} · ${c.license} <a href="${c.page}" target="_blank" rel="noopener">arquivo ↗</a>`
+             :`Foto: Wikimedia Commons — <a href="${p.url}" target="_blank" rel="noopener">verificar licença ↗</a>`;
+  return `<p class="foot">${foto}${p.ext?` · Resumo: Wikipédia, <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.pt-br" target="_blank" rel="noopener">CC BY-SA 4.0</a>`:""}</p>`;
+}
+function credsRender(){
+  const rows=[...CRED.entries()].filter(([id])=>byId.has(id))
+    .sort((a,b)=>byId.get(a[0]).n.localeCompare(byId.get(b[0]).n,"pt"));
+  const el=document.getElementById("creds");
+  if(!rows.length){el.innerHTML=`<p class="sec-note">As licenças são lidas do Wikimedia Commons quando a página abre. Se esta lista estiver vazia, o navegador não conseguiu alcançar o Commons — nesse caso use o link "verificar licença" em cada verbete.</p>`;return}
+  el.innerHTML=`<table class="lic"><thead><tr><th>Quem</th><th>Arquivo</th><th>Autor</th><th>Licença</th></tr></thead><tbody>`
+   +rows.map(([id,c])=>`<tr><td>${byId.get(id).n}</td>
+     <td><a href="${c.page}" target="_blank" rel="noopener">${c.file} ↗</a></td>
+     <td>${c.author}</td>
+     <td>${c.licenseUrl?`<a href="${c.licenseUrl}" target="_blank" rel="noopener">${c.license} ↗</a>`:c.license}</td></tr>`).join("")
+   +`</tbody></table><p class="sec-note" style="margin-top:12px">${rows.length} imagens em uso. Dados lidos da própria página de cada arquivo no Wikimedia Commons no momento em que esta página é aberta.</p>`;
+}
+
+
+/* ---------- 07 caixa de mensagens ---------- */
+const form=document.getElementById("msgform");
+const fOut=document.getElementById("f-out"), fStatus=document.getElementById("f-status");
+const fMsg=document.getElementById("f-msg"), fCnt=document.getElementById("f-cnt");
+const abertoEm=Date.now();
+function say(txt,cor){fOut.hidden=false;fOut.style.setProperty("--k",cor||"var(--rule-strong)");fOut.innerHTML=txt}
+function draft(){return {tipo:form.tipo.value,nome:form.nome.value,email:form.email.value,
+  referencia:form.referencia.value,mensagem:fMsg.value,autorizaPublicacao:form.autorizaPublicacao.checked}}
+function texto(d){
+  return [`Tipo: ${d.tipo}`,`Nome: ${d.nome||"(não informado)"}`,`E-mail: ${d.email||"(não informado)"}`,
+   `Referência: ${d.referencia||"(não informada)"}`,
+   `Autoriza publicação: ${d.autorizaPublicacao?"sim":"não"}`,
+   `Enviado em: ${new Date().toLocaleString("pt-BR")}`,"","Mensagem:",d.mensagem].join("\n");
+}
+fMsg.addEventListener("input",()=>{
+  fCnt.textContent=fMsg.value.trim().length+" caracteres";
+  try{localStorage.setItem("fm:draft",JSON.stringify(draft()))}catch(e){}
+});
+(function restore(){
+  const d=cacheGet("fm:draft"); if(!d) return;
+  if(d.mensagem){form.tipo.value=d.tipo||form.tipo.value;form.nome.value=d.nome||"";form.email.value=d.email||"";
+    form.referencia.value=d.referencia||"";fMsg.value=d.mensagem;form.autorizaPublicacao.checked=!!d.autorizaPublicacao;
+    fCnt.textContent=fMsg.value.trim().length+" caracteres";
+    say("Recuperamos um rascunho que você havia começado nesta página. Continue ou apague o texto.");}
+})();
+function mailtoLink(d){
+  const assunto=`[Feijoada do Master] ${d.tipo}`;
+  return "mailto:"+encodeURIComponent(CONTATO.email)+"?subject="+encodeURIComponent(assunto)+"&body="+encodeURIComponent(texto(d));
+}
+document.getElementById("f-copy").addEventListener("click",async()=>{
+  const d=draft();
+  if(!d.mensagem.trim()){say("Escreva a mensagem antes de copiar.","var(--accent)");return}
+  try{await navigator.clipboard.writeText(texto(d));fStatus.textContent="texto copiado"}
+  catch(e){fStatus.textContent="não foi possível copiar — selecione o texto manualmente"}
+});
+form.addEventListener("submit",async e=>{
+  e.preventDefault();
+  const d=draft();
+  if(form._gotcha.value){return}                                  /* isca anti-robô */
+  if(Date.now()-abertoEm<3000){say("Aguarde um instante e envie de novo.","var(--accent)");return}
+  if(d.mensagem.trim().length<15){say("A mensagem está curta demais para ser útil. Descreva o que precisa ser ajustado.","var(--accent)");fMsg.focus();return}
+  if(d.email&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)){say("O e-mail parece inválido. Corrija ou deixe em branco.","var(--accent)");form.email.focus();return}
+  const go=document.getElementById("f-go");
+  if(!CONTATO.endpoint){
+    if(!CONTATO.email){say("Esta página ainda não tem canal de envio configurado. Use o botão <b>Copiar texto</b> e mande ao responsável pelo site.","var(--accent)");return}
+    say("Abrindo seu programa de e-mail com a mensagem pronta. Se nada abrir, use <b>Copiar texto</b> e envie para <b>"+CONTATO.email+"</b>.");
+    location.href=mailtoLink(d); return;
+  }
+  go.disabled=true; fStatus.textContent="enviando…";
+  try{
+    const r=CONTATO.formato==="json"
+      ? await fetch(CONTATO.endpoint,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)})
+      : await fetch(CONTATO.endpoint,{method:"POST",headers:{Accept:"application/json"},body:new FormData(form)});
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    form.reset(); fMsg.value=""; fCnt.textContent="0 caracteres";
+    try{localStorage.removeItem("fm:draft")}catch(err){}
+    say("Mensagem recebida. Se você deixou e-mail e o caso pedir resposta, ela vem por ali. Correção com fonte costuma entrar na página em poucos dias.","var(--c-reg)");
+    fStatus.textContent="";
+  }catch(err){
+    say("O envio falhou ("+err.message+"). Use <b>Copiar texto</b> e mande"+(CONTATO.email?" para <b>"+CONTATO.email+"</b>":" ao responsável pelo site")+" — seu rascunho continua salvo aqui.","var(--accent)");
+    fStatus.textContent="";
+  }finally{go.disabled=false}
+});
+/* atalho "corrigir" nos verbetes e na ficha */
+function corrigir(id){
+  const d=byId.get(id); if(!d) return;
+  form.tipo.value="Correção de informação";
+  form.referencia.value="verbete "+d.n;
+  document.getElementById("contato").scrollIntoView({behavior:"smooth",block:"start"});
+  setTimeout(()=>fMsg.focus(),400);
+}
+document.addEventListener("click",e=>{
+  const b=e.target.closest(".fix"); if(b) corrigir(b.dataset.id);
+});
+
+/* ---------- tema claro / escuro / sistema ---------- */
+(function tema(){
+  const btn=document.getElementById("theme"), modos=["sistema","claro","escuro"];
+  let i=0;
+  const salvo=cacheGet("fm:tema"); if(salvo&&modos.includes(salvo)) i=modos.indexOf(salvo);
+  function aplica(){
+    const m=modos[i], raiz=document.documentElement;
+    if(m==="sistema") raiz.removeAttribute("data-theme");
+    else raiz.setAttribute("data-theme",m==="claro"?"light":"dark");
+    btn.textContent="tema: "+m;
+    btn.setAttribute("aria-live","polite");
+    cacheSet("fm:tema",m);
+  }
+  btn.addEventListener("click",()=>{i=(i+1)%modos.length;aplica()});
+  aplica();
+})();
+
+/* ---------- nav ativo ---------- */
+const secs=[...document.querySelectorAll("section[id]")];
+const navlinks=new Map([...document.querySelectorAll("nav a")].map(a=>[a.getAttribute("href").slice(1),a]));
+new IntersectionObserver(es=>{
+  es.forEach(e=>{if(e.isIntersecting){navlinks.forEach(a=>a.classList.remove("on"));
+    const a=navlinks.get(e.target.id); if(a)a.classList.add("on")}});
+},{rootMargin:"-45% 0px -50% 0px"}).observe;
+secs.forEach(s=>new IntersectionObserver(es=>{
+  es.forEach(e=>{if(e.isIntersecting){navlinks.forEach(a=>a.classList.remove("on"));
+    const a=navlinks.get(e.target.id); if(a)a.classList.add("on")}});
+},{rootMargin:"-45% 0px -50% 0px"}).observe(s));
+
+</script>
+</body>
+</html>
