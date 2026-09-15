@@ -1,8 +1,14 @@
-# Feijoada do Master — site estatico servido pelo Caddy
-FROM caddy:2-alpine
+# Feijoada do Master — site + backend em um unico servico
+FROM node:22-alpine
 
-COPY Caddyfile /etc/caddy/Caddyfile
-COPY index.html /srv/index.html
+WORKDIR /app
+ENV NODE_ENV=production
 
-# O Railway injeta a porta em $PORT; o Caddyfile le essa variavel.
+COPY server/package.json server/package-lock.json* ./
+RUN npm install --omit=dev --no-audit --no-fund
+
+COPY server/ ./
+COPY index.html ./public/index.html
+
 EXPOSE 8080
+CMD ["node", "server.js"]

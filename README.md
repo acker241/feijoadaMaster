@@ -5,7 +5,10 @@ rede de 90 nomes e verbetes "quem é quem". Dados consolidados em 15/09/2026.
 
 ## Arquivos
 
-- `index.html` — o site inteiro, autocontido. Publicar é só subir este arquivo.
+- `index.html` — o site inteiro (HTML, CSS, JS e dados numa página).
+- `server/` — backend Node: `server.js` (site + API + painel), `admin.js` (telas do `/admin`),
+  `db.js`, `schema.sql`, `hash-senha.js`. Só uma dependência: `pg`.
+- `Dockerfile`, `railway.json`, `compose-teste.yml`, `.env.example` — deploy e teste local.
 - `README.md` — este arquivo.
 - `FONTES.md` — todas as fontes, com endereço e o que cada uma sustenta, mais as fontes de imagem.
 - `LICENCAS.md` — licenças de fotos, textos, fontes tipográficas e código, e o que é obrigatório manter.
@@ -14,14 +17,15 @@ rede de 90 nomes e verbetes "quem é quem". Dados consolidados em 15/09/2026.
 
 Qualquer hospedagem estática serve, sem build:
 
-- **Railway** (em uso): `Dockerfile` + `Caddyfile` na raiz servem o `index.html` pelo Caddy na
-  porta `$PORT`. Passo a passo, cabeçalhos e CSP em `railway/RAILWAY.md`.
+- **Railway** (em uso): container Node serve o site, recebe as mensagens e entrega o `/admin`;
+  Postgres como plugin do mesmo projeto. Variáveis, senha do painel e rotas em
+  `railway/RAILWAY.md`.
 - **GitHub Pages**: Settings › Pages › branch `main` / root.
 - **Netlify / Cloudflare Pages**: conectar o repo ou arrastar a pasta.
 - **Hospedagem própria**: copiar `index.html` para a raiz do domínio.
 
-Os arquivos de deploy ficam na raiz porque o Railway procura o `Dockerfile` ali; `railway/RAILWAY.md`
-é só documentação.
+As três últimas opções servem o site, mas **não** a caixa de mensagens nem o painel — essas
+precisam do backend.
 
 ## Dependências externas em runtime
 
@@ -59,42 +63,20 @@ Acrescentar alguém = uma linha em `N` + as ligações em `E` (+ o título em `W
 `05` Fontes e avisos · `06` Imagens e licenças (tabela montada em tempo de execução com autor e
 licença de cada foto, lida da API do Wikimedia Commons) · `07` Fale com o site (caixa de mensagens).
 
-## Configurar a caixa de mensagens
+## Caixa de mensagens
 
-No `index.html`, procure `const CONTATO=` (fica no começo do bloco de script) e preencha:
+O formulário posta em `/api/mensagem`, no próprio backend — `const CONTATO=` no `index.html` só
+guarda essa URL e um e-mail opcional de plano B. A sitekey do Turnstile **não** está no arquivo:
+o servidor injeta `__TURNSTILE_SITEKEY__` a partir da variável de ambiente, e sem ela o widget
+nem aparece.
 
-```js
-const CONTATO={ endpoint:"", formato:"formspree", email:"" };
-```
+Proteções em camadas: widget Turnstile validado no servidor pelo `siteverify`, campo-isca
+invisível, bloqueio nos 3 primeiros segundos, mínimo de 15 caracteres, validação de e-mail,
+limite de 5 envios por IP a cada 10 minutos e rascunho salvo em `localStorage` para o visitante
+não perder o texto.
 
-Três cenários:
-
-1. **Só e-mail, sem serviço nenhum** — deixe `endpoint` vazio e ponha seu e-mail em `email`.
-   O formulário monta a mensagem formatada e abre o programa de e-mail do visitante. Funciona em
-   qualquer hospedagem, sem conta em serviço nenhum. Desvantagem: expõe o e-mail e depende do
-   cliente de e-mail do visitante. O botão "Copiar texto" é a saída para quem não tem um.
-
-2. **Formspree** (ou similar) — crie um formulário, copie o ID e use:
-
-   ```js
-   const CONTATO={ endpoint:"https://formspree.io/f/SEU_ID", formato:"formspree", email:"seu@email" };
-   ```
-
-   O `email` continua servindo de plano B se o envio falhar. O campo-isca `_gotcha` já está no
-   formulário e o Formspree o reconhece como anti-spam.
-
-3. **Endpoint próprio** (Google Apps Script, Cloudflare Worker, sua API) — use
-   `formato:"json"` e a URL do endpoint; a página faz `POST` com JSON:
-   `{tipo, nome, email, referencia, mensagem, autorizaPublicacao}`. O endpoint precisa
-   responder com CORS liberado para o domínio do site.
-
-**Netlify Forms**: além de configurar acima, adicione ao `<form id="msgform">` os atributos
-`data-netlify="true"` e um `<input type="hidden" name="form-name" value="msgform">` — a Netlify só
-detecta o formulário se ele estiver no HTML estático.
-
-Proteções já embutidas: campo-isca invisível, bloqueio de envio nos primeiros 3 segundos, mínimo de
-15 caracteres, validação de e-mail e rascunho salvo em `localStorage` para o visitante não perder o
-texto se o envio falhar. Para volume alto de spam, ponha um Turnstile/hCaptcha na frente do endpoint.
+Ler as mensagens: `/admin`, com a senha de `ADMIN_SENHA_HASH`. Filtro por status e tipo, nota
+interna, marcação de respondido e export CSV. Detalhes em `railway/RAILWAY.md`.
 
 ## Avisos que precisam continuar na página
 

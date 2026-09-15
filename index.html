@@ -11,6 +11,7 @@
 <title>Feijoada do Master</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,400..900,0..100,0..1;1,9..144,400..900,0..100,0..1&family=Karla:ital,wght@0,400..800;1,400..600&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <style>
 /* paleta feijoada: feijao-preto, caldo, laranja, couve, pimenta, farofa */
 :root{
@@ -219,6 +220,7 @@ table.lic td.u a{color:var(--ink-3)}
 .form textarea{min-height:155px;resize:vertical;line-height:1.55}
 .form .chk{display:grid;grid-template-columns:18px 1fr;gap:11px;align-items:start;font-size:13.5px;color:var(--ink-2);line-height:1.45}
 .form .chk input{margin-top:4px;accent-color:var(--laranja)}
+.cf-wrap{min-height:65px}
 .form .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 .form .send{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .form button.go{font-family:Karla,sans-serif;font-size:14.5px;font-weight:800;background:var(--ink);color:var(--paper);
@@ -419,6 +421,10 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
         </div>
       </div>
       <div class="hp"><label for="f-hp">Não preencha</label><input type="text" id="f-hp" name="_gotcha" tabindex="-1" autocomplete="off"></div>
+      <div class="frow cf-wrap" id="ts-wrap" hidden>
+        <label>Verificação anti-robô</label>
+        <div class="cf-turnstile" data-sitekey="__TURNSTILE_SITEKEY__" data-theme="auto" data-language="pt-br" data-size="flexible"></div>
+      </div>
       <div class="send">
         <button type="submit" class="go" id="f-go">Enviar mensagem</button>
         <button type="button" class="alt" id="f-copy">Copiar texto</button>
@@ -428,7 +434,7 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
     </form>
     <p class="note" style="margin-top:28px"><b>O que acontece com a sua mensagem.</b> Correção com fonte é a que anda mais rápido: o conteúdo é ajustado e a alteração fica registrada na própria página. Direito de resposta de quem é citado é publicado na íntegra, junto ao verbete correspondente. Comentário e sugestão podem ou não ser incorporados — e nem tudo é respondido individualmente.<br><br>
     <b>Ameaça e intimidação.</b> Mensagem com ameaça é preservada com data, horário e conteúdo e pode ser encaminhada às autoridades e a entidades de defesa da liberdade de imprensa. Não é apagada por pedido de quem a enviou.<br><br>
-    <b>Seus dados.</b> Nome, e-mail e mensagem são usados só para responder e para apurar a correção. Nada é vendido, cruzado ou usado para marketing, a página não tem rastreador nem cookie de publicidade, e você pode pedir a exclusão do seu registro pelo mesmo formulário. Sem e-mail, não há como responder — mas a mensagem é lida.</p>
+    <b>Seus dados.</b> Nome, e-mail, mensagem, data, hora e endereço IP são gravados no banco deste site e usados só para responder e para apurar a correção. Nada é vendido, cruzado ou usado para marketing, a página não tem rastreador nem cookie de publicidade, e você pode pedir a exclusão do seu registro pelo mesmo formulário. Sem e-mail, não há como responder — mas a mensagem é lida.</p>
   </div>
 </section>
 
@@ -869,15 +875,16 @@ const E=[
 
 
 /* =========================================================================
-   CAIXA DE MENSAGENS — configure aqui antes de publicar
-   endpoint : URL que recebe o POST. Vazio = a página usa o modo e-mail.
-              Formspree:  https://formspree.io/f/SEU_ID
-              Apps Script / webhook próprio: a URL do seu endpoint
-   formato  : "formspree" (form-data) ou "json" (POST application/json)
-   email    : e-mail do responsável, usado quando não há endpoint
-              (a página monta a mensagem e abre o cliente de e-mail)
+   CAIXA DE MENSAGENS
+   endpoint : /api/mensagem — o backend deste próprio site (Node no Railway).
+              Trocar por outro serviço é só mudar a URL e o formato.
+   email    : plano B mostrado ao visitante se o POST falhar. Opcional.
+   A sitekey do Turnstile é injetada pelo servidor a partir da variável
+   TURNSTILE_SITEKEY; sem ela, o widget não aparece e o backend recusa.
    ========================================================================= */
-const CONTATO={ endpoint:"", formato:"formspree", email:"" };
+const CONTATO={ endpoint:"/api/mensagem", formato:"json", email:"" };
+const SITEKEY_BRUTA="__TURNSTILE_SITEKEY__";
+const SITEKEY=SITEKEY_BRUTA.startsWith("__")?"":SITEKEY_BRUTA;
 
 /* ---------- títulos na Wikipédia (pt) para foto + resumo ---------- */
 const WIKI={
@@ -1295,6 +1302,7 @@ const form=document.getElementById("msgform");
 const fOut=document.getElementById("f-out"), fStatus=document.getElementById("f-status");
 const fMsg=document.getElementById("f-msg"), fCnt=document.getElementById("f-cnt");
 const abertoEm=Date.now();
+if(SITEKEY){const w=document.getElementById("ts-wrap"); if(w) w.hidden=false}
 function say(txt,cor){fOut.hidden=false;fOut.style.setProperty("--k",cor||"var(--rule-strong)");fOut.innerHTML=txt}
 function draft(){return {tipo:form.tipo.value,nome:form.nome.value,email:form.email.value,
   referencia:form.referencia.value,mensagem:fMsg.value,autorizaPublicacao:form.autorizaPublicacao.checked}}
@@ -1332,6 +1340,11 @@ form.addEventListener("submit",async e=>{
   if(Date.now()-abertoEm<3000){say("Aguarde um instante e envie de novo.","var(--accent)");return}
   if(d.mensagem.trim().length<15){say("A mensagem está curta demais para ser útil. Descreva o que precisa ser ajustado.","var(--accent)");fMsg.focus();return}
   if(d.email&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)){say("O e-mail parece inválido. Corrija ou deixe em branco.","var(--accent)");form.email.focus();return}
+  let tsToken="";
+  if(SITEKEY){
+    tsToken=(form.querySelector('[name="cf-turnstile-response"]')||{}).value||"";
+    if(!tsToken){say("Marque a verificação anti-robô antes de enviar.","var(--accent)");return}
+  }
   const go=document.getElementById("f-go");
   if(!CONTATO.endpoint){
     if(!CONTATO.email){say("Esta página ainda não tem canal de envio configurado. Use o botão <b>Copiar texto</b> e mande ao responsável pelo site.","var(--accent)");return}
@@ -1341,12 +1354,17 @@ form.addEventListener("submit",async e=>{
   go.disabled=true; fStatus.textContent="enviando…";
   try{
     const r=CONTATO.formato==="json"
-      ? await fetch(CONTATO.endpoint,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)})
+      ? await fetch(CONTATO.endpoint,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({...d,turnstileToken:tsToken,_gotcha:form._gotcha.value})})
       : await fetch(CONTATO.endpoint,{method:"POST",headers:{Accept:"application/json"},body:new FormData(form)});
-    if(!r.ok) throw new Error("HTTP "+r.status);
+    if(!r.ok){
+      let detalhe="HTTP "+r.status;
+      try{const j=await r.json(); if(j&&j.erro) detalhe=j.erro}catch(e2){}
+      throw new Error(detalhe);
+    }
+    if(window.turnstile&&SITEKEY) window.turnstile.reset();
     form.reset(); fMsg.value=""; fCnt.textContent="0 caracteres";
     try{localStorage.removeItem("fm:draft")}catch(err){}
-    say("Mensagem recebida. Se você deixou e-mail e o caso pedir resposta, ela vem por ali. Correção com fonte costuma entrar na página em poucos dias.","var(--c-reg)");
+    say("Mensagem recebida e registrada. Se você deixou e-mail e o caso pedir resposta, ela vem por ali. Correção com fonte costuma entrar na página em poucos dias.","var(--c-reg)");
     fStatus.textContent="";
   }catch(err){
     say("O envio falhou ("+err.message+"). Use <b>Copiar texto</b> e mande"+(CONTATO.email?" para <b>"+CONTATO.email+"</b>":" ao responsável pelo site")+" — seu rascunho continua salvo aqui.","var(--accent)");

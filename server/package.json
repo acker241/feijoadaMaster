@@ -1,0 +1,15 @@
+{
+  "name": "feijoada-master",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Site e backend do Feijoada do Master",
+  "type": "commonjs",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node server.js",
+    "hash-senha": "node hash-senha.js"
+  },
+  "dependencies": {
+    "pg": "^8.13.1"
+  }
+}

@@ -1,0 +1,20 @@
+# Teste local: postgres + app. Uso:
+#   docker compose -f compose-teste.yml up --build
+# Abre http://localhost:8080  e  http://localhost:8080/admin
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_PASSWORD: feijoada
+      POSTGRES_DB: feijoada
+  app:
+    build: .
+    environment:
+      PORT: 8080
+      DATABASE_URL: postgres://postgres:feijoada@db:5432/feijoada
+      SESSAO_SEGREDO: teste-local-nao-usar-em-producao
+      # senha de teste: feijoada-teste-123  (hash gerado com hash-senha.js)
+      ADMIN_SENHA_HASH: ${ADMIN_SENHA_HASH}
+      SITE_URL: http://localhost:8080
+    ports: ["8080:8080"]
+    depends_on: [db]
