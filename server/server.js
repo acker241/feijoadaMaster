@@ -8,6 +8,8 @@ const path = require("node:path");
 const crypto = require("node:crypto");
 const { pool, migrar } = require("./db");
 const admin = require("./admin");
+const conteudo = require("./conteudo");
+const adminConteudo = require("./admin-conteudo");
 
 const PORTA = Number(process.env.PORT || 8080);
 const SITEKEY = process.env.TURNSTILE_SITEKEY || "";
@@ -256,6 +258,41 @@ async function rotaAdmin(req, res, url) {
     res.statusCode = 302; res.setHeader("Location", corpo.get("volta") || "/admin"); return res.end();
   }
 
+  if (url.pathname.startsWith("/admin/conteudo")) {
+    const ents = Object.keys(conteudo.TABELAS);
+    if (req.method === "POST") {
+      const corpo = new URLSearchParams(await lerCorpo(req, 64 * 1024));
+      const ent = corpo.get("ent");
+      if (!ents.includes(ent)) return enviar(res, 400, "entidade inválida");
+      const chave = corpo.get("chave") || null;
+      const motivo = corpo.get("motivo") || null;
+      const entrada = {};
+      for (const [k, v] of corpo) if (!["ent", "chave", "motivo"].includes(k)) entrada[k] = v;
+      try {
+        if (url.pathname.endsWith("/remover")) {
+          if (!chave) return enviar(res, 400, "sem chave");
+          const ok = await conteudo.remover(ent, chave, motivo);
+          return enviar(res, 200, adminConteudo.recibo(ok ? `Removido. A errata registrou a exclusão.` : "Registro não encontrado.", `/admin/conteudo?ent=${ent}`), "text/html; charset=utf-8", CSP_ADMIN);
+        }
+        const r = await conteudo.salvar(ent, chave, entrada, motivo);
+        return enviar(res, 200, adminConteudo.recibo(`${chave ? "Alterado" : "Incluído"}: ${r.rotulo || r.registro}. O site já serve a versão nova.`, `/admin/conteudo?ent=${ent}`), "text/html; charset=utf-8", CSP_ADMIN);
+      } catch (e) {
+        console.error("[conteudo] erro ao salvar:", e.message);
+        return enviar(res, 400, adminConteudo.recibo(`Não deu: ${e.message}`, `/admin/conteudo?ent=${ent}`), "text/html; charset=utf-8", CSP_ADMIN);
+      }
+    }
+    const ent = ents.includes(url.searchParams.get("ent")) ? url.searchParams.get("ent") : "verbete";
+    const q = (url.searchParams.get("q") || "").trim().toLowerCase();
+    const [linhas, opcoes] = await Promise.all([conteudo.listar(ent), conteudo.opcoes()]);
+    const filtradas = q
+      ? linhas.filter((r) => JSON.stringify(Object.values(r)).toLowerCase().includes(q))
+      : linhas;
+    const contagens = {};
+    for (const e of ents) contagens[e] = (await pool.query(`SELECT count(*)::int AS n FROM ${conteudo.TABELAS[e].tabela}`)).rows[0].n;
+    const err = (await pool.query("SELECT * FROM errata ORDER BY criado_em DESC LIMIT 12")).rows;
+    return enviar(res, 200, adminConteudo.conteudo(ent, filtradas, opcoes, contagens, q, err), "text/html; charset=utf-8", CSP_ADMIN);
+  }
+
   if (url.pathname === "/admin/export.csv") {
     const { rows } = await pool.query("SELECT id,criado_em,tipo,nome,email,referencia,mensagem,autoriza_pub,status,ip,nota_interna FROM mensagens ORDER BY criado_em DESC");
     const esc = (v) => `"${String(v ?? "").replaceAll('"', '""')}"`;
@@ -288,6 +325,20 @@ const servidor = http.createServer(async (req, res) => {
       return await rotaMensagem(req, res);
     }
     if (url.pathname === "/api/config") return json(res, 200, { sitekey: SITEKEY });
+    if (url.pathname === "/api/dados") {
+      try {
+        const { corpo, etag } = await conteudo.dados();
+        if (req.headers["if-none-match"] === etag) { res.statusCode = 304; return res.end(); }
+        cabecalhos(res, "application/json; charset=utf-8", CSP_SITE);
+        res.setHeader("ETag", etag);
+        res.setHeader("Cache-Control", "public, max-age=60, must-revalidate");
+        res.statusCode = 200;
+        return res.end(corpo);
+      } catch (e) {
+        console.error("[api/dados] falhou:", e.message);
+        return json(res, 503, { erro: "conteúdo indisponível" });
+      }
+    }
     if (url.pathname.startsWith("/admin")) return await rotaAdmin(req, res, url);
     if (req.method === "GET" || req.method === "HEAD") {
       cabecalhos(res, "text/html; charset=utf-8", CSP_SITE);
@@ -306,5 +357,6 @@ const servidor = http.createServer(async (req, res) => {
   carregarPagina();
   servidor.listen(PORTA, () => console.log(`[servidor] ouvindo em :${PORTA}`));
   const ok = await migrar();
-  if (!ok) console.error("[db] banco inacessível — o site continua servindo, mas mensagens não serão gravadas");
+  if (!ok) { console.error("[db] banco inacessível — o site serve o snapshot embutido e não grava mensagens"); return; }
+  try { await conteudo.semear(); } catch (e) { console.error("[conteudo] semeadura falhou:", e.message); }
 })();

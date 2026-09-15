@@ -264,6 +264,7 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
     <a href="#quem">Quem é quem</a>
     <a href="#fontes">Fontes</a>
     <a href="#creditos">Imagens e licenças</a>
+    <a href="#errata-sec">Errata</a>
     <a href="#contato">Fale com o site</a>
     <span class="spacer"></span>
     <button id="theme" type="button" aria-label="Alternar tema claro e escuro">tema: sistema</button>
@@ -376,9 +377,18 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
   </div>
 </section>
 
+<section id="errata-sec">
+  <div class="wrap">
+    <div class="sec-head"><span class="n">07</span><h2>Errata</h2>
+      <p class="sec-note">Cada correção feita no conteúdo fica registrada aqui, com o valor antigo, o novo e o motivo. É o compromisso da seção 05 cumprido em forma de lista.</p>
+    </div>
+    <div id="errata"></div>
+  </div>
+</section>
+
 <section id="contato">
   <div class="wrap">
-    <div class="sec-head"><span class="n">07</span><h2>Fale com o site</h2>
+    <div class="sec-head"><span class="n">08</span><h2>Fale com o site</h2>
       <p class="sec-note">Correção de data, valor ou nome, sugestão do que falta, direito de resposta de quem é citado — e também registro de ameaça ou intimidação. Tudo chega ao responsável pela página.</p>
     </div>
     <form class="form" id="msgform" novalidate>
@@ -440,13 +450,13 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
 
 <footer>
   <div class="wrap">
-    <p>Feijoada do Master · agregador de notícias sobre o caso Banco Master · dados consolidados em 15/09/2026 · conteúdo organizado com auxílio de IA a partir das fontes listadas acima.</p>
+    <p>Feijoada do Master · agregador de notícias sobre o caso Banco Master · conteúdo organizado com auxílio de IA a partir das fontes listadas acima. <span id="origem-dados"></span></p>
   </div>
 </footer>
 <div id="tip" role="status"></div>
 
 <script>
-const L={
+var L={
  wpt:["Escândalo do Banco Master — Wikipédia","https://pt.wikipedia.org/wiki/Esc%C3%A2ndalo_do_Banco_Master"],
  wen:["Banco Master scandal — Wikipedia","https://en.wikipedia.org/wiki/Banco_Master_scandal"],
  cnn:["CNN Brasil — relembre a liquidação","https://www.cnnbrasil.com.br/economia/money/macroeconomia/caso-master-relembre-a-liquidacao-do-banco-que-envolve-bc-stf-e-tcu/"],
@@ -471,25 +481,25 @@ const L={
  mm:["Monitor Mercantil — fraudes de R$ 12 bi","https://monitormercantil.com.br/pf-prende-dono-do-banco-master-e-bc-decreta-liquidacao-da-master-corretora/"],
 };
 
-const CATG={
+var CATG={
  mkt:{n:"Mercado e banco",c:"var(--c-mkt)"},
  pol:{n:"Política e influência",c:"var(--c-pol)"},
  reg:{n:"Reguladores",c:"var(--c-reg)"},
  jud:{n:"Justiça e polícia",c:"var(--c-jud)"},
 };
 
-const CAT={
+var CAT={
  mkt:{n:"Mercado e banco",c:"var(--c-mkt)"},
  pol:{n:"Política e influência",c:"var(--c-pol)"},
  reg:{n:"Reguladores",c:"var(--c-reg)"},
  jud:{n:"Justiça e polícia",c:"var(--c-jud)"},
 };
 
-const RING=["Centro","Estrutura financeira","Instituições e apuração","Órbita política","Entorno citado e beneficiários"];
+var RING=["Centro","Estrutura financeira","Instituições e apuração","Órbita política","Entorno citado e beneficiários"];
 
-const RTYPE={f:["Financeiro","var(--c-mkt)"],i:["Institucional","var(--c-reg)"],v:["Investigação","var(--c-jud)"],p:["Político","var(--c-pol)"]};
+var RTYPE={f:["Financeiro","var(--c-mkt)"],i:["Institucional","var(--c-reg)"],v:["Investigação","var(--c-jud)"],p:["Político","var(--c-pol)"]};
 
-const BARS=[
+var BARS=[
  {l:"Pago pelo FGC a clientes do Master",v:40.6,n:"R$ 40,6 bi a ≈800 mil investidores, a partir de 21/01/2026"},
  {l:"CCBs falsas ou sem lastro (Pet 15.478)",v:17,n:"≈R$ 17 bi em cédulas de crédito bancário sem garantia, segundo a apuração"},
  {l:"Fraude apurada Master–BRB",v:12.2,n:"Carteiras de crédito transferidas ao BRB sob suspeita de falta de lastro"},
@@ -500,7 +510,7 @@ const BARS=[
  {l:"Aporte anunciado pela Fictor",v:3,n:"Anunciado em 17/11/2025, horas antes da prisão e da liquidação"},
 ];
 
-const PHASES=[
+var PHASES=[
 {t:"Fase 1",h:"Expansão pelo passivo caro",s:"O Master cresce vendendo CDB com juros muito acima da média, distribuídos em corretoras e protegidos pela garantia do FGC — funding caro que exige ativos cada vez mais agressivos.",
  ev:[
  {d:"2021–2024",c:"mkt",w:"Banco Master",x:"Crescimento acelerado com captação via CDB de alta remuneração e carteiras de crédito consignado, precatórios e direitos creditórios."},
@@ -555,7 +565,7 @@ const PHASES=[
 ]},
 ];
 
-const N=[
+var N=[
 {id:"vorcaro",n:"Daniel Vorcaro",ab:"DV",r:"Controlador do Banco Master",c:"mkt",t:0,
  info:"Preso em 17/11/2025 no aeroporto de Guarulhos ao tentar embarcar para Malta, e novamente em 04/03/2026 na 3ª fase da Operação Compliance Zero. Duas propostas de delação foram rejeitadas pela PF e pela PGR. Depoimento à PF remarcado para 24/09/2026.",ls:["wpt","wen","oe","b247"]},
 
@@ -745,7 +755,7 @@ const N=[
  info:"A investigação mapeou mais de R$ 500 mi pagos a 79 bancas entre 2021 e 2024. Receber pagamento não implica, por si, participação em crime.",ls:["nd"]}
 ];
 
-const E=[
+var E=[
 ["vorcaro","master","f","Controlador do banco. Segundo a apuração, decidia a captação de CDB caro e a originação dos ativos que sustentavam o balanço.",["wpt","mm"]],
 ["master","colig","f","Mesmo conglomerado: liquidadas em 18/11/2025 e, no caso do Will Bank, em 21/01/2026.",["im"]],
 ["master","brb","f","Núcleo da fraude: venda de carteiras de crédito ao BRB sob suspeita de falta de lastro — cerca de R$ 12,2 bi (Inquérito 5.026).",["mm","p360","cnn"]],
@@ -887,7 +897,7 @@ const SITEKEY_BRUTA="__TURNSTILE_SITEKEY__";
 const SITEKEY=SITEKEY_BRUTA.startsWith("__")?"":SITEKEY_BRUTA;
 
 /* ---------- títulos na Wikipédia (pt) para foto + resumo ---------- */
-const WIKI={
+var WIKI={
  vorcaro:"Daniel Vorcaro", master:"Banco Master", brb:"Banco de Brasília", bc:"Banco Central do Brasil",
  fgc:"Fundo Garantidor de Créditos", tcu:"Tribunal de Contas da União", cvm:"Comissão de Valores Mobiliários",
  pf:"Polícia Federal (Brasil)", stf:"Supremo Tribunal Federal", febraban:"Febraban", maxima:"Banco Máxima",
@@ -903,9 +913,12 @@ const WIKI={
  doria:"João Doria", joesley:"Joesley Batista", haddad:"Fernando Haddad",
  furtado:"Marcus Vinícius Furtado Coêlho", costa:"Banco de Brasília", cpi:"Comissão parlamentar de inquérito",
 };
+var ERRATA=[];
+var FONTE_DADOS="página";
 const PHOTO=new Map();   /* id -> {img,ext,url,file} */
 const CRED=new Map();    /* id -> {file,author,license,licenseUrl,page} */
 
+function iniciar(){
 /* ---------- 01 escala ---------- */
 const MAXBAR=40.6;
 document.getElementById("bars").innerHTML=BARS.map(b=>`
@@ -1383,6 +1396,33 @@ document.addEventListener("click",e=>{
   const b=e.target.closest(".fix"); if(b) corrigir(b.dataset.id);
 });
 
+/* ---------- 08 errata ---------- */
+(function errata(){
+  const alvo=document.getElementById("errata"); if(!alvo) return;
+  const rot={verbete:"verbete",vinculo:"vínculo",evento:"evento",fase:"fase",fonte:"fonte",barra:"valor"};
+  if(!ERRATA.length){
+    alvo.innerHTML=`<p class="sec-note">Nenhuma alteração registrada desde a publicação. Toda correção feita daqui para frente aparece nesta lista, com o que mudou e por quê.</p>`;
+    return;
+  }
+  alvo.innerHTML=`<div class="tablewrap"><table class="lic"><thead><tr><th>Quando</th><th>O que mudou</th><th>De → para</th><th>Motivo</th></tr></thead><tbody>`
+   +ERRATA.map(e=>{
+     const q=new Date(e.em).toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo"});
+     const corta=t=>!t?"—":(t.length>140?t.slice(0,138)+"…":t);
+     return `<tr><td style="white-space:nowrap">${q}</td>
+      <td><b>${e.rotulo||e.entidade}</b><br><span style="color:var(--ink-3);font-size:12.5px">${rot[e.entidade]||e.entidade} ${e.acao}${e.campo?` · ${e.campo}`:""}</span></td>
+      <td>${e.campo?`<span style="color:var(--c-jud)">${corta(e.antes)}</span> → <span style="color:var(--c-reg)">${corta(e.depois)}</span>`:"—"}</td>
+      <td>${e.motivo?e.motivo:"—"}</td></tr>`}).join("")
+   +`</tbody></table></div>`;
+})();
+
+/* origem dos dados no rodapé */
+(function origem(){
+  const el=document.getElementById("origem-dados"); if(!el) return;
+  el.textContent = FONTE_DADOS==="banco"
+    ? "Conteúdo servido do banco deste site, com errata na seção 07."
+    : "Conteúdo desta cópia: snapshot embutido (a API de dados não respondeu).";
+})();
+
 /* ---------- tema claro / escuro / sistema ---------- */
 (function tema(){
   const btn=document.getElementById("theme"), modos=["sistema","claro","escuro"];
@@ -1411,6 +1451,28 @@ secs.forEach(s=>new IntersectionObserver(es=>{
   es.forEach(e=>{if(e.isIntersecting){navlinks.forEach(a=>a.classList.remove("on"));
     const a=navlinks.get(e.target.id); if(a)a.classList.add("on")}});
 },{rootMargin:"-45% 0px -50% 0px"}).observe(s));
+
+}
+
+/* Dados vem de /api/dados (banco). Sem backend ou com a API fora, a pagina
+   renderiza o snapshot embutido acima e avisa a data no rodape. */
+(async function comecar(){
+  try{
+    const r = await fetch("/api/dados", {headers:{Accept:"application/json"}});
+    if(r.ok){
+      const d = await r.json();
+      if(d && Array.isArray(d.N) && d.N.length){
+        L=d.L; CATG=d.CATG; CAT=d.CATG; RING=d.RING; RTYPE=d.RTYPE;
+        BARS=d.BARS; PHASES=d.PHASES; N=d.N; E=d.E;
+        if(d.WIKI) WIKI=d.WIKI;
+        ERRATA = d.ERRATA || [];
+        FONTE_DADOS = "banco";
+      }
+    }
+  }catch(e){ /* segue com o snapshot */ }
+  try{ iniciar(); }catch(e){ console.error("falha ao renderizar", e); }
+})();
+
 
 </script>
 </body>
