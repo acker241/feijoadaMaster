@@ -412,7 +412,7 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
 <section id="dinheiro">
   <div class="wrap">
     <div class="sec-head"><span class="n">02</span><h2>Caminho do dinheiro</h2>
-      <p class="sec-note">Quatro trilhas reconstruídas a partir de relatórios oficiais e reportagens: quem pagou, para quem, quanto e quando. Doação registrada no TSE e decisão já publicada aparecem marcadas; o resto é o que a investigação afirma, com a fonte do lado.</p>
+      <p class="sec-note">Quatro trilhas reconstruídas a partir de relatórios oficiais e reportagens: quem pagou, para quem, quanto e quando. Doação registrada no TSE e decisão já publicada aparecem marcadas; o resto é o que a investigação afirma. As reportagens e os documentos que sustentam cada passo estão listados em <a href="#fontes">Fontes e avisos</a>.</p>
     </div>
     <div class="chips" id="d-filters"></div>
     <p class="trilha-resumo" id="d-resumo"></p>
@@ -1289,7 +1289,7 @@ function fluxoRender(){
   const t=TRILHAS[trAtual];
   dFil.querySelectorAll(".chip[data-tr]").forEach(c=>c.setAttribute("aria-pressed",String(Number(c.dataset.tr)===trAtual)));
   if(!t){ dRes.textContent=""; fluxoEl.innerHTML=`<p class="sec-note">Nenhuma trilha publicada ainda.</p>`; return }
-  dRes.innerHTML=t.resumo+(t.ls&&t.ls.length?srcHtml(t.ls.filter(i=>L[i])):"");
+  dRes.textContent=t.resumo;
   fluxoEl.innerHTML=t.passos.map(p=>{
     const ok=p.status!=="apuracao";
     const selo=p.status==="registro"?"registro oficial":p.status==="decidido"?"decisão publicada":"em apuração";
@@ -1298,7 +1298,6 @@ function fluxoRender(){
       <div class="pmeta">${p.valor?`<span class="pval">${p.valor}</span>`:""}${p.data?`<span class="pdata">${p.data}</span>`:""}
         <span class="pselo">${selo}</span></div>
       <p class="pinfo">${p.info}</p>
-      ${p.ls&&p.ls.length?srcHtml(p.ls.filter(i=>L[i])):""}
     </div>`;
   }).join("")||`<p class="sec-note">Trilha sem passos publicados.</p>`;
   marcarTermos(fluxoEl);
@@ -1360,8 +1359,15 @@ cardsRender();
 /* ---------- fontes ---------- */
 const usoFonte=id=>{
   const nos=N.filter(d=>d.ls.includes(id)).length, vin=links.filter(l=>l.ls.includes(id)).length;
-  const ev=[]; if(!nos&&!vin) return "consulta geral";
-  return [nos?nos+" verbete"+(nos>1?"s":""):"",vin?vin+" vínculo"+(vin>1?"s":""):""].filter(Boolean).join(" · ");
+  let pas=0, tri=0;
+  TRILHAS.forEach(t=>{
+    if((t.ls||[]).includes(id)) tri++;
+    t.passos.forEach(p=>{ if((p.ls||[]).includes(id)) pas++ });
+  });
+  if(!nos&&!vin&&!pas&&!tri) return "consulta geral";
+  return [nos?nos+" verbete"+(nos>1?"s":""):"",vin?vin+" vínculo"+(vin>1?"s":""):"",
+          pas?pas+" passo"+(pas>1?"s":"")+" do dinheiro":"",
+          !pas&&tri?"trilha do dinheiro":""].filter(Boolean).join(" · ");
 };
 document.getElementById("srcs").innerHTML=`<table class="lic"><thead><tr><th>Fonte</th><th>Endereço</th><th>Sustenta</th></tr></thead><tbody>`
  +Object.entries(L).map(([id,[t,u]])=>{
