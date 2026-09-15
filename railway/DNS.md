@@ -5,11 +5,24 @@ Valores que o Railway pediu no painel (Custom Domain), anotados em 15/09/2026.
 | Tipo  | Nome                 | Valor                                        |
 |-------|----------------------|----------------------------------------------|
 | CNAME | `www`                | `jbb56krw.up.railway.app`                    |
-| TXT   | `_railway-verify.www`| `railway-verify=5f3668b0a9e8b73df485a6910e9e60…` |
+| TXT   | `_railway-verify.www`| `railway-verify=5f3668b0a9e8b73df485a6910e9e60eec74f9f16f684af2fc0614b42cb851b81` |
 
-> **O TXT está incompleto.** O painel cortou o valor com "…" na tela que eu vi. Antes de
-> cadastrar, abra o Railway › Settings › Networking › o domínio › e copie o valor inteiro
-> (o botão de copiar pega tudo). Um TXT truncado falha na verificação sem dizer por quê.
+Valor completo do TXT confirmado no Registro.br em 15/09/2026:
+`railway-verify=5f3668b0a9e8b73df485a6910e9e60eec74f9f16f684af2fc0614b42cb851b81`
+(64 caracteres hexadecimais depois do `=`). No Registro.br ele aparece entre aspas duplas — o
+painel adiciona as aspas sozinho; não digite outro par.
+
+## Histórico
+
+- **15/09/2026, primeira tentativa** — a zona apareceu vazia com "Domínio em transição. Por favor,
+  aguarde alguns minutos e tente novamente". Registro recém-feito ou nameserver em alteração trava
+  a zona para escrita; abre sozinha depois de alguns minutos.
+- **15/09/2026, segunda tentativa** — modo avançado liberado, as duas entradas cadastradas com os
+  nomes completos (`www.feijoadadomaster.com.br` e `_railway-verify.www.feijoadadomaster.com.br`),
+  aguardando **Salvar alterações**.
+
+O Registro.br avisa que, depois de entrar no modo avançado, o modo básico só volta a ficar
+disponível em ~13 minutos. Não é problema: o avançado é o que permite CNAME e TXT.
 
 ## Como cadastrar
 
