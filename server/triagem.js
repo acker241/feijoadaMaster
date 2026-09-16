@@ -288,30 +288,185 @@ async function conferirLote() {
   }
 }
 
+
+/* ---------- consolidacao: segunda passada so para achar repeticao ----------
+   A classificacao compara cada grupo com uma lista longa e deixa passar
+   repeticoes. Aqui, sem IA, juntamos em blocos as historias que dividem ao menos
+   a mesma pessoa citada (ou a mesma palavra rara); a IA ve cada bloco curto e
+   responde so quais relatam o mesmo acontecimento. */
+const JANELA_CONSOLIDAR_DIAS = 5;
+const MAX_POR_BLOCO = 40;
+const radicais = (t) => new Set([...palavras(t)].map((w) => w.slice(0, 5)));
+
+const INSTRUCOES_CONSOLIDAR = `Você ajuda o editor do "Feijoada do Master" (caso Banco Master / Daniel Vorcaro) a limpar a fila de notícias: a mesma história chega repetida por vários veículos, com palavras diferentes.
+
+Recebe uma lista de histórias (id · data · título). Junte as que relatam o MESMO acontecimento: o mesmo fato, decisão, declaração ou documento, mesmo que um título traga um detalhe a mais (ex.: "Conselho do MP analisará mensagens de Vorcaro que citam Gonet" e "Conselho Superior do MPF marca sessão para analisar mensagens de Vorcaro sobre Gonet").
+
+Não junte etapas diferentes de uma novela (pedido, depois decisão, depois entrega), nem fatos distintos sobre a mesma pessoa. Na dúvida, não junte.
+
+Responda só os conjuntos com 2 ou mais ids, usando exatamente os ids recebidos. Se nada se repete, devolva a lista vazia.`;
+
+const SCHEMA_CONSOLIDAR = {
+  type: "object",
+  properties: {
+    grupos: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: { ids: { type: "array", items: { type: "integer" } } },
+        required: ["ids"],
+        additionalProperties: false,
+      },
+    },
+  },
+  required: ["grupos"],
+  additionalProperties: false,
+};
+
+/* blocos por ancora: a pessoa citada (ja marcada na coleta) ou, sem pessoa, a palavra
+   mais rara do titulo. Componentes por semelhanca encadeavam tudo via "Moraes"/"STF". */
+const ANCORAS_GENERICAS = new Set(["stf", "pf", "bc", "master", "vorcaro"]);
+async function blocosParaConsolidar(dias) {
+  const { rows } = await pool.query(`
+    SELECT r.id, r.titulo, r.status, max(coalesce(m.publicado_em, m.encontrado_em)) AS quando,
+           (SELECT coalesce(array_agg(DISTINCT p), '{}') FROM noticias x, unnest(x.pessoas) p WHERE x.grupo = r.id) AS pessoas
+      FROM noticias r JOIN noticias m ON m.grupo = r.id
+     WHERE r.grupo = r.id
+     GROUP BY r.id
+    HAVING max(coalesce(m.publicado_em, m.encontrado_em)) >= now() - make_interval(days => $1)
+     ORDER BY quando`, [dias]);
+  const itens = rows.map((r) => ({ ...r, id: Number(r.id), r: radicais(r.titulo), t: new Date(r.quando).getTime() }));
+  const df = new Map();
+  for (const i of itens) for (const w of i.r) df.set(w, (df.get(w) || 0) + 1);
+  const porAncora = new Map();
+  const poe = (k, i) => { if (!porAncora.has(k)) porAncora.set(k, []); porAncora.get(k).push(i); };
+  for (const i of itens) {
+    const pessoas = (i.pessoas || []).filter((p) => !ANCORAS_GENERICAS.has(p));
+    if (pessoas.length) { for (const p of pessoas) poe("p:" + p, i); continue; }
+    const rara = [...i.r].filter((w) => df.get(w) >= 2).sort((a, b) => df.get(a) - df.get(b))[0];
+    if (rara) poe("w:" + rara, i);
+  }
+  /* so interessa bloco com alguma historia ainda aberta; bloco grande vira fatias por data */
+  const blocos = [];
+  for (const lista of porAncora.values()) {
+    if (lista.length < 2 || !lista.some((i) => i.status === "novo")) continue;
+    for (let k = 0; k < lista.length; k += MAX_POR_BLOCO) {
+      const fatia = lista.slice(k, k + MAX_POR_BLOCO);
+      if (fatia.length >= 2 && fatia.some((i) => i.status === "novo")) blocos.push(fatia);
+    }
+  }
+  return blocos;
+}
+
+async function consolidar(dias) {
+  const api = cliente();
+  if (!api) return { pulado: true };
+  const aberto = await pool.query("SELECT valor FROM meta WHERE chave='triagem_consolidacao'");
+  if (aberto.rows.length) return { pendente: JSON.parse(aberto.rows[0].valor).id };
+  /* a primeira consolidacao cobre a fila acumulada; as seguintes, so os ultimos dias */
+  if (!dias) dias = (await pool.query("SELECT 1 FROM meta WHERE chave='triagem_consolidada'")).rows.length ? JANELA_CONSOLIDAR_DIAS : 15;
+  try {
+    const blocos = await blocosParaConsolidar(dias);
+    if (!blocos.length) return { nada: true };
+    const dia = (t) => new Date(t).toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit" });
+    const pedidos = blocos.map((b, i) => ({
+      custom_id: `bloco-${i}`,
+      params: {
+        model: MODELO,
+        max_tokens: 3000,
+        system: [{ type: "text", text: INSTRUCOES_CONSOLIDAR }],
+        messages: [{ role: "user", content: b.map((h) => `${h.id} · ${dia(h.t)} · ${h.titulo}`).join("\n") }],
+        output_config: { format: { type: "json_schema", schema: SCHEMA_CONSOLIDAR } },
+      },
+    }));
+    const lote = await api.messages.batches.create({ requests: pedidos });
+    const historias = blocos.reduce((a, b) => a + b.length, 0);
+    await pool.query("INSERT INTO meta (chave,valor) VALUES ('triagem_consolidacao',$1) ON CONFLICT (chave) DO UPDATE SET valor=EXCLUDED.valor",
+      [JSON.stringify({ id: lote.id, criado: new Date().toISOString(), blocos: blocos.length, historias })]);
+    console.log(`[triagem] consolidação ${lote.id} criada: ${historias} história(s) em ${blocos.length} bloco(s)`);
+    return { criado: lote.id, blocos: blocos.length, historias };
+  } catch (e) {
+    console.error("[triagem] criar consolidação falhou:", e.status || "", e.message);
+    return { erro: e.message };
+  }
+}
+
+async function conferirConsolidacao() {
+  const api = cliente();
+  if (!api) return { pulado: true };
+  const aberto = await pool.query("SELECT valor FROM meta WHERE chave='triagem_consolidacao'");
+  if (!aberto.rows.length) return { nada: true };
+  const info = JSON.parse(aberto.rows[0].valor);
+  try {
+    const lote = await api.messages.batches.retrieve(info.id);
+    if (lote.processing_status !== "ended") return { andamento: lote.processing_status };
+    let fundidos = 0, falhas = 0;
+    for await (const r of await api.messages.batches.results(info.id)) {
+      const msg = r.result.type === "succeeded" ? r.result.message : null;
+      const texto = msg && msg.stop_reason === "end_turn" && msg.content.find((b) => b.type === "text");
+      if (!texto) { falhas++; continue; }
+      let grupos;
+      try { grupos = JSON.parse(texto.text).grupos || []; } catch { falhas++; continue; }
+      for (const g of grupos) {
+        const ids = [...new Set((g.ids || []).filter(Number.isInteger))];
+        if (ids.length < 2) continue;
+        /* destino: quem ja tem decisao tomada; senao o grupo com mais materias */
+        const { rows } = await pool.query(`
+          SELECT r.id, r.status, count(m.id)::int AS qtd FROM noticias r JOIN noticias m ON m.grupo = r.id
+           WHERE r.id = ANY($1::bigint[]) AND r.grupo = r.id GROUP BY r.id`, [ids]);
+        if (rows.length < 2) continue;
+        rows.sort((a, b) => (a.status === "novo") - (b.status === "novo") || b.qtd - a.qtd || Number(a.id) - Number(b.id));
+        const destino = Number(rows[0].id);
+        for (const o of rows.slice(1)) {
+          try { if (await fundir(Number(o.id), destino)) fundidos++; } catch (e) { console.error("[triagem] fusão falhou:", e.message); }
+        }
+      }
+    }
+    await pool.query("DELETE FROM meta WHERE chave='triagem_consolidacao'");
+    await pool.query("INSERT INTO meta (chave,valor) VALUES ('triagem_consolidada',$1) ON CONFLICT (chave) DO UPDATE SET valor=EXCLUDED.valor",
+      [JSON.stringify({ quando: new Date().toISOString(), lote: info.id, historias: info.historias, fundidos, falhas })]);
+    console.log(`[triagem] consolidação ${info.id} terminou: ${fundidos} história(s) juntadas, ${falhas} bloco(s) com falha`);
+    return { fundidos, falhas };
+  } catch (e) {
+    console.error("[triagem] conferir consolidação falhou:", e.status || "", e.message);
+    if (e.status === 404) await pool.query("DELETE FROM meta WHERE chave='triagem_consolidacao'");
+    return { erro: e.message };
+  }
+}
+
 async function refazerAbertas() {
   const r = await pool.query("UPDATE noticias SET categoria=NULL, no_site=NULL, motivo_ia=NULL, classificado_em=NULL WHERE status='novo' AND categoria IS NOT NULL");
   return r.rowCount;
 }
 
 async function situacao() {
-  const r = await pool.query("SELECT chave, valor FROM meta WHERE chave IN ('triagem_lote','triagem_ultima')");
+  const r = await pool.query("SELECT chave, valor FROM meta WHERE chave IN ('triagem_lote','triagem_ultima','triagem_consolidacao','triagem_consolidada')");
   const m = Object.fromEntries(r.rows.map((x) => { try { return [x.chave, JSON.parse(x.valor)]; } catch { return [x.chave, null]; } }));
-  return { ativa: !!process.env.ANTHROPIC_API_KEY, lote: m.triagem_lote || null, ultima: m.triagem_ultima || null };
+  return { ativa: !!process.env.ANTHROPIC_API_KEY, lote: m.triagem_lote || null, ultima: m.triagem_ultima || null,
+    consolidacao: m.triagem_consolidacao || null, consolidada: m.triagem_consolidada || null };
 }
 
 /* depois de cada coleta: agrupa, fecha lote pronto e abre lote novo; entre coletas confere o lote a cada 5 min */
+/* ordem: agrupa por palavras -> fecha lotes prontos -> classifica o que falta ->
+   quando nao ha mais nada para classificar, consolida as repeticoes */
 async function rodar() {
   try {
     const n = await agrupar();
     if (n) console.log(`[triagem] ${n} notícia(s) agrupadas`);
     await conferirLote();
-    await classificar();
+    await conferirConsolidacao();
+    const c = await classificar();
+    if (c.nada) await consolidar();
   } catch (e) { console.error("[triagem] falhou:", e.message); }
 }
 function agendar() {
   setInterval(async () => {
-    try { const r = await conferirLote(); if (r && r.lote) await classificar(); } catch { /* registrado dentro */ }
+    try {
+      const r = await conferirLote();
+      if (r && r.lote) { const c = await classificar(); if (c.nada) await consolidar(); }
+      await conferirConsolidacao();
+    } catch { /* registrado dentro */ }
   }, 5 * 60_000).unref();
 }
 
-module.exports = { agrupar, classificar, conferirLote, rodar, agendar, situacao, refazerAbertas, CATEGORIAS, palavras, parecidos };
+module.exports = { agrupar, classificar, conferirLote, consolidar, conferirConsolidacao, blocosParaConsolidar, rodar, agendar, situacao, refazerAbertas, CATEGORIAS, palavras, parecidos };

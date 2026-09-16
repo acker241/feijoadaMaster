@@ -86,10 +86,12 @@ function linhaStatus(o) {
     : t.lote ? `Triagem por IA: lote com ${t.lote.grupos} grupo(s) em processamento desde ${dataSP(t.lote.criado)}.`
     : t.ultima ? `Última triagem por IA ${dataSP(t.ultima.quando)}: ${t.ultima.grupos} grupo(s)${t.ultima.falhas ? `, ${t.ultima.falhas} pedido(s) com falha` : ""}.`
     : "Triagem por IA ainda não rodou.";
+  const con = t.consolidacao ? ` Juntando histórias repetidas (${t.consolidacao.historias} em análise).`
+    : t.consolidada ? ` Última junção de repetidas ${dataSP(t.consolidada.quando)}: ${t.consolidada.fundidos} juntada(s).` : "";
   return `<div class="status">${o.rodando ? "<b>Coleta em andamento</b> — recarregue em alguns minutos. " : ""}${esc(quando)}.
     Coleta automática a cada ${o.horas}h; busca por pessoa uma vez por dia.
     <form class="inline" method="post" action="/admin/noticias/coletar"><button type="submit" ${o.rodando ? "disabled" : ""} style="margin-left:8px">coletar agora</button></form>
-    <br>${esc(tri)}
+    <br>${esc(tri + con)}
     ${t.ativa && !t.lote ? `<form class="inline" method="post" action="/admin/noticias/triar"><button type="submit" style="margin-left:8px">triar agora</button></form>
       <form class="inline" method="post" action="/admin/noticias/retriar"><button type="submit" style="margin-left:4px" title="Classifica de novo todas as histórias abertas e junta as repetidas. Usa créditos da API (menos de US$ 1 para a fila atual).">refazer triagem das abertas</button></form>` : ""}
     ${o.msg ? `<br><b>${esc(o.msg)}</b>` : ""}</div>`;
