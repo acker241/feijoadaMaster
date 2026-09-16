@@ -744,7 +744,7 @@ const hit=gHit.selectAll("line").data(links).join("line").attr("class","hit")
 const node=gNode.selectAll("g").data(N).join("g").attr("class","node")
  .on("mouseenter",(e,d)=>{tipNode(e,d);focusNode(d)})
  .on("mousemove",moveTip).on("mouseleave",()=>{hideTip();clearFocus()})
- .on("click",(e,d)=>showNode(d))
+ .on("click",(e,d)=>{fmEv("no",d.id,true);showNode(d)})
  .call(d3.drag()
    .on("start",(e,d)=>{if(!e.active)sim.alphaTarget(.2).restart();d.fx=d.x;d.fy=d.y})
    .on("drag",(e,d)=>{d.fx=e.x;d.fy=e.y})
@@ -884,6 +884,7 @@ function blocoDinheiro(id){
 }
 function showEdge(d){
   const a=byId.get(d.source.id||d.source), b=byId.get(d.target.id||d.target);
+  fmEv("ligacao",a&&b?a.id+"~"+b.id:null,true);
   panel.innerHTML=`
    <p class="role" style="--k:${RTYPE[d.k][1]}">Vínculo ${RTYPE[d.k][0].toLowerCase()}</p>
    <h3>${a.n} ↔ ${b.n}</h3>
@@ -895,8 +896,8 @@ function showEdge(d){
      <button id="pb"><i style="--d:${CATG[b.c].c}"></i><span><b>${b.n}</b> — ${b.r}</span></button>
    </div></div>
    <p class="warn">O vínculo descrito reflete o que consta de investigações em curso e de reportagens — não uma conclusão judicial.</p>`;
-  panel.querySelector("#pa").onclick=()=>showNode(a);
-  panel.querySelector("#pb").onclick=()=>showNode(b);
+  panel.querySelector("#pa").onclick=()=>{fmEv("no",a.id,true);showNode(a)};
+  panel.querySelector("#pb").onclick=()=>{fmEv("no",b.id,true);showNode(b)};
   panel.scrollTop=0;
 }
 showNode(byId.get("vorcaro"));
@@ -932,11 +933,12 @@ gf.addEventListener("click",e=>{
   gRender();
 });
 document.getElementById("g-q").addEventListener("input",e=>{
+  fmEv("busca","rede",true);
   const q=e.target.value.trim().toLowerCase();
   if(!q){node.classed("dim",false);return}
   const hits=N.filter(d=>d.n.toLowerCase().includes(q)||d.r.toLowerCase().includes(q));
   node.classed("dim",d=>!hits.includes(d));
-  if(hits.length===1) showNode(hits[0]);
+  if(hits.length===1){ fmEv("no",hits[0].id,true); showNode(hits[0]) }
 });
 gRender();
 
@@ -975,7 +977,7 @@ dFil.innerHTML=TRILHAS.map((t,i)=>`<button class="chip" data-tr="${i}" aria-pres
  +`<span class="hint">${TRILHAS.reduce((a,t)=>a+t.passos.length,0)} passos com fonte</span>`;
 dFil.addEventListener("click",e=>{
   const b=e.target.closest(".chip[data-tr]"); if(!b) return;
-  trAtual=Number(b.dataset.tr); fluxoRender();
+  trAtual=Number(b.dataset.tr); fluxoRender(); fmEv("trilha",TRILHAS[trAtual]&&TRILHAS[trAtual].id,true);
 });
 fluxoRender();
 document.addEventListener("click",e=>{
@@ -1034,7 +1036,7 @@ qf.addEventListener("click",e=>{
   const k=b.dataset.cat; qOff.has(k)?qOff.delete(k):qOff.add(k);
   b.setAttribute("aria-pressed",!qOff.has(k)); cardsRender();
 });
-qf.addEventListener("input",e=>{if(e.target.id==="q-q")cardsRender()});
+qf.addEventListener("input",e=>{if(e.target.id==="q-q"){fmEv("busca","quem",true);cardsRender()}});
 cardsRender();
 
 /* ---------- fontes ---------- */
@@ -1207,6 +1209,7 @@ function mailtoLink(d){
 document.getElementById("f-copy").addEventListener("click",async()=>{
   const d=draft();
   if(!d.mensagem.trim()){say("Escreva a mensagem antes de copiar.","var(--accent)");return}
+  fmEv("copiar",null,true);
   try{await navigator.clipboard.writeText(texto(d));fStatus.textContent="texto copiado"}
   catch(e){fStatus.textContent="não foi possível copiar — selecione o texto manualmente"}
 });
@@ -1239,7 +1242,7 @@ form.addEventListener("submit",async e=>{
       throw new Error(detalhe);
     }
     if(window.turnstile&&SITEKEY) window.turnstile.reset();
-    form.reset(); fMsg.value=""; fCnt.textContent="0 caracteres";
+    fmEv("msg_ok"); form.reset(); fMsg.value=""; fCnt.textContent="0 caracteres";
     try{localStorage.removeItem("fm:draft")}catch(err){}
     say("Mensagem recebida e registrada. Se você deixou e-mail e o caso pedir resposta, ela vem por ali. Correção com fonte costuma entrar na página em poucos dias.","var(--c-reg)");
     fStatus.textContent="";
@@ -1276,7 +1279,7 @@ function glosRender(){
     </div>`).join(""):`<p class="sec-note">Nenhum termo com esse filtro.</p>`;
 }
 glosRender();
-document.getElementById("glos-q")?.addEventListener("input",glosRender);
+document.getElementById("glos-q")?.addEventListener("input",()=>{fmEv("busca","glossario",true);glosRender()});
 
 /* --- marcação automática: nomes de verbetes e termos do glossário --- */
 function glosMapa(){ return new Map(GLOS.map(g=>[g.id,g])) }
@@ -1384,7 +1387,7 @@ addEventListener("keydown",e=>{
 });
 document.addEventListener("click",e=>{
   const b=e.target.closest(".tref"); if(!b) return;
-  e.preventDefault(); irPara(b.dataset.dest);
+  e.preventDefault(); fmEv("ref",b.dataset.dest,true); irPara(b.dataset.dest);
 });
 
 /* ---------- 08 errata ---------- */
@@ -1466,6 +1469,51 @@ secs.forEach(s=>new IntersectionObserver(es=>{
 },{rootMargin:"-45% 0px -50% 0px"}).observe(s));
 
 }
+
+/* ---------- metrica anonima de visita ----------
+   Sem cookie e sem identificador guardado no navegador. Manda so o que foi
+   visto ou clicado (nunca o texto digitado) para /api/ev. */
+var FM_M=null;
+function fmEv(tipo,alvo,uma){
+  const m=FM_M; if(!m) return;
+  const k=tipo+":"+(alvo==null?"":alvo);
+  if(uma){ if(m.vistos.has(k)) return; m.vistos.add(k) }
+  m.fila.push({t:tipo,a:alvo==null?null:String(alvo).slice(0,80)});
+  clearTimeout(m.timer);
+  if(m.fila.length>=20) m.manda(); else m.timer=setTimeout(m.manda,5000);
+}
+(function metrica(){
+  if(location.protocol==="file:"||navigator.webdriver) return;
+  const m=FM_M={vistos:new Set(),fila:[],timer:null,visivel:document.visibilityState==="visible"?Date.now():0};
+  let meta={r:document.referrer||"",d:matchMedia("(max-width:760px)").matches?"m":"d"};
+  m.manda=function(){
+    clearTimeout(m.timer); if(!m.fila.length) return;
+    const corpo=JSON.stringify({...meta,e:m.fila.splice(0)});
+    try{
+      if(!(navigator.sendBeacon&&navigator.sendBeacon("/api/ev",new Blob([corpo],{type:"text/plain"}))))
+        fetch("/api/ev",{method:"POST",body:corpo,keepalive:true}).catch(()=>{});
+    }catch(e){}
+  };
+  function contaTempo(){
+    if(m.visivel){ const s=Math.round((Date.now()-m.visivel)/1000); m.visivel=0; if(s>0) fmEv("tempo",s) }
+  }
+  document.addEventListener("visibilitychange",()=>{
+    if(document.visibilityState==="hidden"){ contaTempo(); m.manda() }
+    else m.visivel=Date.now();
+  });
+  addEventListener("pagehide",()=>{ contaTempo(); m.manda() });
+  fmEv("view",location.hash?location.hash.slice(1):null);
+  if("IntersectionObserver" in window){
+    const io=new IntersectionObserver(es=>es.forEach(en=>{
+      if(en.isIntersecting){ fmEv("sec",en.target.id,true); io.unobserve(en.target) }
+    }),{rootMargin:"-45% 0px -45% 0px"});
+    document.querySelectorAll("section[id]").forEach(s=>io.observe(s));
+  }
+  document.addEventListener("click",e=>{
+    const a=e.target.closest("a[href^='http']"); if(!a) return;
+    try{ const h=new URL(a.href).hostname.replace(/^www\./,""); if(h&&h!==location.hostname.replace(/^www\./,"")) fmEv("fonte",h,true) }catch(err){}
+  },true);
+})();
 
 /* Dados vem de /api/dados (banco). Sem backend ou com a API fora, a pagina
    renderiza o snapshot embutido acima e avisa a data no rodape. */

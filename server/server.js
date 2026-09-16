@@ -10,6 +10,8 @@ const { pool, migrar } = require("./db");
 const admin = require("./admin");
 const conteudo = require("./conteudo");
 const adminConteudo = require("./admin-conteudo");
+const metricas = require("./metricas");
+const adminStats = require("./admin-stats");
 
 const PORTA = Number(process.env.PORT || 8080);
 const SITEKEY = process.env.TURNSTILE_SITEKEY || "";
@@ -293,6 +295,13 @@ async function rotaAdmin(req, res, url) {
     return enviar(res, 200, adminConteudo.conteudo(ent, filtradas, opcoes, contagens, q, err), "text/html; charset=utf-8", CSP_ADMIN);
   }
 
+  if (url.pathname === "/admin/stats") {
+    const d = Number(url.searchParams.get("dias"));
+    const dias = [7, 30, 90, 365].includes(d) ? d : 30;
+    const r = await metricas.resumo(dias);
+    return enviar(res, 200, adminStats.stats(r), "text/html; charset=utf-8", CSP_ADMIN);
+  }
+
   if (url.pathname === "/admin/export.csv") {
     const { rows } = await pool.query("SELECT id,criado_em,tipo,nome,email,referencia,mensagem,autoriza_pub,status,ip,nota_interna FROM mensagens ORDER BY criado_em DESC");
     const esc = (v) => `"${String(v ?? "").replaceAll('"', '""')}"`;
@@ -323,6 +332,15 @@ const servidor = http.createServer(async (req, res) => {
     if (url.pathname === "/api/mensagem") {
       if (req.method !== "POST") return json(res, 405, { erro: "use POST" });
       return await rotaMensagem(req, res);
+    }
+    if (url.pathname === "/api/ev") {
+      if (req.method !== "POST") return json(res, 405, { erro: "use POST" });
+      res.statusCode = 204;
+      if (!limitar(`ev:${ipDe(req)}`, 120, 10 * 60_000)) return res.end();
+      try {
+        await metricas.registrar(await lerCorpo(req, 8192), ipDe(req), req.headers["user-agent"] || "", req.headers.host);
+      } catch (e) { console.error("[metricas] falhou:", e.message); }
+      return res.end();
     }
     if (url.pathname === "/api/config") return json(res, 200, { sitekey: SITEKEY });
     if (url.pathname === "/api/dados") {
@@ -359,4 +377,6 @@ const servidor = http.createServer(async (req, res) => {
   const ok = await migrar();
   if (!ok) { console.error("[db] banco inacessível — o site serve o snapshot embutido e não grava mensagens"); return; }
   try { await conteudo.semear(); } catch (e) { console.error("[conteudo] semeadura falhou:", e.message); }
+  metricas.limpar();
+  setInterval(metricas.limpar, 24 * 60 * 60_000).unref();
 })();

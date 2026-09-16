@@ -154,3 +154,17 @@ CREATE TABLE IF NOT EXISTS passos (
   fontes    TEXT[] NOT NULL DEFAULT '{}'
 );
 CREATE INDEX IF NOT EXISTS passos_trilha_idx ON passos (trilha);
+
+-- ---------- metricas de visita (anonimas: sem cookie, sem IP) ----------
+-- visitante = hash de (segredo + dia + ip + navegador); muda todo dia, nao identifica ninguem.
+CREATE TABLE IF NOT EXISTS metricas (
+  id         BIGSERIAL PRIMARY KEY,
+  criado_em  TIMESTAMPTZ NOT NULL DEFAULT now(),
+  dia        DATE NOT NULL DEFAULT (now() AT TIME ZONE 'America/Sao_Paulo')::date,
+  visitante  TEXT NOT NULL,
+  tipo       TEXT NOT NULL,
+  alvo       TEXT,
+  ref        TEXT,
+  disp       TEXT
+);
+CREATE INDEX IF NOT EXISTS metricas_dia_tipo_idx ON metricas (dia, tipo);

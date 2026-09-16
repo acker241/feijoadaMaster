@@ -127,7 +127,7 @@ exports.lista = (rows, contagens, filtro, tipos) => {
 <div class="wrap">
   <p class="sub">Painel · mensagens recebidas</p>
   <h1>Feijoada <span>do Master</span></h1>
-  <div class="bar">${chips}<span class="sp"></span><a class="pill" href="/admin/conteudo">editar conteúdo</a><a class="pill" href="/admin/export.csv">baixar CSV</a><a class="pill" href="/admin/sair">sair</a></div>
+  <div class="bar">${chips}<span class="sp"></span><a class="pill" href="/admin/stats">estatísticas</a><a class="pill" href="/admin/conteudo">editar conteúdo</a><a class="pill" href="/admin/export.csv">baixar CSV</a><a class="pill" href="/admin/sair">sair</a></div>
   <div class="bar" style="margin-top:-6px;border:0;padding:0">${chipsTipo}</div>
   ${itens}
   <p class="sub" style="margin-top:26px">Mensagem com ameaça é preservada com data, hora e IP — não use "arquivado" como exclusão.</p>
