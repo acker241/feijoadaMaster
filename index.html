@@ -312,6 +312,8 @@ table.lic td.u a{color:var(--ink-3)}
   border:1px solid var(--rule-strong);color:var(--ink-3);padding:2px 7px;border-radius:2px}
 .passo.ok .pselo{border-color:var(--c-reg);color:var(--c-reg)}
 .pinfo{font-size:14.5px;color:var(--ink-2);line-height:1.6;margin:9px 0 0;max-width:700px}
+.vlab{font-family:"DM Mono",monospace;font-size:9.5px;fill:var(--ink);pointer-events:none;
+  paint-order:stroke;stroke:var(--paper);stroke-width:3px;stroke-linejoin:round}
 .pfons{display:inline-flex;gap:5px;align-items:center}
 .pfon{display:inline-flex;width:21px;height:21px;border:1px solid var(--rule-strong);border-radius:50%;
   align-items:center;justify-content:center;font-size:11px;line-height:1;color:var(--ink-3);
@@ -589,407 +591,23 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
 <script>
 var L={"wpt": ["Escândalo do Banco Master — Wikipédia", "https://pt.wikipedia.org/wiki/Esc%C3%A2ndalo_do_Banco_Master"], "wen": ["Banco Master scandal — Wikipedia", "https://en.wikipedia.org/wiki/Banco_Master_scandal"], "cnn": ["CNN Brasil — relembre a liquidação", "https://www.cnnbrasil.com.br/economia/money/macroeconomia/caso-master-relembre-a-liquidacao-do-banco-que-envolve-bc-stf-e-tcu/"], "cj": ["Conjur — o caso no STF (Pet 16.662)", "https://conjur.com.br/2026-set-13/para-entender-o-caso-banco-master-vorcaro-no-stf-pet-16-662/"], "af": ["Aos Fatos — as novas revelações", "https://www.aosfatos.org/noticias/explicamos-novas-revelacoes-caso-master/"], "ap": ["Agência Pública — crise no STF", "https://apublica.org/2026/09/crise-no-stf-e-mensagens-de-moraes-e-vorcaro-como-chegamos-aqui/"], "ap2": ["Agência Pública — 24h de revelações", "https://apublica.org/2026/09/analise-as-revelacoes-sobre-master-vorcaro-moraes-e-mendonca/"], "p360": ["Poder360 — o que há em cada documento", "https://www.poder360.com.br/poder-justica/master-sem-sigilo-saiba-o-que-ha-em-cada-documento/"], "im": ["InfoMoney — pagamentos do FGC", "https://www.infomoney.com.br/minhas-financas/fgc-tudo-o-que-voce-precisa-saber-sobre-os-pagamentos-para-clientes-do-banco-master/"], "br": ["O Brasilianista — desdobramentos", "https://obrasilianista.com.br/2026/09/08/justica/leia-todos-os-desdobramentos-do-caso-master"], "oe": ["Revista Oeste — depoimento adiado", "https://revistaoeste.com/politica/policia-federal-adia-depoimento-de-daniel-vorcaro-para-24-de-setembro/"], "ab": ["Agência Brasil — BRB e os achados relevantes", "https://agenciabrasil.ebc.com.br/economia/noticia/2026-02/brb-diz-ter-encontrado-achados-relevantes-sobre-caso-do-banco-master"], "ic": ["Intercept — Mendonça e Moraes no caso", "https://www.intercept.com.br/2026/09/05/mendonca-moraes-sujeira-banco-master/"], "bd": ["Band — PGR apura interferência em relatório", "https://www.band.com.br/politica/caso-master-pgr-diz-que-investigara-interferencia-em-relatorio-da-pf"], "cb": ["Correio Braziliense — PGR e o fim do sigilo", "https://www.correiobraziliense.com.br/politica/2026/09/7499903-pgr-defende-fim-de-sigilo-em-investigacao-sobre-rede-de-pagamentos-do-master.html"], "b247": ["Brasil 247 — PF prepara indiciamento", "https://www.brasil247.com/brasil/pf-prepara-conclusao-do-caso-master-e-indiciamento-de-vorcaro/"], "ap3": ["Agência Pública — a reconstrução completa da fraude", "https://apublica.org/2026/03/banco-master-a-reconstrucao-completa-de-como-uma-fraude-capturou-a-republica/"], "nd": ["ND Mais — os principais beneficiários dos pagamentos", "https://ndmais.com.br/politica/master-dinheiro-advogados-vorcaro/"], "tb": ["Times Brasil — a liquidação da Sefer", "https://timesbrasil.com.br/empresas-e-negocios/bancos-fintechs/liquidacao-sefer-engrenagem-vorcaro-master/"], "ti": ["Transparência Internacional — o caso Master", "https://transparenciainternacional.org.br/posts/o-caso-master/"], "cb2": ["Correio Braziliense — Vorcaro troca defesa", "https://www.correiobraziliense.com.br/politica/2026/03/7375513-vorcaro-troca-defesa-e-sinaliza-delacao.html"], "mm": ["Monitor Mercantil — fraudes de R$ 12 bi", "https://monitormercantil.com.br/pf-prende-dono-do-banco-master-e-bc-decreta-liquidacao-da-master-corretora/"], "jgb": ["Jornal Grande Bahia — Moraes chama relatório de farsa", "https://jornalgrandebahia.com.br/2026/09/ministro-alexandre-de-moraes-qualifica-relatorio-da-pf-no-caso-master-de-farsa-acusa-andre-mendonca-de-vinganca-e-nega-dialogos-com-daniel-vorcaro/"], "alb": ["Aliados Brasil — Moraes apresenta defesa ao STF", "https://www.aliadosbrasiloficial.com.br/noticia/caso-master-moraes-apresenta-defesa-ao-stf-e-nega-vazamento-de-informacoes-ou-favorecimento"], "b247b": ["Brasil 247 — defesa de Vorcaro fala em fato inexistente", "https://www.brasil247.com/brasil/defesa-de-daniel-vorcaro-diz-que-investigacao-se-baseia-em-fato-inexistente-e-nega-fraude-bilionaria"], "dj": ["Debate Jurídico — Vorcaro depõe e nega corrupção", "https://debatejuridico.com.br/daniel-vorcaro-depoe-a-pf-sobre-banco-master-e-nega-corrupcao-saiba-o-que-disse-a-defesa/"], "ot2": ["O Tempo — defesa pede filtro de sigilo para dados íntimos", "https://www.otempo.com.br/politica/judiciario/2026/9/13/defesa-de-vorcaro-pede-que-stf-adote-filtro-para-manter-sigilo-em-dados-intimos-no-caso-master"], "oe3": ["Revista Oeste — Jaques Wagner recorre ao STF", "https://revistaoeste.com/no-ponto/caso-master-na-mira-da-pf-jaques-wagner-recorre-ao-stf/"], "ab2": ["Agência Brasil — entidades financeiras defendem o Banco Central", "https://agenciabrasil.ebc.com.br/economia/noticia/2025-12/entidades-financeiras-defendem-atuacao-do-banco-central-no-caso-master"], "fbdec": ["Decisão judicial — remoção de conteúdo falso sobre Flávio Bolsonaro", "https://tagteam.harvard.edu/hub_feeds/3884/feed_items/17269532/content"], "cb3": ["Correio Braziliense — o que é a emenda Master", "https://www.correiobraziliense.com.br/politica/2026/06/7444379-o-que-e-emenda-master-citada-pela-pf-contra-ciro-nogueira-e-jaques-wagner.html"], "jdb": ["Jornal de Brasília — mensagens sobre Mendonça e filhos de Fux e Kassio", "https://jornaldebrasilia.com.br/noticias/politica-e-poder/veja-o-que-dizem-mensagens-no-celular-de-vorcaro-sobre-andre-mendonca-e-filhos-de-fux-e-kassio/"], "ex1": ["Exame — do Master ao fundo nos EUA: o caminho do dinheiro do Dark Horse", "https://exame.com/brasil/do-banco-master-ao-fundo-nos-eua-o-caminho-do-dinheiro-para-o-dark-horse-segundo-a-pf/"], "cnndh": ["CNN Brasil — relatório da PF pede esclarecimento sobre o fundo nos EUA", "https://www.cnnbrasil.com.br/politica/dark-horse-relatorio-da-pf-pede-esclarecimento-sobre-fundo-nos-eua/"], "abdh": ["Agência Brasil — PF aponta cobranças de Flávio a Vorcaro pelo Dark Horse", "https://agenciabrasil.ebc.com.br/justica/noticia/2026-09/pf-aponta-cobrancas-de-flavio-vorcaro-por-filme-dark-horse"], "icdh": ["Intercept — produtora esconde da Ancine quem mandava no dinheiro de Vorcaro", "https://www.intercept.com.br/2026/09/04/produtora-dark-horse-esconde-ancine-quem-mandava-dinheiro-vorcaro/"], "apdh": ["Agência Pública — o escândalo do filme Dark Horse", "https://apublica.org/2026/05/flavio-bolsonaro-vorcaro-master-escandalo-filme-dark-horse-azarao/"], "mope": ["Metrópoles — entenda as operações do Master que chamaram atenção", "https://www.metropoles.com/colunas/dinheiro-e-negocios/entenda-operacoes-do-master-que-chamaram-atencao-das-autoridades"], "mtir": ["Metrópoles — Master comprou R$ 6,7 bi de carteiras, não pagou nada e vendeu ao BRB", "https://www.metropoles.com/colunas/dinheiro-e-negocios/master-comprou-r-67-bilhoes-de-carteiras-podres-nao-pagou-nada-e-vendeu-por-r-122-bilhoes-ao-brb"], "mbrb": ["Metrópoles — BRB comprou R$ 30,4 bilhões em ativos do Master (planilhas)", "https://www.metropoles.com/colunas/demetrio-vecchioli/brb-comprou-r-304-bilhoes-em-ativos-do-banco-master-veja-planilhas"], "mman": ["Metrópoles — as manobras do BRB para pagar bilhões ao Master", "https://www.metropoles.com/colunas/dinheiro-e-negocios/as-manobras-do-brb-para-pagar-bilhoes-ao-master-em-operacoes-fraudulentas"], "moff": ["Metrópoles — BRB procura fundos do Master em Jersey e nas Bahamas e acha contas vazias", "https://www.metropoles.com/colunas/dinheiro-e-negocios/brb-vai-ate-bahamas-e-ilha-jersey-atras-de-fundos-do-master-e-descobre-que-nao-tinham-saldo-nem-liquidez"], "mimo": ["Metrópoles — PF diz que ex-presidente do BRB recebeu R$ 140 milhões em imóveis", "https://www.metropoles.com/brasil/pf-ex-presidente-do-brb-recebeu-r-140-milhoes-em-imoveis-do-master"], "mres": ["Metrópoles — Master não devolveu R$ 12,2 bi por ter sido 'pego de surpresa', disse Vorcaro", "https://www.metropoles.com/colunas/dinheiro-e-negocios/master-nao-devolveu-r-122-bilhoes-ao-brb-por-ter-sido-pego-de-surpresa-disse-vorcaro"], "mrombo": ["Metrópoles — presidente do BRB estima rombo de R$ 8,8 bilhões", "https://www.metropoles.com/colunas/grande-angular/presidente-do-brb-estima-rombo-de-r-88-bilhoes-com-master"], "mvit": ["Metrópoles — BRB comenta a queda do sigilo e diz ser vítima de atos criminosos", "https://www.metropoles.com/colunas/grande-angular/master-brb-comenta-queda-de-sigilo-e-diz-ser-vitima-de-atos-criminosos"], "cnnrio": ["CNN Brasil — como o Rio investiu R$ 3 bi no Master e para onde foi o dinheiro", "https://www.cnnbrasil.com.br/economia/money/macroeconomia/entenda-como-o-rio-investiu-r-3-bi-no-master-e-para-onde-foi-o-dinheiro/"], "imrio": ["InfoMoney — Rioprevidência justifica aporte: 'todo investimento possui riscos'", "https://www.infomoney.com.br/mercados/rioprevidencia-justifica-aporte-no-master-todo-investimento-possui-riscos/"], "imprec": ["InfoMoney — Rioprevidência diz negociar troca das letras do Master por precatórios federais", "https://www.infomoney.com.br/mercados/rioprevidencia-diz-negociar-para-substituir-letras-do-master-por-precatorios-federais/"], "abpge": ["Agência Brasil — PGE-RJ cobra do grupo Master prejuízo de R$ 640 mi ao Rioprevidência", "https://agenciabrasil.ebc.com.br/justica/noticia/2026-07/pge-rj-cobra-grupo-master-por-prejuizo-de-r-640-mi-ao-rioprevidencia"], "mrpps": ["Metrópoles — 18 fundos de previdência investiram quase R$ 2 bilhões no Master", "https://www.metropoles.com/brasil/caso-master-18-fundos-de-previdencia-investiram-quase-r-2-bilhoes"], "imamp": ["InfoMoney — PF apura aporte de R$ 400 milhões da Amprev no Master", "https://www.infomoney.com.br/politica/pf-realiza-operacao-que-apura-aporte-de-r-400-milhoes-da-amprev-no-banco-master/"], "miprev": ["Metrópoles — o dinheiro dos aposentados no caso Iprev Maceió e Banco Master", "https://www.metropoles.com/colunas/matheus-leitao/o-dinheiro-dos-aposentados-e-o-ex-prefeito-jhc-no-caso-iprev-e-banco-master"], "mibaneis": ["Metrópoles — Ibaneis pede para os precatórios ficarem fora da compra do Master", "https://www.metropoles.com/distrito-federal/compra-do-banco-master-ibaneis-pede-para-precatorios-ficarem-de-fora"], "cnntru": ["CNN Brasil — BC decreta liquidação da Trustee e da Banvox", "https://www.cnnbrasil.com.br/economia/money/macroeconomia/bc-decreta-liquidacao-da-trustee-e-da-banvox/"], "apzet": ["Agência Pública — quem é Fabiano Zettel, maior doador de Tarcísio de Freitas", "https://apublica.org/nota/quem-e-fabiano-zettel-maior-doador-de-tarcisio-de-freitas/"], "cnnzet": ["CNN Brasil — alvo da PF doou R$ 5 mi para campanhas de Bolsonaro e Tarcísio em 2022", "https://www.cnnbrasil.com.br/politica/alvo-da-pf-doou-r-5-mi-para-campanhas-de-bolsonaro-e-tarcisio-em-2022/"], "p360kas": ["Poder360 — Vorcaro diz que doações a Tarcísio e Bolsonaro foram propina", "https://www.poder360.com.br/poder-justica/vorcaro-diz-que-doacoes-a-tarcisio-e-bolsonaro-foram-propina/"], "cnnciro": ["CNN Brasil — PF cita 'mesada' de Vorcaro a Ciro Nogueira", "https://www.cnnbrasil.com.br/politica/pagamento-de-500k-ou-300k-pf-cita-mesada-de-vorcaro-a-ciro-nogueira/"], "mrede": ["Metrópoles — PF aperta o cerco à rede de Vorcaro e amplia o mapa de políticos sob suspeita", "https://www.metropoles.com/brasil/pf-aperta-cerco-a-rede-de-vorcaro-e-amplia-mapa-de-politicos-sob-suspeita"], "abbc": ["Agência Brasil — PF diz que ex-chefe de supervisão do BC recebeu R$ 500 mil mensais", "https://agenciabrasil.ebc.com.br/justica/noticia/2026-09/pf-ex-chefe-de-supervisao-do-bc-recebeu-r-500-mil-mensais-de-vorcaro"], "cnnbarci": ["CNN Brasil — Master pagaria R$ 131 mi ao Barci de Moraes; escritório declarou R$ 80,2 mi", "https://www.cnnbrasil.com.br/politica/master-pagaria-r-131-mi-a-barci-de-moraes-escritorio-declarou-r-802-mi/"], "itaig": ["Rádio Itatiaia — R$ 19,2 mi do cunhado de Vorcaro foram para igreja em BH", "https://www.itatiaia.com.br/politica/caso-master-r-192-mi-de-cunhado-de-vorcaro-foram-para-igreja-em-bh/"], "emdoa": ["Estado de Minas — familiares de Vorcaro doaram R$ 60 mil a campanha de ex-deputado", "https://www.em.com.br/politica/2026/03/7367194-familiares-de-vorcaro-doaram-rs-60-mil-para-campanha-de-ex-deputado-mineiro.html"], "imliq": ["InfoMoney — Banco Central decreta a liquidação extrajudicial do Banco Master", "https://www.infomoney.com.br/mercados/banco-central-decreta-liquidacao-extrajudicial-do-banco-master/"]};
 
-var CATG={
- mkt:{n:"Mercado e banco",c:"var(--c-mkt)"},
- pol:{n:"Política e influência",c:"var(--c-pol)"},
- reg:{n:"Reguladores",c:"var(--c-reg)"},
- jud:{n:"Justiça e polícia",c:"var(--c-jud)"},
-};
+var CATG={"mkt": {"n": "Mercado e banco", "c": "var(--c-mkt)"}, "pol": {"n": "Política e influência", "c": "var(--c-pol)"}, "reg": {"n": "Reguladores", "c": "var(--c-reg)"}, "jud": {"n": "Justiça e polícia", "c": "var(--c-jud)"}};
 
-var CAT={
- mkt:{n:"Mercado e banco",c:"var(--c-mkt)"},
- pol:{n:"Política e influência",c:"var(--c-pol)"},
- reg:{n:"Reguladores",c:"var(--c-reg)"},
- jud:{n:"Justiça e polícia",c:"var(--c-jud)"},
-};
+var CAT={"mkt": {"n": "Mercado e banco", "c": "var(--c-mkt)"}, "pol": {"n": "Política e influência", "c": "var(--c-pol)"}, "reg": {"n": "Reguladores", "c": "var(--c-reg)"}, "jud": {"n": "Justiça e polícia", "c": "var(--c-jud)"}};
 
-var RING=["Centro","Estrutura financeira","Instituições e apuração","Órbita política","Entorno citado e beneficiários"];
+var RING=["Centro", "Estrutura financeira", "Instituições e apuração", "Órbita política", "Entorno citado e beneficiários"];
 
-var RTYPE={f:["Financeiro","var(--c-mkt)"],i:["Institucional","var(--c-reg)"],v:["Investigação","var(--c-jud)"],p:["Político","var(--c-pol)"]};
+var RTYPE={"f": ["Financeiro", "var(--c-mkt)"], "i": ["Institucional", "var(--c-reg)"], "v": ["Investigação", "var(--c-jud)"], "p": ["Político", "var(--c-pol)"]};
 
-var BARS=[
- {l:"Pago pelo FGC a clientes do Master",v:40.6,n:"R$ 40,6 bi a ≈800 mil investidores, a partir de 21/01/2026"},
- {l:"CCBs falsas ou sem lastro (Pet 15.478)",v:17,n:"≈R$ 17 bi em cédulas de crédito bancário sem garantia, segundo a apuração"},
- {l:"Fraude apurada Master–BRB",v:12.2,n:"Carteiras de crédito transferidas ao BRB sob suspeita de falta de lastro"},
- {l:"Cobertura potencial do FGC no Will Bank",v:6.5,n:"Estimativa com dados de set/2025; valor final não definido"},
- {l:"Bens bloqueados por decisão do STF",v:5.7,n:"Bloqueio determinado no âmbito da Operação Compliance Zero"},
- {l:"Exposição do BRB ao Master",v:5,n:"Mais de R$ 5 bi comprometidos pelo banco público do DF"},
- {l:"Rioprevidência em fundos sob apuração",v:3,n:"Investimento do fundo previdenciário do RJ sob investigação"},
- {l:"Aporte anunciado pela Fictor",v:3,n:"Anunciado em 17/11/2025, horas antes da prisão e da liquidação"},
-];
+var BARS=[{"l": "Pago pelo FGC a clientes do Master", "v": 40.6, "n": "R$ 40,6 bi a ≈800 mil investidores, a partir de 21/01/2026"}, {"l": "CCBs falsas ou sem lastro (Pet 15.478)", "v": 17, "n": "≈R$ 17 bi em cédulas de crédito bancário sem garantia, segundo a apuração"}, {"l": "Fraude apurada Master–BRB", "v": 12.2, "n": "Carteiras de crédito transferidas ao BRB sob suspeita de falta de lastro"}, {"l": "Cobertura potencial do FGC no Will Bank", "v": 6.5, "n": "Estimativa com dados de set/2025; valor final não definido"}, {"l": "Bens bloqueados por decisão do STF", "v": 5.7, "n": "Bloqueio determinado no âmbito da Operação Compliance Zero"}, {"l": "Exposição do BRB ao Master", "v": 5, "n": "Mais de R$ 5 bi comprometidos pelo banco público do DF"}, {"l": "Rioprevidência em fundos sob apuração", "v": 3, "n": "Investimento do fundo previdenciário do RJ sob investigação"}, {"l": "Aporte anunciado pela Fictor", "v": 3, "n": "Anunciado em 17/11/2025, horas antes da prisão e da liquidação"}];
 
-var PHASES=[
-{t:"Fase 1",h:"Expansão pelo passivo caro",s:"O Master cresce vendendo CDB com juros muito acima da média, distribuídos em corretoras e protegidos pela garantia do FGC — funding caro que exige ativos cada vez mais agressivos.",
- ev:[
- {d:"2021–2024",c:"mkt",w:"Banco Master",x:"Crescimento acelerado com captação via CDB de alta remuneração e carteiras de crédito consignado, precatórios e direitos creditórios."},
- {d:"2024–2025",c:"reg",w:"Banco Central",x:"Supervisão passa a questionar a qualidade dos ativos e o ritmo de captação; restrições começam a apertar o balanço."},
-]},
-{t:"Fase 2",h:"A tentativa de socorro via banco público",s:"A saída desenhada era vender o Master ao BRB, banco público do Distrito Federal. Passou pelo Cade e pela Câmara Legislativa, e travou no regulador.",
- ev:[
- {d:"28/03/2025",c:"mkt",w:"BRB",x:"BRB anuncia a compra do Banco Master."},
- {d:"17/06/2025",c:"reg",w:"Cade",x:"Órgão antitruste aprova a operação."},
- {d:"19/08/2025",c:"pol",w:"CLDF",x:"Câmara Legislativa do DF aprova o negócio."},
- {d:"03/09/2025",c:"reg",w:"Banco Central",x:"<b>BC nega a aquisição</b> — o plano de salvamento morre e o Master fica sem comprador."},
-]},
-{t:"Fase 3",h:"Colapso em 48 horas",s:"Entre 17 e 18 de novembro de 2025, uma venda de emergência, uma prisão no aeroporto e a liquidação extrajudicial acontecem em sequência.",
- ev:[
- {d:"17/11/2025",c:"mkt",w:"Fictor",x:"Grupo Fictor anuncia a compra com aporte de R$ 3 bi."},
- {d:"17/11/2025",c:"jud",w:"Polícia Federal",x:"<b>Vorcaro é preso em Guarulhos</b> ao tentar embarcar em jato particular com destino a Malta."},
- {d:"18/11/2025",c:"jud",w:"Operação Compliance Zero",x:"PF deflagra a operação; hipótese central é a venda de carteiras de crédito sem lastro ao BRB."},
- {d:"18/11/2025",c:"reg",w:"Banco Central",x:"<b>Liquidação extrajudicial</b> do Banco Master, Master de Investimento, Letsbank e Master Corretora por grave crise de liquidez."},
- {d:"29/11/2025",c:"jud",w:"TRF",x:"Tribunal manda soltar Vorcaro."},
- {d:"02–03/12/2025",c:"jud",w:"STF",x:"Caso recebe regime severo de sigilo e as investigações são transferidas ao Supremo; <b>Toffoli assume a relatoria</b>."},
- {d:"11/12/2025",c:"jud",w:"Contratos",x:"Vem a público contrato de R$ 131 mi (36 meses) entre o Master e o escritório de Viviane Barci, mulher de Alexandre de Moraes; pagamentos cessaram com a liquidação."},
-]},
-{t:"Fase 4",h:"A onda de liquidações e as ramificações políticas",s:"O rombo se espalha por instituições ligadas, o TCU entra no Banco Central, o FGC paga a conta e a operação passa a alcançar políticos.",
- ev:[
- {d:"02–05/01/2026",c:"reg",w:"TCU",x:"Tribunal autoriza inspeção presencial em documentos do BC sobre a supervisão do Master."},
- {d:"15/01/2026",c:"reg",w:"Banco Central",x:"Liquidação de fundo da Reag, também alcançada pela apuração."},
- {d:"21/01/2026",c:"reg",w:"FGC + BC",x:"<b>FGC começa a pagar R$ 40,6 bi</b> a cerca de 800 mil investidores; no mesmo dia o BC liquida o Will Bank."},
- {d:"02/02/2026",c:"mkt",w:"Fictor",x:"Braço financeiro do grupo pede recuperação judicial."},
- {d:"12/02/2026",c:"jud",w:"STF",x:"<b>Toffoli deixa a relatoria</b> após referências a ele no celular de Vorcaro; André Mendonça é sorteado relator."},
- {d:"25/02/2026",c:"pol",w:"CPI",x:"Comissão aprova convocações e quebras de sigilo, incluindo Roberto Campos Neto e Paulo Guedes."},
- {d:"04/03/2026",c:"jud",w:"PF",x:"<b>Vorcaro é preso de novo</b> na 3ª fase da Compliance Zero, com cunhado e segurança."},
- {d:"14/04/2026",c:"pol",w:"CPI",x:"Relatório final pedindo indiciamento de ministros do STF e do PGR é rejeitado por 6 a 4."},
- {d:"16/04/2026",c:"jud",w:"PF",x:"Ex-presidente do BRB, Paulo Henrique Costa, é preso; investigação aponta R$ 146 mi em imóveis."},
- {d:"06–20/05/2026",c:"jud",w:"Delação",x:"Vorcaro entrega proposta de delação; <b>PF rejeita</b> por insuficiência de informações novas."},
- {d:"07/05/2026",c:"pol",w:"Compliance Zero",x:"Senador Ciro Nogueira é alvo; apuração aponta repasses mensais de R$ 300 mil."},
- {d:"14/05/2026",c:"jud",w:"PF",x:"Henrique Vorcaro, pai do banqueiro, é preso com outras seis pessoas, entre elas dois policiais federais."},
- {d:"10–15/06/2026",c:"jud",w:"PGR",x:"Segunda proposta de delação é rejeitada pela PF e, formalmente, pela PGR."},
- {d:"18/06/2026",c:"pol",w:"Compliance Zero",x:"9ª fase alcança o senador Jaques Wagner; 18 mandados na BA, SP e DF."},
-]},
-{t:"Fase 5",h:"A crise institucional",s:"Em setembro de 2026 o caso deixa de ser só bancário: a quebra de sigilo das mensagens de Vorcaro com autoridades põe o próprio STF no centro da disputa.",
- ev:[
- {d:"12/08/2026",c:"reg",w:"Banco Central",x:"Diretor de Fiscalização relata à PF suspeitas sobre dois servidores do BC."},
- {d:"21/08/2026",c:"mkt",w:"Laudo da PF",x:"Novo laudo aponta falhas de governança e concentração de risco na diretoria colegiada do BRB."},
- {d:"28/08/2026",c:"jud",w:"PF",x:"Vorcaro depõe quase quatro horas sobre suspeitas envolvendo servidores do BC."},
- {d:"01/09/2026",c:"jud",w:"STF",x:"<b>Mendonça quebra o sigilo das conversas entre Vorcaro e Moraes</b>; mensagens incluem pergunta sobre deixar o país e alteração de contrato de R$ 131 mi. No mesmo dia, reportagem contesta a versão de Flávio Bolsonaro sobre o financiamento do filme \"Dark Horse\"."},
- {d:"03/09/2026",c:"jud",w:"STF + BC",x:"Presidência do STF abre procedimento de apuração (Pet 16.704); BC liquida duas distribuidoras ligadas a ex-sócio de Vorcaro."},
- {d:"08/09/2026",c:"jud",w:"STF × PF",x:"<b>Mendonça afasta o diretor-geral da PF e o diretor de Inteligência</b>; Moraes pede investigação contra Mendonça por abuso de autoridade; 13 ex-ministros assinam carta sobre a crise da Corte."},
- {d:"09/09/2026",c:"jud",w:"STF",x:"Fachin suspende por liminar a decisão de afastamento."},
- {d:"10–11/09/2026",c:"jud",w:"STF",x:"Levantamento de sigilo de 15 e depois 38 processos — 25,3 GB de documentos, áudios e vídeos vêm a público."},
- {d:"12/09/2026",c:"jud",w:"STF",x:"<b>Fachin avoca a Pet 16.662 para a Presidência</b> e reserva sessão do plenário só para ela."},
- {d:"15/09/2026",c:"jud",w:"Hoje",x:"Plenário do STF se reúne sobre a Pet 16.662; depoimento de Vorcaro à PF fica para 24/09."},
-]},
-];
+var PHASES=[{"t": "Fase 1", "h": "Expansão pelo passivo caro", "s": "O Master cresce vendendo CDB com juros muito acima da média, distribuídos em corretoras e protegidos pela garantia do FGC — funding caro que exige ativos cada vez mais agressivos.", "ev": [{"d": "2021–2024", "c": "mkt", "w": "Banco Master", "x": "Crescimento acelerado com captação via CDB de alta remuneração e carteiras de crédito consignado, precatórios e direitos creditórios."}, {"d": "2024–2025", "c": "reg", "w": "Banco Central", "x": "Supervisão passa a questionar a qualidade dos ativos e o ritmo de captação; restrições começam a apertar o balanço."}]}, {"t": "Fase 2", "h": "A tentativa de socorro via banco público", "s": "A saída desenhada era vender o Master ao BRB, banco público do Distrito Federal. Passou pelo Cade e pela Câmara Legislativa, e travou no regulador.", "ev": [{"d": "28/03/2025", "c": "mkt", "w": "BRB", "x": "BRB anuncia a compra do Banco Master."}, {"d": "17/06/2025", "c": "reg", "w": "Cade", "x": "Órgão antitruste aprova a operação."}, {"d": "19/08/2025", "c": "pol", "w": "CLDF", "x": "Câmara Legislativa do DF aprova o negócio."}, {"d": "03/09/2025", "c": "reg", "w": "Banco Central", "x": "<b>BC nega a aquisição</b> — o plano de salvamento morre e o Master fica sem comprador."}]}, {"t": "Fase 3", "h": "Colapso em 48 horas", "s": "Entre 17 e 18 de novembro de 2025, uma venda de emergência, uma prisão no aeroporto e a liquidação extrajudicial acontecem em sequência.", "ev": [{"d": "17/11/2025", "c": "mkt", "w": "Fictor", "x": "Grupo Fictor anuncia a compra com aporte de R$ 3 bi."}, {"d": "17/11/2025", "c": "jud", "w": "Polícia Federal", "x": "<b>Vorcaro é preso em Guarulhos</b> ao tentar embarcar em jato particular com destino a Malta."}, {"d": "18/11/2025", "c": "jud", "w": "Operação Compliance Zero", "x": "PF deflagra a operação; hipótese central é a venda de carteiras de crédito sem lastro ao BRB."}, {"d": "18/11/2025", "c": "reg", "w": "Banco Central", "x": "<b>Liquidação extrajudicial</b> do Banco Master, Master de Investimento, Letsbank e Master Corretora por grave crise de liquidez."}, {"d": "29/11/2025", "c": "jud", "w": "TRF", "x": "Tribunal manda soltar Vorcaro."}, {"d": "02–03/12/2025", "c": "jud", "w": "STF", "x": "Caso recebe regime severo de sigilo e as investigações são transferidas ao Supremo; <b>Toffoli assume a relatoria</b>."}, {"d": "11/12/2025", "c": "jud", "w": "Contratos", "x": "Vem a público contrato de R$ 131 mi (36 meses) entre o Master e o escritório de Viviane Barci, mulher de Alexandre de Moraes; pagamentos cessaram com a liquidação."}]}, {"t": "Fase 4", "h": "A onda de liquidações e as ramificações políticas", "s": "O rombo se espalha por instituições ligadas, o TCU entra no Banco Central, o FGC paga a conta e a operação passa a alcançar políticos.", "ev": [{"d": "02–05/01/2026", "c": "reg", "w": "TCU", "x": "Tribunal autoriza inspeção presencial em documentos do BC sobre a supervisão do Master."}, {"d": "15/01/2026", "c": "reg", "w": "Banco Central", "x": "Liquidação de fundo da Reag, também alcançada pela apuração."}, {"d": "21/01/2026", "c": "reg", "w": "FGC + BC", "x": "<b>FGC começa a pagar R$ 40,6 bi</b> a cerca de 800 mil investidores; no mesmo dia o BC liquida o Will Bank."}, {"d": "02/02/2026", "c": "mkt", "w": "Fictor", "x": "Braço financeiro do grupo pede recuperação judicial."}, {"d": "12/02/2026", "c": "jud", "w": "STF", "x": "<b>Toffoli deixa a relatoria</b> após referências a ele no celular de Vorcaro; André Mendonça é sorteado relator."}, {"d": "25/02/2026", "c": "pol", "w": "CPI", "x": "Comissão aprova convocações e quebras de sigilo, incluindo Roberto Campos Neto e Paulo Guedes."}, {"d": "04/03/2026", "c": "jud", "w": "PF", "x": "<b>Vorcaro é preso de novo</b> na 3ª fase da Compliance Zero, com cunhado e segurança."}, {"d": "14/04/2026", "c": "pol", "w": "CPI", "x": "Relatório final pedindo indiciamento de ministros do STF e do PGR é rejeitado por 6 a 4."}, {"d": "16/04/2026", "c": "jud", "w": "PF", "x": "Ex-presidente do BRB, Paulo Henrique Costa, é preso; investigação aponta R$ 146 mi em imóveis."}, {"d": "06–20/05/2026", "c": "jud", "w": "Delação", "x": "Vorcaro entrega proposta de delação; <b>PF rejeita</b> por insuficiência de informações novas."}, {"d": "07/05/2026", "c": "pol", "w": "Compliance Zero", "x": "Senador Ciro Nogueira é alvo; apuração aponta repasses mensais de R$ 300 mil."}, {"d": "14/05/2026", "c": "jud", "w": "PF", "x": "Henrique Vorcaro, pai do banqueiro, é preso com outras seis pessoas, entre elas dois policiais federais."}, {"d": "10–15/06/2026", "c": "jud", "w": "PGR", "x": "Segunda proposta de delação é rejeitada pela PF e, formalmente, pela PGR."}, {"d": "18/06/2026", "c": "pol", "w": "Compliance Zero", "x": "9ª fase alcança o senador Jaques Wagner; 18 mandados na BA, SP e DF."}]}, {"t": "Fase 5", "h": "A crise institucional", "s": "Em setembro de 2026 o caso deixa de ser só bancário: a quebra de sigilo das mensagens de Vorcaro com autoridades põe o próprio STF no centro da disputa.", "ev": [{"d": "12/08/2026", "c": "reg", "w": "Banco Central", "x": "Diretor de Fiscalização relata à PF suspeitas sobre dois servidores do BC."}, {"d": "21/08/2026", "c": "mkt", "w": "Laudo da PF", "x": "Novo laudo aponta falhas de governança e concentração de risco na diretoria colegiada do BRB."}, {"d": "28/08/2026", "c": "jud", "w": "PF", "x": "Vorcaro depõe quase quatro horas sobre suspeitas envolvendo servidores do BC."}, {"d": "01/09/2026", "c": "jud", "w": "STF", "x": "<b>Mendonça quebra o sigilo das conversas entre Vorcaro e Moraes</b>; mensagens incluem pergunta sobre deixar o país e alteração de contrato de R$ 131 mi. No mesmo dia, reportagem contesta a versão de Flávio Bolsonaro sobre o financiamento do filme \"Dark Horse\"."}, {"d": "03/09/2026", "c": "jud", "w": "STF + BC", "x": "Presidência do STF abre procedimento de apuração (Pet 16.704); BC liquida duas distribuidoras ligadas a ex-sócio de Vorcaro."}, {"d": "08/09/2026", "c": "jud", "w": "STF × PF", "x": "<b>Mendonça afasta o diretor-geral da PF e o diretor de Inteligência</b>; Moraes pede investigação contra Mendonça por abuso de autoridade; 13 ex-ministros assinam carta sobre a crise da Corte."}, {"d": "09/09/2026", "c": "jud", "w": "STF", "x": "Fachin suspende por liminar a decisão de afastamento."}, {"d": "10–11/09/2026", "c": "jud", "w": "STF", "x": "Levantamento de sigilo de 15 e depois 38 processos — 25,3 GB de documentos, áudios e vídeos vêm a público."}, {"d": "12/09/2026", "c": "jud", "w": "STF", "x": "<b>Fachin avoca a Pet 16.662 para a Presidência</b> e reserva sessão do plenário só para ela."}, {"d": "15/09/2026", "c": "jud", "w": "Hoje", "x": "Plenário do STF se reúne sobre a Pet 16.662; depoimento de Vorcaro à PF fica para 24/09."}, {"d": "15/09/2026", "c": "jud", "w": "Imprensa", "x": "Reportagem detalha mensagens do celular de Vorcaro sobre <b>André Mendonça</b> — via advogados e um deputado — e sobre os filhos de <b>Luiz Fux</b> e de <b>Kassio Nunes Marques</b>. Nenhum dos citados se manifestou na matéria."}]}];
 
-var N=[
-{id:"vorcaro",n:"Daniel Vorcaro",ab:"DV",r:"Controlador do Banco Master",c:"mkt",t:0,
- info:"Preso em 17/11/2025 no aeroporto de Guarulhos ao tentar embarcar para Malta, e novamente em 04/03/2026 na 3ª fase da Operação Compliance Zero. Duas propostas de delação foram rejeitadas pela PF e pela PGR. Depoimento à PF remarcado para 24/09/2026.",ls:["wpt","wen","oe","b247"]},
+var N=[{"id": "vorcaro", "n": "Daniel Vorcaro", "ab": "DV", "r": "Controlador do Banco Master", "c": "mkt", "t": 0, "info": "Preso em 17/11/2025 no aeroporto de Guarulhos ao tentar embarcar para Malta, e novamente em 04/03/2026 na 3ª fase da Operação Compliance Zero. Duas propostas de delação foram rejeitadas pela PF e pela PGR. Depoimento à PF remarcado para 24/09/2026.", "ls": ["wpt", "wen", "oe", "b247"]}, {"id": "master", "n": "Banco Master", "ab": "BM", "r": "Banco liquidado em 18/11/2025", "c": "mkt", "t": 1, "info": "Crescia captando CDB com juros muito acima do mercado e aplicando em ativos de alto risco. O BC decretou liquidação extrajudicial por grave crise de liquidez. Apuração aponta ~R$ 17 bi em CCBs falsas ou sem lastro.", "ls": ["wpt", "mm", "p360"]}, {"id": "colig", "n": "Letsbank, Will Bank, Master Corretora", "ab": "GR", "r": "Coligadas liquidadas", "c": "mkt", "t": 1, "info": "Liquidadas junto com o Master (18/11/2025) ou em seguida — o Will Bank em 21/01/2026, com cobertura potencial do FGC de até R$ 6,5 bi.", "ls": ["im", "wpt"]}, {"id": "brb", "n": "BRB", "ab": "BRB", "r": "Banco público do DF", "c": "mkt", "t": 1, "info": "Tentou comprar o Master em 2025 e ficou com mais de R$ 5 bi de exposição. Em 2026 afastou 12 executivos e admitiu 'achados relevantes' na revisão interna.", "ls": ["ab", "cnn"]}, {"id": "costa", "n": "Paulo Henrique Costa", "ab": "PC", "r": "Ex-presidente do BRB", "c": "mkt", "t": 1, "info": "Preso em 16/04/2026; a investigação aponta R$ 146 mi em imóveis recebidos. Nega irregularidade.", "ls": ["wen", "br"]}, {"id": "dirbrb", "n": "Diretoria colegiada do BRB", "ab": "DC", "r": "Governança do banco", "c": "mkt", "t": 1, "info": "Laudo da PF de 21/08/2026 aponta falhas de governança e concentração de risco na aprovação das operações com o Master.", "ls": ["br"]}, {"id": "fictor", "n": "Grupo Fictor", "ab": "FI", "r": "Comprador de última hora", "c": "mkt", "t": 1, "info": "Anunciou a compra do Master com aporte de R$ 3 bi em 17/11/2025, horas antes da prisão e da liquidação. Seu braço financeiro pediu recuperação judicial em 02/02/2026.", "ls": ["wen", "wpt"]}, {"id": "reag", "n": "Reag Investimentos", "ab": "RG", "r": "Gestora ligada ao grupo", "c": "mkt", "t": 1, "info": "Fundo liquidado pelo BC em 15/01/2026; também citada em apuração sobre fraude no setor de combustíveis.", "ls": ["wen"]}, {"id": "exsocio", "n": "Augusto Lima", "ab": "AL", "r": "Ex-sócio de Vorcaro", "c": "mkt", "t": 1, "info": "Recebeu o Banco Voiter (depois Pleno) em ago/2025. Em 03/09/2026 o BC liquidou duas distribuidoras ligadas a ele.", "ls": ["br", "ap3"]}, {"id": "rioprev", "n": "Rioprevidência", "ab": "RP", "r": "Fundo previdenciário do RJ", "c": "mkt", "t": 1, "info": "Aplicação de cerca de R$ 3 bi em fundos ligados ao grupo está sob investigação; a Operação Barco de Papel (23/01/2026) tratou de transações suspeitas.", "ls": ["wen"]}, {"id": "henrique", "n": "Henrique Vorcaro", "ab": "HV", "r": "Pai de Daniel Vorcaro", "c": "mkt", "t": 1, "info": "Preso em 14/05/2026 com outras seis pessoas, entre elas dois policiais federais.", "ls": ["wen"]}, {"id": "cunhado", "n": "Fabiano Zettel", "ab": "FZ", "r": "Cunhado de Vorcaro", "c": "mkt", "t": 1, "info": "Cunhado de Vorcaro, preso em fase da operação junto com o banqueiro. Declarou ao TSE R$ 5,01 mi em doações em 2022 — R$ 3 mi à campanha de Bolsonaro e R$ 2 mi à de Tarcísio de Freitas. Segundo relatório do Coaf citado pela imprensa, a conta da Igreja Batista da Lagoinha unidade Belvedere, que ele geria, movimentou R$ 57,1 mi entre dez/2024 e dez/2025, com R$ 19,2 mi transferidos por ele. A defesa afirma que tem atividades empresariais lícitas, sem relação com a gestão do banco.", "ls": ["ap3", "apzet", "cnnzet", "itaig", "nd", "wen"]}, {"id": "bc", "n": "Banco Central", "ab": "BC", "r": "Regulador do sistema financeiro", "c": "reg", "t": 2, "info": "Negou a compra do Master pelo BRB em 03/09/2025 e liquidou o banco em 18/11/2025. Depois passou a ser objeto de inspeção do TCU por possível falha de supervisão.", "ls": ["cnn", "mm"]}, {"id": "galipolo", "n": "Gabriel Galípolo", "ab": "GG", "r": "Presidente do Banco Central", "c": "reg", "t": 2, "info": "Relatou contatos recebidos no período da operação BRB–Master; nega que o caso tenha sido tratado.", "ls": ["wen", "cnn"]}, {"id": "campos", "n": "Roberto Campos Neto", "ab": "RC", "r": "Ex-presidente do BC", "c": "reg", "t": 2, "info": "Convocado pela CPI em 25/02/2026 para explicar a supervisão do Master no período anterior.", "ls": ["wen"]}, {"id": "psneves", "n": "Paulo Sérgio Neves de Souza", "ab": "PS", "r": "Ex-diretor de Fiscalização do BC", "c": "reg", "t": 2, "info": "Citado em relato do Diretor de Fiscalização à PF (12/08/2026) sob suspeita de receber vantagens; a apuração fala em pagamentos mensais. Foco da Petição 15.504.", "ls": ["br", "p360"]}, {"id": "belline", "n": "Belline Santana", "ab": "BS", "r": "Ex-chefe de supervisão do BC", "c": "reg", "t": 2, "info": "Citado na mesma apuração sobre corrupção e vazamento de informações de supervisão.", "ls": ["br", "p360"]}, {"id": "fgc", "n": "FGC", "ab": "FGC", "r": "Fundo Garantidor de Créditos", "c": "reg", "t": 2, "info": "Começou a pagar em 21/01/2026: R$ 40,6 bi a cerca de 800 mil investidores do Master, com prazo de resgate até 18/11/2030.", "ls": ["im"]}, {"id": "tcu", "n": "TCU", "ab": "TCU", "r": "Tribunal de Contas da União", "c": "reg", "t": 2, "info": "Autorizou em jan/2026 inspeção presencial em documentos do BC sobre a supervisão do Master.", "ls": ["cnn"]}, {"id": "jhonatan", "n": "Jhonatan de Jesus", "ab": "JJ", "r": "Ministro relator no TCU", "c": "reg", "t": 2, "info": "Determinou a inspeção no BC; em 26/03/2026 a PGR pediu apuração sobre sua atuação e sugeriu suspeição.", "ls": ["wen", "cnn"]}, {"id": "cvm", "n": "CVM", "ab": "CVM", "r": "Regulador do mercado de capitais", "c": "reg", "t": 2, "info": "Marcou julgamento sobre irregularidades no fundo imobiliário Brazil Realty, ligado ao caso.", "ls": ["br"]}, {"id": "pf", "n": "Polícia Federal", "ab": "PF", "r": "Operação Compliance Zero", "c": "jud", "t": 2, "info": "Deflagrou a operação em 18/11/2025 e chegou à 9ª fase em 18/06/2026. Mapeou quatro núcleos: fraude financeira, corrupção de servidores, lavagem por empresas de fachada e obstrução.", "ls": ["wen", "mm", "b247"]}, {"id": "andrei", "n": "Andrei Rodrigues", "ab": "AR", "r": "Diretor-geral da PF", "c": "jud", "t": 2, "info": "Afastado preventivamente por decisão de Mendonça em 08/09/2026, junto com o diretor de Inteligência; a decisão foi suspensa por Fachin no dia seguinte.", "ls": ["cj", "af"]}, {"id": "stf", "n": "STF", "ab": "STF", "r": "Pet 16.662 e Pet 16.704", "c": "jud", "t": 2, "info": "As investigações foram transferidas ao Supremo em 03/12/2025 por causa do foro de autoridades citadas. Sessões do plenário em 15/09 (Pet 16.662) e 23/09 (Pet 16.704).", "ls": ["cj", "p360"]}, {"id": "toffoli", "n": "Dias Toffoli", "ab": "DT", "r": "Primeiro relator no STF", "c": "jud", "t": 2, "info": "Assumiu a relatoria em dez/2025 e impôs sigilo severo. Deixou o caso em 12/02/2026 após referências a ele no celular de Vorcaro e informações sobre participação no resort Tayayá, da família. Nega irregularidade.", "ls": ["cnn", "ap"]}, {"id": "mendonca", "n": "André Mendonça", "ab": "AM", "r": "Relator seguinte", "c": "jud", "t": 2, "info": "Sorteado relator em 12/02/2026. Determinou o detalhamento das conversas de Vorcaro, quebrou sigilos em setembro e afastou dirigentes da PF — decisões que abriram a crise interna da Corte.", "ls": ["cj", "ic", "p360"]}, {"id": "fachin", "n": "Edson Fachin", "ab": "EF", "r": "Presidente do STF", "c": "jud", "t": 2, "info": "Suspendeu a decisão de afastamento em 09/09/2026, avocou a Pet 16.662 para a Presidência em 12/09 e reservou sessão do plenário só para ela.", "ls": ["cj"]}, {"id": "moraes", "n": "Alexandre de Moraes", "ab": "MO", "r": "Ministro do STF", "c": "jud", "t": 2, "info": "Citado em 28 mensagens atribuídas a contatos de Vorcaro, divulgadas em 01/09/2026. Nega interferência em favor do banco e pediu investigação contra Mendonça por abuso de autoridade.", "ls": ["af", "ap", "ic"]}, {"id": "gilmar", "n": "Gilmar Mendes", "ab": "GM", "r": "Ministro do STF", "c": "jud", "t": 2, "info": "Anulou quebra de sigilo de fundo ligado ao caso em 19/03/2026 e enviou ofício em 11/09/2026 questionando procedimentos adotados na investigação.", "ls": ["wen", "cj"]}, {"id": "gonet", "n": "Paulo Gonet", "ab": "PG", "r": "Procurador-geral da República", "c": "jud", "t": 2, "info": "Rejeitou formalmente a segunda proposta de delação em 15/06/2026; a PGR passou a apurar interferência em relatório da PF e defendeu o fim do sigilo.", "ls": ["bd", "cb"]}, {"id": "cpi", "n": "CPI do Banco Master", "ab": "CPI", "r": "Comissão parlamentar de inquérito", "c": "jud", "t": 2, "info": "Aprovou convocações e quebras de sigilo em 25/02/2026. O relatório final, com pedido de indiciamento de ministros do STF e do PGR, foi rejeitado por 6 a 4 em 14/04/2026.", "ls": ["wen"]}, {"id": "barci", "n": "Escritório de Viviane Barci", "ab": "VB", "r": "Banca de advocacia", "c": "pol", "t": 3, "info": "Tinha contrato de R$ 131 mi em 36 meses com o Master, revelado em 11/12/2025; R$ 80 mi confirmados como pagos entre 2024 e 2025. Os pagamentos cessaram com a liquidação.", "ls": ["cnn", "wen"]}, {"id": "turma", "n": "'A Turma'", "ab": "AT", "r": "Policiais supostamente cooptados", "c": "jud", "t": 3, "info": "Grupo descrito em relatório de 218 páginas extraído do celular de Vorcaro, na Petição 15.556, junto com contatos com hackers.", "ls": ["p360"]}, {"id": "projetodv", "n": "Projeto DV", "ab": "DV", "r": "Campanha de imagem", "c": "pol", "t": 3, "info": "Inquérito 5.035 apura contratação de influenciadores e amplificação de conteúdo para defender Vorcaro e atacar o Banco Central.", "ls": ["p360", "br"]}, {"id": "darkhorse", "n": "Fundo do filme 'Dark Horse'", "ab": "DH", "r": "Veículo de financiamento", "c": "pol", "t": 3, "info": "Fundo de US$ 24 mi que financiou o filme; apuração atribui cerca de US$ 14 mi a Vorcaro. Em 04/09/2026 pediu-se ao STF o levantamento do sigilo sobre o financiamento.", "ls": ["af", "br"]}, {"id": "flavio", "n": "Flávio Bolsonaro", "ab": "FB", "r": "Senador (PL)", "c": "pol", "t": 3, "info": "Negociou o financiamento do fundo do filme; reportagens de mai/2026 e set/2026 contestam suas versões sobre a origem do dinheiro. Nega irregularidade.", "ls": ["af", "ap2", "wen"]}, {"id": "ciro", "n": "Ciro Nogueira", "ab": "CN", "r": "Senador (PP)", "c": "pol", "t": 3, "info": "Alvo da 7ª fase da operação em 07/05/2026; apuração aponta repasses mensais de R$ 300 mil e atuação pela ampliação da garantia do FGC. Nega.", "ls": ["wen"]}, {"id": "wagner", "n": "Jaques Wagner", "ab": "JW", "r": "Senador (PT)", "c": "pol", "t": 3, "info": "Alvo da 9ª fase em 18/06/2026, com 18 mandados na Bahia, em São Paulo e no DF. Nega irregularidade.", "ls": ["wen"]}, {"id": "castro", "n": "Cláudio Castro", "ab": "CC", "r": "Ex-governador do RJ (PL)", "c": "pol", "t": 3, "info": "Alvo em 26/05/2026 pela aplicação de cerca de R$ 3 bi do Rioprevidência em fundos ligados ao grupo. Nega.", "ls": ["wen"]}, {"id": "kassab", "n": "Gilberto Kassab", "ab": "GK", "r": "Presidente do PSD", "c": "pol", "t": 3, "info": "Vorcaro afirma ter negociado R$ 5 mi em doações para campanhas de 2022 como contrapartida por favores. Kassab nega.", "ls": ["af"]}, {"id": "fabiofaria", "n": "Fábio Faria", "ab": "FF", "r": "Ex-ministro das Comunicações", "c": "pol", "t": 3, "info": "Aparece entre os contatos nas mensagens divulgadas em set/2026. Nega irregularidade.", "ls": ["af"]}, {"id": "nikolas", "n": "Nikolas Ferreira", "ab": "NF", "r": "Deputado federal (PL)", "c": "pol", "t": 3, "info": "Citado nas mensagens divulgadas em set/2026. Nega irregularidade.", "ls": ["af"]}, {"id": "mantega", "n": "Guido Mantega", "ab": "GM2", "r": "Ex-ministro da Fazenda", "c": "pol", "t": 3, "info": "Levantamento divulgado na investigação aponta pagamentos mensais de cerca de R$ 1 mi por consultoria. Menção de apuração, sem denúncia julgada.", "ls": ["wen"]}, {"id": "lewa", "n": "Ricardo Lewandowski", "ab": "RL", "r": "Ministro da Justiça", "c": "pol", "t": 3, "info": "A apuração cita repasse de R$ 6 mi a family office ligado à família. Menção de apuração, sem denúncia julgada.", "ls": ["wen"]}, {"id": "temer", "n": "Michel Temer", "ab": "MT", "r": "Ex-presidente da República", "c": "pol", "t": 3, "info": "Pagamentos citados em levantamento divulgado em abr/2026. Menção de apuração, sem denúncia julgada.", "ls": ["wen"]}, {"id": "acm", "n": "ACM Neto", "ab": "AN", "r": "Ex-prefeito de Salvador", "c": "pol", "t": 3, "info": "Pagamentos citados no mesmo levantamento de abr/2026. Nega irregularidade.", "ls": ["wen"]}, {"id": "rueda", "n": "Antônio de Rueda", "ab": "AD", "r": "Presidente do União Brasil", "c": "pol", "t": 3, "info": "Pagamentos citados no levantamento de abr/2026. Nega irregularidade.", "ls": ["wen"]}, {"id": "guedes", "n": "Paulo Guedes", "ab": "PGu", "r": "Ex-ministro da Economia", "c": "pol", "t": 3, "info": "Convocado pela CPI em 25/02/2026 para tratar do ambiente regulatório do período.", "ls": ["wen"]}, {"id": "vieira", "n": "Alessandro Vieira", "ab": "AV", "r": "Senador, relator da CPI", "c": "pol", "t": 3, "info": "Assinou o relatório final que pedia indiciamento de três ministros do STF e do PGR, rejeitado em 14/04/2026.", "ls": ["wen"]}, {"id": "tirreno", "n": "Tirreno", "ab": "TI", "r": "Empresa de fachada", "c": "mkt", "t": 1, "info": "Empresa recém-criada usada, segundo a apuração, para intermediar a venda de R$ 12,2 bi em créditos ao BRB.", "ls": ["ap3", "p360"]}, {"id": "maxima", "n": "Banco Máxima", "ab": "MX", "r": "Origem do Master (2017)", "c": "mkt", "t": 1, "info": "Instituição comprada em 2017 e rebatizada de Banco Master; entre os investidores da compra apareceu o espanhol Oliver Martin.", "ls": ["ap3"]}, {"id": "pleno", "n": "Banco Pleno (ex-Voiter)", "ab": "PL", "r": "Banco ligado ao grupo", "c": "mkt", "t": 1, "info": "Transferido a Augusto Lima em ago/2025 e liquidado pelo BC em 18/02/2026.", "ls": ["ap3"]}, {"id": "sefer", "n": "Sefer Investimentos", "ab": "SF", "r": "Corretora liquidada", "c": "mkt", "t": 1, "info": "Ex-Foco DTVM/Indigo. Intermediava captação junto a fundos de previdência desde 2017; liquidada em 26/06/2026 com bloqueio de bens do controlador.", "ls": ["tb", "ap3"]}, {"id": "benjamim", "n": "Benjamim Botelho", "ab": "BB", "r": "Controlador da Sefer", "c": "mkt", "t": 1, "info": "Radicado em Portugal desde 2024; apontado como operador da engrenagem financeira, ligado ao Grupo Aquilla e ao Faex Fund.", "ls": ["tb", "ap3"]}, {"id": "faex", "n": "Faex Fund", "ab": "FX", "r": "Offshore nas Bahamas", "c": "mkt", "t": 1, "info": "Veículo rastreado pelo liquidante do Master entre os ativos ligados ao grupo.", "ls": ["tb"]}, {"id": "aquilla", "n": "Grupo Aquilla", "ab": "AQ", "r": "Veículo de investimento", "c": "mkt", "t": 1, "info": "Administrado por Benjamim Botelho, com aportes atribuídos a Oliver Martin.", "ls": ["ap3"]}, {"id": "oliver", "n": "Oliver Ortiz de Zarate Martin", "ab": "OM", "r": "Investidor estrangeiro", "c": "mkt", "t": 1, "info": "Espanhol apontado em reportagem como narcotraficante; presente entre os investidores da compra do Banco Máxima em 2017.", "ls": ["ap3"]}, {"id": "bull", "n": "Luiz Antonio Bull", "ab": "LB", "r": "Diretor de compliance do Master", "c": "mkt", "t": 1, "info": "Executivo responsável pela área de compliance no período das operações investigadas.", "ls": ["ap3"]}, {"id": "iprev", "n": "Iprev Maceió", "ab": "IP", "r": "Fundo municipal de previdência", "c": "mkt", "t": 1, "info": "Aplicou cerca de R$ 110 mi em papéis do Master.", "ls": ["ap3"]}, {"id": "amapa", "n": "Previdência do Amapá", "ab": "AP", "r": "Fundo estadual de previdência", "c": "mkt", "t": 1, "info": "Perdeu cerca de R$ 400 mi em papéis do grupo.", "ls": ["ap3"]}, {"id": "aquino", "n": "Ailton de Aquino", "ab": "AA", "r": "Diretor de Fiscalização do BC", "c": "reg", "t": 2, "info": "Participou de videoconferência com Vorcaro em 17/11/2025, no dia da prisão; foi dispensado de depor em dez/2025.", "ls": ["ap3", "wen"]}, {"id": "sidnei", "n": "Sidnei Marques", "ab": "SM", "r": "Diretor de Organização do SFN", "c": "reg", "t": 2, "info": "Rejeitou pedido do grupo em 2017, antes da aquisição que originou o Master.", "ls": ["ap3"]}, {"id": "kassio", "n": "Kassio Nunes Marques", "ab": "KN", "r": "Ministro do STF", "c": "jud", "t": 3, "info": "Aparece como contato na agenda do banqueiro divulgada na apuração. Nega irregularidade.", "ls": ["ap3"]}, {"id": "marilson", "n": "Marilson Roseno da Silva", "ab": "MR", "r": "Policial federal aposentado", "c": "jud", "t": 3, "info": "Apontado como responsável por espionagem a serviço do banqueiro.", "ls": ["ap3"]}, {"id": "mourao", "n": "Luiz Phillipi Mourão", "ab": "LP", "r": "Apontado como líder de 'A Turma'", "c": "jud", "t": 3, "info": "Descrito na apuração como executor de atos de intimidação para o grupo.", "ls": ["ap3"]}, {"id": "jorn", "n": "Jornalistas ameaçados", "ab": "JN", "r": "Alvos de intimidação", "c": "jud", "t": 3, "info": "Colunistas que revelaram o caso foram alvo de ataques coordenados e de ameaças registradas nas mensagens apreendidas.", "ls": ["ap3"]}, {"id": "pec", "n": "PEC da garantia do FGC", "ab": "PEC", "r": "Proposta legislativa", "c": "pol", "t": 3, "info": "Ampliava a cobertura do FGC — vantagem direta para quem captava via CDB. Voltou depois em novo projeto na Câmara.", "ls": ["ap3"]}, {"id": "motta", "n": "Hugo Motta", "ab": "HM", "r": "Presidente da Câmara", "c": "pol", "t": 3, "info": "Citado em jantar com o banqueiro. Nega irregularidade.", "ls": ["ap3"]}, {"id": "alcolumbre", "n": "Davi Alcolumbre", "ab": "DA", "r": "Presidente do Senado", "c": "pol", "t": 3, "info": "Citado como próximo ao banqueiro; o fundo de previdência do Amapá perdeu ~R$ 400 mi em papéis do grupo. Nega.", "ls": ["ap3"]}, {"id": "lira", "n": "Arthur Lira", "ab": "AL2", "r": "Deputado federal (PP)", "c": "pol", "t": 3, "info": "Citado como próximo ao banqueiro; indicou Jhonatan de Jesus ao TCU. Nega irregularidade.", "ls": ["ap3"]}, {"id": "cajado", "n": "Cláudio Cajado", "ab": "CJ", "r": "Deputado federal (PP)", "c": "pol", "t": 3, "info": "Encabeçou projeto que mexia no comando do Banco Central durante a crise.", "ls": ["ap3"]}, {"id": "barros", "n": "Filipe Barros", "ab": "FBa", "r": "Deputado federal (PL)", "c": "pol", "t": 3, "info": "Apresentou projeto que retomava a chamada 'emenda Master'.", "ls": ["ap3"]}, {"id": "bacelar", "n": "João Carlos Bacelar", "ab": "JB", "r": "Deputado federal (PL)", "c": "pol", "t": 3, "info": "Envelope com seu nome foi encontrado em endereço do banqueiro. Nega irregularidade.", "ls": ["ap3"]}, {"id": "ibaneis", "n": "Ibaneis Rocha", "ab": "IR", "r": "Governador do DF", "c": "pol", "t": 3, "info": "Reuniu-se com o banqueiro no período da operação com o BRB, banco controlado pelo governo do DF. Nega.", "ls": ["ap3"]}, {"id": "eduardo", "n": "Eduardo Bolsonaro", "ab": "EB", "r": "Deputado federal (PL)", "c": "pol", "t": 3, "info": "Citado nas tratativas do fundo que financiou o filme 'Dark Horse'. Nega irregularidade.", "ls": ["nd"]}, {"id": "haddad", "n": "Fernando Haddad", "ab": "FH", "r": "Ministro da Fazenda", "c": "pol", "t": 3, "info": "Classificou o episódio como a maior fraude bancária da história do país.", "ls": ["ap3", "ti"]}, {"id": "febraban", "n": "Febraban (Isaac Sidney)", "ab": "FE", "r": "Entidade do setor bancário", "c": "pol", "t": 3, "info": "Reuniões com o grupo em 2019, na fase de expansão do banco.", "ls": ["ap3"]}, {"id": "lula", "n": "Lula", "ab": "LU", "r": "Presidente da República", "c": "pol", "t": 4, "info": "Recebeu o banqueiro em reunião no Palácio do Planalto em dez/2024.", "ls": ["ap3"]}, {"id": "doria", "n": "João Doria", "ab": "JD", "r": "Ex-governador de SP", "c": "pol", "t": 4, "info": "Aparece como contato na agenda do banqueiro.", "ls": ["ap3"]}, {"id": "joesley", "n": "Joesley Batista", "ab": "JO", "r": "Empresário", "c": "pol", "t": 4, "info": "Citado em episódio de evento patrocinado pelo banco.", "ls": ["ap3"]}, {"id": "pastore", "n": "Luiz Oswaldo Pastore", "ab": "LO", "r": "Empresário", "c": "pol", "t": 4, "info": "Forneceu o jato usado em viagem de Toffoli a Lima em nov/2025, junto com advogado de investigado.", "ls": ["ap3"]}, {"id": "maridt", "n": "Maridt", "ab": "MD", "r": "Empresa de irmãos de Toffoli", "c": "pol", "t": 4, "info": "Sócia em fundo do Master ligado ao resort Tayayá.", "ls": ["ap3"]}, {"id": "tayaya", "n": "Resort Tayayá", "ab": "TY", "r": "Ativo da família Toffoli", "c": "pol", "t": 4, "info": "Fundo do banco movimentou cerca de R$ 6,6 mi em participações no resort.", "ls": ["ap3", "ap"]}, {"id": "monteiro", "n": "Monteiro, Rusu, Cameirão e Bercht", "ab": "MB", "r": "Banca de advocacia", "c": "pol", "t": 4, "info": "Recebeu R$ 79 mi; com a Mytra Consultoria (R$ 30 mi), R$ 109 mi. Pagamento documentado não é, por si, prova de crime.", "ls": ["nd"]}, {"id": "warde", "n": "Warde Advogados", "ab": "WA", "r": "Banca de advocacia", "c": "pol", "t": 4, "info": "Recebeu R$ 63,8 mi em pagamentos do grupo.", "ls": ["nd"]}, {"id": "gabino", "n": "Gabino Kruschewsky Advogados", "ab": "GB", "r": "Banca de advocacia", "c": "pol", "t": 4, "info": "Recebeu R$ 54 mi em pagamentos do grupo.", "ls": ["nd"]}, {"id": "alvescorrea", "n": "Alves Corrêa Verissimo", "ab": "AC", "r": "Banca de advocacia", "c": "pol", "t": 4, "info": "Recebeu R$ 32,9 mi em pagamentos do grupo.", "ls": ["nd"]}, {"id": "furtado", "n": "Marcus Vinícius Furtado Coelho", "ab": "MV", "r": "Advogado, ex-presidente da OAB", "c": "pol", "t": 4, "info": "Escritório recebeu R$ 27,5 mi em pagamentos do grupo.", "ls": ["nd"]}, {"id": "arruda", "n": "Augusto Arruda Botelho", "ab": "AB", "r": "Advogado", "c": "pol", "t": 4, "info": "Atuou na defesa do diretor de compliance do Master.", "ls": ["ap3"]}, {"id": "bancas", "n": "Rede de 79 escritórios", "ab": "79", "r": "Beneficiários de pagamentos", "c": "pol", "t": 4, "info": "A investigação mapeou mais de R$ 500 mi pagos a 79 bancas entre 2021 e 2024. Receber pagamento não implica, por si, participação em crime.", "ls": ["nd"]}, {"id": "fux", "n": "Luiz Fux", "ab": "LF", "r": "Ministro do STF", "c": "jud", "t": 2, "info": "A reportagem de 15/09/2026 não o aponta como investigado: seu nome entra no caso por mensagens que envolvem o filho, Rodrigo Fux. Não se manifestou na matéria.", "ls": ["jdb"]}, {"id": "rodrigofux", "n": "Rodrigo Fux", "ab": "RF", "r": "Advogado, filho do ministro Fux", "c": "pol", "t": 4, "info": "Segundo mensagens divulgadas em 15/09/2026, tratava Vorcaro como \"irmão\" em mai/2024 e, em mar/2025, pediu que informações sobre um compromisso em Londres fossem enviadas à secretária do pai no STF. Não se manifestou.", "ls": ["jdb"]}, {"id": "kevin", "n": "Kevin Marques", "ab": "KM", "r": "Filho do ministro Kassio Nunes Marques", "c": "pol", "t": 4, "info": "Anotação atribuída a Luiz Rennó, de out/2024, menciona pagamentos mensais de R$ 500 mil a ele e usa a expressão \"Dominado aqui\" após voto favorável do ministro em caso de destilaria; a referência reaparece em jul/2025. Não se manifestou.", "ls": ["jdb"]}, {"id": "renno", "n": "Luiz Rennó", "ab": "LR", "r": "Interlocutor de Vorcaro nas mensagens", "c": "mkt", "t": 4, "info": "Autor, segundo a reportagem, das anotações sobre pagamentos ligados ao filho de Kassio Nunes Marques. Não se manifestou.", "ls": ["jdb"]}, {"id": "ciroadv", "n": "Ciro Soares", "ab": "CS", "r": "Advogado", "c": "pol", "t": 4, "info": "Em 08/02/2025 mostrou a Vorcaro uma foto ao lado do ministro André Mendonça e, em 16/02, escreveu que \"o A.M. quer recebê-lo\", pedindo para agendar. Não se manifestou.", "ls": ["jdb"]}, {"id": "marcusv", "n": "Marcus Vinicius", "ab": "MV", "r": "Advogado", "c": "pol", "t": 4, "info": "Em abr/2024 relatou a Vorcaro reunião com Mendonça no STF e combinou encontrá-lo em seguida; no dia seguinte tratou de novo horário. Em jul/2024 respondeu sobre um processo no Supremo que \"tudo tem como o amigo\". Não se manifestou.", "ls": ["jdb"]}, {"id": "cezinha", "n": "Cezinha de Madureira", "ab": "CM", "r": "Deputado federal (PL-SP)", "c": "pol", "t": 3, "info": "Alvo de fase da Operação Compliance Zero. Segundo as mensagens, avisou Vorcaro em 13/03/2025 sobre encontro \"com ministro André em São Paulo\" e, no dia seguinte, escreveu que o \"ministro já está te esperando\". Não se manifestou.", "ls": ["jdb"]}, {"id": "iter", "n": "Instituto Iter", "ab": "IT", "r": "Instituto fundado por André Mendonça", "c": "pol", "t": 4, "info": "Vorcaro foi convidado ao menos duas vezes a eventos do instituto, entre eles um debate no hotel Fasano de Belo Horizonte com o próprio ministro, para \"poucos convidados\". A reportagem não confirma se ele compareceu.", "ls": ["jdb"]}];
 
-{id:"master",n:"Banco Master",ab:"BM",r:"Banco liquidado em 18/11/2025",c:"mkt",t:1,
- info:"Crescia captando CDB com juros muito acima do mercado e aplicando em ativos de alto risco. O BC decretou liquidação extrajudicial por grave crise de liquidez. Apuração aponta ~R$ 17 bi em CCBs falsas ou sem lastro.",ls:["wpt","mm","p360"]},
-{id:"colig",n:"Letsbank, Will Bank, Master Corretora",ab:"GR",r:"Coligadas liquidadas",c:"mkt",t:1,
- info:"Liquidadas junto com o Master (18/11/2025) ou em seguida — o Will Bank em 21/01/2026, com cobertura potencial do FGC de até R$ 6,5 bi.",ls:["im","wpt"]},
-{id:"brb",n:"BRB",ab:"BRB",r:"Banco público do DF",c:"mkt",t:1,
- info:"Tentou comprar o Master em 2025 e ficou com mais de R$ 5 bi de exposição. Em 2026 afastou 12 executivos e admitiu 'achados relevantes' na revisão interna.",ls:["ab","cnn"]},
-{id:"costa",n:"Paulo Henrique Costa",ab:"PC",r:"Ex-presidente do BRB",c:"mkt",t:1,
- info:"Preso em 16/04/2026; a investigação aponta R$ 146 mi em imóveis recebidos. Nega irregularidade.",ls:["wen","br"]},
-{id:"dirbrb",n:"Diretoria colegiada do BRB",ab:"DC",r:"Governança do banco",c:"mkt",t:1,
- info:"Laudo da PF de 21/08/2026 aponta falhas de governança e concentração de risco na aprovação das operações com o Master.",ls:["br"]},
-{id:"fictor",n:"Grupo Fictor",ab:"FI",r:"Comprador de última hora",c:"mkt",t:1,
- info:"Anunciou a compra do Master com aporte de R$ 3 bi em 17/11/2025, horas antes da prisão e da liquidação. Seu braço financeiro pediu recuperação judicial em 02/02/2026.",ls:["wen","wpt"]},
-{id:"reag",n:"Reag Investimentos",ab:"RG",r:"Gestora ligada ao grupo",c:"mkt",t:1,
- info:"Fundo liquidado pelo BC em 15/01/2026; também citada em apuração sobre fraude no setor de combustíveis.",ls:["wen"]},
-{id:"exsocio",n:"Augusto Lima",ab:"AL",r:"Ex-sócio de Vorcaro",c:"mkt",t:1,
- info:"Recebeu o Banco Voiter (depois Pleno) em ago/2025. Em 03/09/2026 o BC liquidou duas distribuidoras ligadas a ele.",ls:["br","ap3"]},
-{id:"rioprev",n:"Rioprevidência",ab:"RP",r:"Fundo previdenciário do RJ",c:"mkt",t:1,
- info:"Aplicação de cerca de R$ 3 bi em fundos ligados ao grupo está sob investigação; a Operação Barco de Papel (23/01/2026) tratou de transações suspeitas.",ls:["wen"]},
-{id:"henrique",n:"Henrique Vorcaro",ab:"HV",r:"Pai de Daniel Vorcaro",c:"mkt",t:1,
- info:"Preso em 14/05/2026 com outras seis pessoas, entre elas dois policiais federais.",ls:["wen"]},
-{id:"cunhado",n:"Fabiano Zettel",ab:"FZ",r:"Cunhado de Vorcaro",c:"mkt",t:1,
- info:"Preso em fase da operação junto com o banqueiro. Recebeu R$ 57,1 mi em repasses, parte roteada por uma igreja em Belo Horizonte, e foi grande doador de campanhas em 2022.",ls:["wen","nd","ap3"]},
+var E=[["vorcaro", "master", "f", "Controlador do banco. Segundo a apuração, decidia a captação de CDB caro e a originação dos ativos que sustentavam o balanço.", ["wpt", "mm"]], ["master", "colig", "f", "Mesmo conglomerado: liquidadas em 18/11/2025 e, no caso do Will Bank, em 21/01/2026.", ["im"]], ["master", "brb", "f", "Núcleo da fraude: venda de carteiras de crédito ao BRB sob suspeita de falta de lastro — cerca de R$ 12,2 bi (Inquérito 5.026).", ["mm", "p360", "cnn"]], ["master", "fictor", "f", "Compra anunciada com R$ 3 bi horas antes da prisão e da liquidação; tentativa final de evitar o colapso.", ["wen"]], ["brb", "costa", "f", "Presidia o BRB quando as operações foram aprovadas; preso em 16/04/2026, com R$ 146 mi em imóveis apontados.", ["wen", "br"]], ["brb", "dirbrb", "i", "Laudo da PF de 21/08/2026 aponta falhas de governança e concentração de risco nas decisões do colegiado.", ["br"]], ["vorcaro", "henrique", "f", "Pai do banqueiro, preso em 14/05/2026 na mesma investigação, junto com dois policiais federais.", ["wen"]], ["vorcaro", "cunhado", "f", "Cunhado e operador financeiro apontado pela apuração. Doou R$ 5,01 mi a campanhas em 2022, segundo o TSE, e geria a conta de igreja em BH que movimentou R$ 57,1 mi entre dez/2024 e dez/2025, segundo o Coaf.", ["ap3", "apzet", "itaig", "nd"]], ["master", "reag", "f", "Gestora ligada ao grupo; teve fundo liquidado pelo BC em 15/01/2026.", ["wen"]], ["vorcaro", "exsocio", "f", "Duas distribuidoras do ex-sócio foram liquidadas pelo BC em 03/09/2026.", ["br"]], ["master", "rioprev", "f", "O fundo previdenciário do RJ aplicou cerca de R$ 3 bi em fundos ligados ao grupo.", ["wen"]], ["rioprev", "castro", "p", "Aplicações feitas durante seu governo; alvo da operação em 26/05/2026.", ["wen"]], ["master", "bc", "i", "O BC negou a venda ao BRB em 03/09/2025 e decretou a liquidação extrajudicial em 18/11/2025.", ["cnn", "mm"]], ["bc", "galipolo", "i", "Presidente do BC no período; relatou contatos sobre o caso e nega tratativas.", ["wen", "cnn"]], ["bc", "campos", "i", "Presidia o BC quando o Master crescia; convocado pela CPI sobre a supervisão.", ["wen"]], ["bc", "psneves", "v", "Servidor citado por suspeita de vantagens em relato do Diretor de Fiscalização à PF (12/08/2026).", ["br", "p360"]], ["bc", "belline", "v", "Citado na mesma apuração sobre corrupção e vazamento de informação de supervisão.", ["br", "p360"]], ["vorcaro", "psneves", "v", "Petição 15.504: contatos do banqueiro com servidores do BC, sob suspeita de compra de informação.", ["p360"]], ["vorcaro", "belline", "v", "Mesma petição — relação apurada entre o banqueiro e servidores da fiscalização.", ["p360"]], ["bc", "fgc", "i", "A liquidação acionou a garantia: R$ 40,6 bi pagos a ~800 mil investidores a partir de 21/01/2026.", ["im"]], ["master", "fgc", "f", "O CDB do Master era vendido com o argumento da garantia de R$ 250 mil por CPF — o que sustentou a captação.", ["im"]], ["bc", "tcu", "i", "O TCU inspeciona desde jan/2026 se houve falha de supervisão do BC.", ["cnn"]], ["tcu", "jhonatan", "i", "Relator da inspeção; a PGR pediu apuração sobre sua atuação em 26/03/2026.", ["wen", "cnn"]], ["master", "cvm", "i", "A CVM julga irregularidades no FII Brazil Realty, ligado ao caso.", ["br"]], ["vorcaro", "pf", "v", "Preso em 17/11/2025 e em 04/03/2026; depôs quase quatro horas em 28/08/2026 e teve duas delações rejeitadas.", ["wen", "oe"]], ["pf", "master", "v", "Operação Compliance Zero: nove fases sobre fraude, corrupção de servidores, lavagem e obstrução.", ["wen", "mm"]], ["pf", "andrei", "i", "Diretor-geral afastado por Mendonça em 08/09/2026; Fachin suspendeu a decisão no dia seguinte.", ["cj", "af"]], ["pf", "turma", "v", "Relatório de 218 páginas do celular de Vorcaro descreve 'A Turma', policiais supostamente cooptados.", ["p360"]], ["vorcaro", "turma", "v", "Grupo apontado como estrutura de intimidação e obtenção de informação a serviço do banqueiro.", ["p360"]], ["vorcaro", "projetodv", "p", "Campanha de defesa pública e ataque ao BC atribuída ao seu entorno (Inquérito 5.035).", ["p360", "br"]], ["pf", "projetodv", "v", "Inquérito 5.035 apura a contratação de influenciadores e a amplificação coordenada de conteúdo.", ["p360"]], ["vorcaro", "stf", "v", "As investigações foram remetidas ao Supremo em 03/12/2025 por causa do foro de autoridades citadas.", ["cj", "cnn"]], ["stf", "toffoli", "v", "Primeiro relator: assumiu em dez/2025, impôs sigilo severo e deixou o caso em 12/02/2026.", ["cnn", "ap"]], ["vorcaro", "toffoli", "v", "Referências ao ministro no celular do banqueiro e negócio no resort Tayayá, da família, motivaram a saída da relatoria.", ["ap", "wen"]], ["stf", "mendonca", "v", "Relator sorteado em 12/02/2026; conduziu a quebra de sigilo das conversas.", ["cj"]], ["vorcaro", "mendonca", "v", "Ouviu o banqueiro em gabinete no fim de agosto de 2026 e mandou a PF detalhar suas conversas com autoridades.", ["br", "cj"]], ["mendonca", "andrei", "v", "Afastamento preventivo determinado em 08/09/2026, com suspensão de relatórios sobre atos judiciais.", ["cj"]], ["mendonca", "moraes", "v", "Mendonça quebrou o sigilo das mensagens que citam Moraes; Moraes pediu investigação contra ele por abuso de autoridade.", ["af", "ic", "ap2"]], ["vorcaro", "moraes", "v", "28 mensagens atribuídas ao contato do banqueiro com o ministro, incluindo pergunta sobre deixar o país em 15/11/2025. Moraes nega interferência.", ["af", "ap", "ic"]], ["moraes", "barci", "f", "O escritório da mulher do ministro tinha contrato de R$ 131 mi com o Master; R$ 80 mi confirmados como pagos.", ["cnn", "wen"]], ["master", "barci", "f", "Contratante da banca entre 2024 e 2027, com R$ 3,6 mi mensais; pagamentos cessaram com a liquidação.", ["cnn"]], ["vorcaro", "barci", "f", "Mensagens apontam que a versão do contrato de R$ 131 mi foi editada em perfil identificado como o do ministro.", ["af", "br"]], ["moraes", "galipolo", "i", "Registros de ligações e reuniões no período da operação BRB–Master; ambos negam ter tratado do caso.", ["wen", "cnn"]], ["stf", "fachin", "i", "Presidente da Corte: suspendeu a decisão de afastamento e avocou a Pet 16.662 em 12/09/2026.", ["cj"]], ["fachin", "mendonca", "i", "Fachin retirou o caso das mãos de Mendonça após as decisões de 08/09 e marcou sessão exclusiva.", ["cj"]], ["stf", "gilmar", "i", "Anulou quebra de sigilo de fundo ligado ao caso e questionou procedimentos em ofício de 11/09/2026.", ["wen", "cj"]], ["gonet", "vorcaro", "v", "A PGR rejeitou formalmente a segunda proposta de delação em 15/06/2026.", ["wen"]], ["gonet", "mendonca", "v", "A PGR apura interferência em relatório da PF e defende o fim do sigilo da rede de pagamentos.", ["bd", "cb"]], ["cpi", "master", "p", "A CPI apurou a operação BRB–Master e aprovou convocações e quebras de sigilo em 25/02/2026.", ["wen"]], ["cpi", "vieira", "p", "Relator do parecer final, rejeitado por 6 a 4 em 14/04/2026.", ["wen"]], ["cpi", "guedes", "p", "Convocado em 25/02/2026 para tratar do ambiente regulatório.", ["wen"]], ["cpi", "campos", "p", "Convocado no mesmo pacote para explicar a supervisão do BC.", ["wen"]], ["cpi", "toffoli", "p", "A comissão aprovou a convocação de irmãos do ministro em 25/02/2026.", ["wen"]], ["vorcaro", "ciro", "p", "Alvo da 7ª fase (07/05/2026): apuração aponta R$ 300 mil mensais e atuação pela PEC que ampliava a garantia do FGC.", ["wen"]], ["ciro", "fgc", "p", "A emenda defendida ampliaria a cobertura do fundo — vantagem direta para quem captava via CDB.", ["wen"]], ["vorcaro", "wagner", "p", "Alvo da 9ª fase, em 18/06/2026, com 18 mandados em três estados.", ["wen"]], ["vorcaro", "flavio", "p", "Negociação de US$ 24 mi para o fundo do filme; cerca de US$ 14 mi atribuídos ao banqueiro.", ["af", "ap2"]], ["flavio", "darkhorse", "p", "Fundo que financiou o filme, hoje no centro do pedido de levantamento de sigilo.", ["af", "br"]], ["vorcaro", "darkhorse", "f", "Transferências verificadas entre fev e mai/2025 ligam o banqueiro ao veículo de financiamento.", ["wen", "af"]], ["vorcaro", "kassab", "p", "Vorcaro afirma ter negociado R$ 5 mi em doações de campanha em 2022 como contrapartida. Kassab nega.", ["af"]], ["vorcaro", "fabiofaria", "p", "Aparece entre os contatos nas mensagens divulgadas em set/2026.", ["af"]], ["vorcaro", "nikolas", "p", "Citado nas mensagens divulgadas em set/2026.", ["af"]], ["vorcaro", "mantega", "p", "Levantamento da apuração aponta consultoria de cerca de R$ 1 mi por mês.", ["wen"]], ["vorcaro", "lewa", "p", "A apuração cita R$ 6 mi repassados a family office ligado à família.", ["wen"]], ["vorcaro", "temer", "p", "Pagamentos citados em levantamento divulgado em abr/2026.", ["wen"]], ["vorcaro", "acm", "p", "Pagamentos citados no mesmo levantamento de abr/2026.", ["wen"]], ["vorcaro", "rueda", "p", "Pagamentos citados no levantamento de abr/2026.", ["wen"]], ["andrei", "gonet", "i", "A apuração sobre interferência no relatório da PF corre na PGR após os afastamentos.", ["bd"]], ["vorcaro", "tirreno", "f", "Empresa criada às pressas e usada, segundo a apuração, para empacotar os créditos vendidos ao BRB.", ["ap3", "p360"]], ["tirreno", "brb", "f", "Destino dos R$ 12,2 bi em créditos apontados como sem lastro.", ["ap3"]], ["master", "tirreno", "f", "Veículo dentro do próprio grupo para a operação com o banco público.", ["ap3"]], ["vorcaro", "maxima", "f", "Comprou o Banco Máxima em 2017 — a instituição que virou Banco Master.", ["ap3"]], ["maxima", "master", "f", "Mesma instituição, rebatizada depois da aquisição.", ["ap3"]], ["oliver", "maxima", "f", "Apareceu entre os investidores da compra de 2017.", ["ap3"]], ["oliver", "aquilla", "f", "Aportes atribuídos a ele no veículo administrado por Benjamim Botelho.", ["ap3"]], ["aquilla", "benjamim", "f", "Grupo administrado pelo controlador da Sefer.", ["ap3"]], ["benjamim", "sefer", "f", "Controlador da corretora, com bens bloqueados na liquidação de 26/06/2026.", ["tb"]], ["sefer", "master", "f", "Intermediava, desde 2017, captações do grupo junto a fundos de previdência.", ["tb", "ap3"]], ["sefer", "faex", "f", "Offshore bahamense ligada ao controlador, rastreada pelo liquidante do Master.", ["tb"]], ["sefer", "bc", "i", "Liquidada pelo BC em 26/06/2026 por comprometimento financeiro e violação de normas.", ["tb"]], ["exsocio", "pleno", "f", "Recebeu o Banco Voiter, depois Pleno, em ago/2025; liquidado em 18/02/2026.", ["ap3"]], ["pleno", "bc", "i", "Liquidado pelo Banco Central em 18/02/2026.", ["ap3"]], ["master", "bull", "i", "Diretor de compliance no período das operações investigadas.", ["ap3"]], ["bull", "arruda", "p", "Defendido pelo advogado na apuração.", ["ap3"]], ["master", "iprev", "f", "Fundo municipal de Maceió aplicou cerca de R$ 110 mi em papéis do banco.", ["ap3"]], ["master", "amapa", "f", "Fundo de previdência do Amapá perdeu cerca de R$ 400 mi em papéis do grupo.", ["ap3"]], ["amapa", "alcolumbre", "p", "Fundo do estado que ele representa no Senado; é citado como próximo ao banqueiro.", ["ap3"]], ["turma", "marilson", "v", "Policial federal aposentado apontado como responsável pela espionagem do grupo.", ["ap3"]], ["turma", "mourao", "v", "Apontado na apuração como líder do grupo de intimidação.", ["ap3"]], ["turma", "jorn", "v", "Ameaças e ataques a jornalistas que revelaram o caso constam do material apreendido.", ["ap3"]], ["vorcaro", "jorn", "v", "Mensagens registram intenção de agredir colunistas e campanhas de desinformação contra quem apurava o caso.", ["ap3"]], ["bc", "aquino", "i", "Diretor de Fiscalização que participou de videoconferência com o banqueiro em 17/11/2025.", ["ap3"]], ["vorcaro", "aquino", "v", "Contato direto no dia da prisão e da liquidação, sob apuração.", ["ap3", "wen"]], ["bc", "sidnei", "i", "Diretor que rejeitou pedido do grupo em 2017, antes da aquisição.", ["ap3"]], ["campos", "psneves", "i", "Segundo a apuração, indicou servidores depois apontados como cooptados.", ["ap3"]], ["vorcaro", "kassio", "v", "Ministro aparece como contato na agenda do banqueiro.", ["ap3"]], ["toffoli", "maridt", "f", "Empresa de irmãos do ministro, sócia em fundo do Master.", ["ap3"]], ["maridt", "tayaya", "f", "Sociedade no fundo ligado ao resort da família.", ["ap3"]], ["master", "tayaya", "f", "Fundo do banco movimentou ~R$ 6,6 mi em participações no resort.", ["ap3", "ap"]], ["toffoli", "pastore", "p", "Jato do empresário usado na viagem do ministro a Lima, em nov/2025, junto a advogado de investigado.", ["ap3"]], ["master", "monteiro", "f", "R$ 79 mi à banca; com a Mytra Consultoria, R$ 109 mi.", ["nd"]], ["master", "warde", "f", "R$ 63,8 mi em pagamentos.", ["nd"]], ["master", "gabino", "f", "R$ 54 mi em pagamentos.", ["nd"]], ["master", "alvescorrea", "f", "R$ 32,9 mi em pagamentos.", ["nd"]], ["master", "furtado", "f", "R$ 27,5 mi ao escritório do ex-presidente nacional da OAB.", ["nd"]], ["master", "bancas", "f", "Mais de R$ 500 mi a 79 bancas entre 2021 e 2024, segundo a investigação.", ["nd"]], ["barci", "bancas", "f", "O contrato de R$ 131 mi é o maior dessa rede de pagamentos a advogados.", ["nd"]], ["vorcaro", "motta", "p", "Citado em jantar com o banqueiro. Nega irregularidade.", ["ap3"]], ["vorcaro", "alcolumbre", "p", "Citado como próximo ao banqueiro no material da apuração.", ["ap3"]], ["vorcaro", "lira", "p", "Citado como próximo ao banqueiro no material da apuração.", ["ap3"]], ["lira", "jhonatan", "p", "Indicou ao TCU o relator que depois tentou questionar a liquidação.", ["ap3"]], ["cajado", "bc", "p", "Encabeçou projeto que mexia no comando do Banco Central durante a crise.", ["ap3"]], ["ciro", "pec", "p", "Autor da proposta que ampliava a garantia do FGC.", ["ap3", "wen"]], ["barros", "pec", "p", "Retomou a proposta em novo projeto depois da liquidação.", ["ap3"]], ["pec", "fgc", "p", "Ampliação da cobertura do fundo beneficiava diretamente quem captava via CDB.", ["ap3"]], ["vorcaro", "bacelar", "p", "Envelope com o nome do deputado encontrado em endereço do banqueiro. Nega.", ["ap3"]], ["vorcaro", "ibaneis", "p", "Reuniões no período da operação com o BRB. Nega irregularidade.", ["ap3"]], ["ibaneis", "brb", "p", "O governo do DF é o controlador do banco público que comprou as carteiras.", ["ap3"]], ["rueda", "ibaneis", "p", "Apontado como o interlocutor que aproximou o banqueiro do governador.", ["ap3"]], ["eduardo", "darkhorse", "p", "Citado nas tratativas do fundo que financiou o filme.", ["nd"]], ["vorcaro", "lula", "p", "Reunião no Palácio do Planalto em dez/2024.", ["ap3"]], ["vorcaro", "doria", "p", "Contato registrado na agenda do banqueiro.", ["ap3"]], ["vorcaro", "joesley", "p", "Episódio em evento patrocinado pelo banco.", ["ap3"]], ["vorcaro", "febraban", "p", "Reuniões com a entidade do setor em 2019, na fase de expansão.", ["ap3"]], ["master", "haddad", "i", "O ministro da Fazenda classificou o caso como a maior fraude bancária da história do país.", ["ap3", "ti"]], ["vorcaro", "rodrigofux", "p", "Mensagens de mai/2024 mostram tratamento próximo (\"irmão\"); em mar/2025, pedido para enviar informação à secretária do ministro Fux no STF.", ["jdb"]], ["rodrigofux", "fux", "p", "Pai e filho. O ministro não é apontado como investigado na reportagem.", ["jdb"]], ["vorcaro", "kevin", "p", "Anotação de out/2024 atribuída a Luiz Rennó menciona R$ 500 mil mensais ao filho do ministro Kassio.", ["jdb"]], ["kevin", "kassio", "p", "Pai e filho. O ministro não se manifestou sobre as mensagens.", ["jdb"]], ["renno", "kevin", "p", "Rennó é apontado como autor da anotação sobre os pagamentos mensais.", ["jdb"]], ["vorcaro", "renno", "p", "Interlocutor direto do banqueiro nas conversas divulgadas.", ["jdb"]], ["vorcaro", "ciroadv", "p", "Advogado que se apresentou como ponte para o ministro Mendonça em fev/2025.", ["jdb"]], ["ciroadv", "mendonca", "p", "Mensagens citam foto ao lado do ministro e tentativa de agendar encontro. Mendonça não se manifestou na reportagem.", ["jdb"]], ["vorcaro", "marcusv", "p", "Advogado que relatou reuniões no STF e tratou de andamento processual com o banqueiro em 2024.", ["jdb"]], ["marcusv", "mendonca", "p", "Segundo as mensagens, dizia ter sido chamado pelo ministro no STF e combinava encontros com Vorcaro em seguida.", ["jdb"]], ["vorcaro", "cezinha", "p", "Deputado avisou sobre encontro com o ministro em São Paulo em mar/2025, segundo as mensagens.", ["jdb"]], ["cezinha", "mendonca", "p", "As mensagens do deputado tratam de encontro com \"ministro André\"; o ministro não se manifestou.", ["jdb"]], ["vorcaro", "iter", "p", "Convites a eventos do instituto, incluindo debate fechado em Belo Horizonte.", ["jdb"]], ["iter", "mendonca", "p", "Instituto fundado pelo ministro, usado como contexto dos convites ao banqueiro.", ["jdb"]], ["master", "costa", "f", "Segundo a PF, o ex-presidente do BRB recebeu R$ 146,5 mi em seis imóveis como propina pela aprovação das compras de carteira. Preso em 16/04/2026.", ["mimo"]], ["exsocio", "wagner", "f", "Segundo o relatório da PF, empresa ligada ao entorno de Augusto Lima repassou R$ 3,5 mi à BN Financeira, apontada como ligada ao entorno do senador. Wagner diz que sua relação com Vorcaro 'é praticamente zero'.", ["mrede"]], ["master", "belline", "f", "Segundo o relatório da PF, o então chefe do Departamento de Supervisão do BC recebeu R$ 500 mil mensais e um pagamento de R$ 760 mil. Afastado, nega ter vazado informações e diz ter pagado as próprias despesas.", ["abbc"]], ["master", "motta", "f", "Segundo a reportagem sobre o material da PF, houve custeio de hospedagem de cerca de 3 mil euros em Lisboa, em junho de 2024. Motta não é investigado e afirma que as relações foram 'corretas e institucionais'.", ["mrede"]]];
 
-{id:"bc",n:"Banco Central",ab:"BC",r:"Regulador do sistema financeiro",c:"reg",t:2,
- info:"Negou a compra do Master pelo BRB em 03/09/2025 e liquidou o banco em 18/11/2025. Depois passou a ser objeto de inspeção do TCU por possível falha de supervisão.",ls:["cnn","mm"]},
-{id:"galipolo",n:"Gabriel Galípolo",ab:"GG",r:"Presidente do Banco Central",c:"reg",t:2,
- info:"Relatou contatos recebidos no período da operação BRB–Master; nega que o caso tenha sido tratado.",ls:["wen","cnn"]},
-{id:"campos",n:"Roberto Campos Neto",ab:"RC",r:"Ex-presidente do BC",c:"reg",t:2,
- info:"Convocado pela CPI em 25/02/2026 para explicar a supervisão do Master no período anterior.",ls:["wen"]},
-{id:"psneves",n:"Paulo Sérgio Neves de Souza",ab:"PS",r:"Ex-diretor de Fiscalização do BC",c:"reg",t:2,
- info:"Citado em relato do Diretor de Fiscalização à PF (12/08/2026) sob suspeita de receber vantagens; a apuração fala em pagamentos mensais. Foco da Petição 15.504.",ls:["br","p360"]},
-{id:"belline",n:"Belline Santana",ab:"BS",r:"Ex-chefe de supervisão do BC",c:"reg",t:2,
- info:"Citado na mesma apuração sobre corrupção e vazamento de informações de supervisão.",ls:["br","p360"]},
-{id:"fgc",n:"FGC",ab:"FGC",r:"Fundo Garantidor de Créditos",c:"reg",t:2,
- info:"Começou a pagar em 21/01/2026: R$ 40,6 bi a cerca de 800 mil investidores do Master, com prazo de resgate até 18/11/2030.",ls:["im"]},
-{id:"tcu",n:"TCU",ab:"TCU",r:"Tribunal de Contas da União",c:"reg",t:2,
- info:"Autorizou em jan/2026 inspeção presencial em documentos do BC sobre a supervisão do Master.",ls:["cnn"]},
-{id:"jhonatan",n:"Jhonatan de Jesus",ab:"JJ",r:"Ministro relator no TCU",c:"reg",t:2,
- info:"Determinou a inspeção no BC; em 26/03/2026 a PGR pediu apuração sobre sua atuação e sugeriu suspeição.",ls:["wen","cnn"]},
-{id:"cvm",n:"CVM",ab:"CVM",r:"Regulador do mercado de capitais",c:"reg",t:2,
- info:"Marcou julgamento sobre irregularidades no fundo imobiliário Brazil Realty, ligado ao caso.",ls:["br"]},
-
-{id:"pf",n:"Polícia Federal",ab:"PF",r:"Operação Compliance Zero",c:"jud",t:2,
- info:"Deflagrou a operação em 18/11/2025 e chegou à 9ª fase em 18/06/2026. Mapeou quatro núcleos: fraude financeira, corrupção de servidores, lavagem por empresas de fachada e obstrução.",ls:["wen","mm","b247"]},
-{id:"andrei",n:"Andrei Rodrigues",ab:"AR",r:"Diretor-geral da PF",c:"jud",t:2,
- info:"Afastado preventivamente por decisão de Mendonça em 08/09/2026, junto com o diretor de Inteligência; a decisão foi suspensa por Fachin no dia seguinte.",ls:["cj","af"]},
-{id:"stf",n:"STF",ab:"STF",r:"Pet 16.662 e Pet 16.704",c:"jud",t:2,
- info:"As investigações foram transferidas ao Supremo em 03/12/2025 por causa do foro de autoridades citadas. Sessões do plenário em 15/09 (Pet 16.662) e 23/09 (Pet 16.704).",ls:["cj","p360"]},
-{id:"toffoli",n:"Dias Toffoli",ab:"DT",r:"Primeiro relator no STF",c:"jud",t:2,
- info:"Assumiu a relatoria em dez/2025 e impôs sigilo severo. Deixou o caso em 12/02/2026 após referências a ele no celular de Vorcaro e informações sobre participação no resort Tayayá, da família. Nega irregularidade.",ls:["cnn","ap"]},
-{id:"mendonca",n:"André Mendonça",ab:"AM",r:"Relator seguinte",c:"jud",t:2,
- info:"Sorteado relator em 12/02/2026. Determinou o detalhamento das conversas de Vorcaro, quebrou sigilos em setembro e afastou dirigentes da PF — decisões que abriram a crise interna da Corte.",ls:["cj","ic","p360"]},
-{id:"fachin",n:"Edson Fachin",ab:"EF",r:"Presidente do STF",c:"jud",t:2,
- info:"Suspendeu a decisão de afastamento em 09/09/2026, avocou a Pet 16.662 para a Presidência em 12/09 e reservou sessão do plenário só para ela.",ls:["cj"]},
-{id:"moraes",n:"Alexandre de Moraes",ab:"MO",r:"Ministro do STF",c:"jud",t:2,
- info:"Citado em 28 mensagens atribuídas a contatos de Vorcaro, divulgadas em 01/09/2026. Nega interferência em favor do banco e pediu investigação contra Mendonça por abuso de autoridade.",ls:["af","ap","ic"]},
-{id:"gilmar",n:"Gilmar Mendes",ab:"GM",r:"Ministro do STF",c:"jud",t:2,
- info:"Anulou quebra de sigilo de fundo ligado ao caso em 19/03/2026 e enviou ofício em 11/09/2026 questionando procedimentos adotados na investigação.",ls:["wen","cj"]},
-{id:"gonet",n:"Paulo Gonet",ab:"PG",r:"Procurador-geral da República",c:"jud",t:2,
- info:"Rejeitou formalmente a segunda proposta de delação em 15/06/2026; a PGR passou a apurar interferência em relatório da PF e defendeu o fim do sigilo.",ls:["bd","cb"]},
-{id:"cpi",n:"CPI do Banco Master",ab:"CPI",r:"Comissão parlamentar de inquérito",c:"jud",t:2,
- info:"Aprovou convocações e quebras de sigilo em 25/02/2026. O relatório final, com pedido de indiciamento de ministros do STF e do PGR, foi rejeitado por 6 a 4 em 14/04/2026.",ls:["wen"]},
-
-{id:"barci",n:"Escritório de Viviane Barci",ab:"VB",r:"Banca de advocacia",c:"pol",t:3,
- info:"Tinha contrato de R$ 131 mi em 36 meses com o Master, revelado em 11/12/2025; R$ 80 mi confirmados como pagos entre 2024 e 2025. Os pagamentos cessaram com a liquidação.",ls:["cnn","wen"]},
-{id:"turma",n:"'A Turma'",ab:"AT",r:"Policiais supostamente cooptados",c:"jud",t:3,
- info:"Grupo descrito em relatório de 218 páginas extraído do celular de Vorcaro, na Petição 15.556, junto com contatos com hackers.",ls:["p360"]},
-{id:"projetodv",n:"Projeto DV",ab:"DV",r:"Campanha de imagem",c:"pol",t:3,
- info:"Inquérito 5.035 apura contratação de influenciadores e amplificação de conteúdo para defender Vorcaro e atacar o Banco Central.",ls:["p360","br"]},
-{id:"darkhorse",n:"Fundo do filme 'Dark Horse'",ab:"DH",r:"Veículo de financiamento",c:"pol",t:3,
- info:"Fundo de US$ 24 mi que financiou o filme; apuração atribui cerca de US$ 14 mi a Vorcaro. Em 04/09/2026 pediu-se ao STF o levantamento do sigilo sobre o financiamento.",ls:["af","br"]},
-{id:"flavio",n:"Flávio Bolsonaro",ab:"FB",r:"Senador (PL)",c:"pol",t:3,
- info:"Negociou o financiamento do fundo do filme; reportagens de mai/2026 e set/2026 contestam suas versões sobre a origem do dinheiro. Nega irregularidade.",ls:["af","ap2","wen"]},
-{id:"ciro",n:"Ciro Nogueira",ab:"CN",r:"Senador (PP)",c:"pol",t:3,
- info:"Alvo da 7ª fase da operação em 07/05/2026; apuração aponta repasses mensais de R$ 300 mil e atuação pela ampliação da garantia do FGC. Nega.",ls:["wen"]},
-{id:"wagner",n:"Jaques Wagner",ab:"JW",r:"Senador (PT)",c:"pol",t:3,
- info:"Alvo da 9ª fase em 18/06/2026, com 18 mandados na Bahia, em São Paulo e no DF. Nega irregularidade.",ls:["wen"]},
-{id:"castro",n:"Cláudio Castro",ab:"CC",r:"Ex-governador do RJ (PL)",c:"pol",t:3,
- info:"Alvo em 26/05/2026 pela aplicação de cerca de R$ 3 bi do Rioprevidência em fundos ligados ao grupo. Nega.",ls:["wen"]},
-{id:"kassab",n:"Gilberto Kassab",ab:"GK",r:"Presidente do PSD",c:"pol",t:3,
- info:"Vorcaro afirma ter negociado R$ 5 mi em doações para campanhas de 2022 como contrapartida por favores. Kassab nega.",ls:["af"]},
-{id:"fabiofaria",n:"Fábio Faria",ab:"FF",r:"Ex-ministro das Comunicações",c:"pol",t:3,
- info:"Aparece entre os contatos nas mensagens divulgadas em set/2026. Nega irregularidade.",ls:["af"]},
-{id:"nikolas",n:"Nikolas Ferreira",ab:"NF",r:"Deputado federal (PL)",c:"pol",t:3,
- info:"Citado nas mensagens divulgadas em set/2026. Nega irregularidade.",ls:["af"]},
-{id:"mantega",n:"Guido Mantega",ab:"GM2",r:"Ex-ministro da Fazenda",c:"pol",t:3,
- info:"Levantamento divulgado na investigação aponta pagamentos mensais de cerca de R$ 1 mi por consultoria. Menção de apuração, sem denúncia julgada.",ls:["wen"]},
-{id:"lewa",n:"Ricardo Lewandowski",ab:"RL",r:"Ministro da Justiça",c:"pol",t:3,
- info:"A apuração cita repasse de R$ 6 mi a family office ligado à família. Menção de apuração, sem denúncia julgada.",ls:["wen"]},
-{id:"temer",n:"Michel Temer",ab:"MT",r:"Ex-presidente da República",c:"pol",t:3,
- info:"Pagamentos citados em levantamento divulgado em abr/2026. Menção de apuração, sem denúncia julgada.",ls:["wen"]},
-{id:"acm",n:"ACM Neto",ab:"AN",r:"Ex-prefeito de Salvador",c:"pol",t:3,
- info:"Pagamentos citados no mesmo levantamento de abr/2026. Nega irregularidade.",ls:["wen"]},
-{id:"rueda",n:"Antônio de Rueda",ab:"AD",r:"Presidente do União Brasil",c:"pol",t:3,
- info:"Pagamentos citados no levantamento de abr/2026. Nega irregularidade.",ls:["wen"]},
-{id:"guedes",n:"Paulo Guedes",ab:"PGu",r:"Ex-ministro da Economia",c:"pol",t:3,
- info:"Convocado pela CPI em 25/02/2026 para tratar do ambiente regulatório do período.",ls:["wen"]},
-{id:"vieira",n:"Alessandro Vieira",ab:"AV",r:"Senador, relator da CPI",c:"pol",t:3,
- info:"Assinou o relatório final que pedia indiciamento de três ministros do STF e do PGR, rejeitado em 14/04/2026.",ls:["wen"]},
-{id:"tirreno",n:"Tirreno",ab:"TI",r:"Empresa de fachada",c:"mkt",t:1,
- info:"Empresa recém-criada usada, segundo a apuração, para intermediar a venda de R$ 12,2 bi em créditos ao BRB.",ls:["ap3","p360"]},
-{id:"maxima",n:"Banco Máxima",ab:"MX",r:"Origem do Master (2017)",c:"mkt",t:1,
- info:"Instituição comprada em 2017 e rebatizada de Banco Master; entre os investidores da compra apareceu o espanhol Oliver Martin.",ls:["ap3"]},
-{id:"pleno",n:"Banco Pleno (ex-Voiter)",ab:"PL",r:"Banco ligado ao grupo",c:"mkt",t:1,
- info:"Transferido a Augusto Lima em ago/2025 e liquidado pelo BC em 18/02/2026.",ls:["ap3"]},
-{id:"sefer",n:"Sefer Investimentos",ab:"SF",r:"Corretora liquidada",c:"mkt",t:1,
- info:"Ex-Foco DTVM/Indigo. Intermediava captação junto a fundos de previdência desde 2017; liquidada em 26/06/2026 com bloqueio de bens do controlador.",ls:["tb","ap3"]},
-{id:"benjamim",n:"Benjamim Botelho",ab:"BB",r:"Controlador da Sefer",c:"mkt",t:1,
- info:"Radicado em Portugal desde 2024; apontado como operador da engrenagem financeira, ligado ao Grupo Aquilla e ao Faex Fund.",ls:["tb","ap3"]},
-{id:"faex",n:"Faex Fund",ab:"FX",r:"Offshore nas Bahamas",c:"mkt",t:1,
- info:"Veículo rastreado pelo liquidante do Master entre os ativos ligados ao grupo.",ls:["tb"]},
-{id:"aquilla",n:"Grupo Aquilla",ab:"AQ",r:"Veículo de investimento",c:"mkt",t:1,
- info:"Administrado por Benjamim Botelho, com aportes atribuídos a Oliver Martin.",ls:["ap3"]},
-{id:"oliver",n:"Oliver Ortiz de Zarate Martin",ab:"OM",r:"Investidor estrangeiro",c:"mkt",t:1,
- info:"Espanhol apontado em reportagem como narcotraficante; presente entre os investidores da compra do Banco Máxima em 2017.",ls:["ap3"]},
-{id:"bull",n:"Luiz Antonio Bull",ab:"LB",r:"Diretor de compliance do Master",c:"mkt",t:1,
- info:"Executivo responsável pela área de compliance no período das operações investigadas.",ls:["ap3"]},
-{id:"iprev",n:"Iprev Maceió",ab:"IP",r:"Fundo municipal de previdência",c:"mkt",t:1,
- info:"Aplicou cerca de R$ 110 mi em papéis do Master.",ls:["ap3"]},
-{id:"amapa",n:"Previdência do Amapá",ab:"AP",r:"Fundo estadual de previdência",c:"mkt",t:1,
- info:"Perdeu cerca de R$ 400 mi em papéis do grupo.",ls:["ap3"]},
-
-{id:"aquino",n:"Ailton de Aquino",ab:"AA",r:"Diretor de Fiscalização do BC",c:"reg",t:2,
- info:"Participou de videoconferência com Vorcaro em 17/11/2025, no dia da prisão; foi dispensado de depor em dez/2025.",ls:["ap3","wen"]},
-{id:"sidnei",n:"Sidnei Marques",ab:"SM",r:"Diretor de Organização do SFN",c:"reg",t:2,
- info:"Rejeitou pedido do grupo em 2017, antes da aquisição que originou o Master.",ls:["ap3"]},
-
-{id:"kassio",n:"Kassio Nunes Marques",ab:"KN",r:"Ministro do STF",c:"jud",t:3,
- info:"Aparece como contato na agenda do banqueiro divulgada na apuração. Nega irregularidade.",ls:["ap3"]},
-{id:"marilson",n:"Marilson Roseno da Silva",ab:"MR",r:"Policial federal aposentado",c:"jud",t:3,
- info:"Apontado como responsável por espionagem a serviço do banqueiro.",ls:["ap3"]},
-{id:"mourao",n:"Luiz Phillipi Mourão",ab:"LP",r:"Apontado como líder de 'A Turma'",c:"jud",t:3,
- info:"Descrito na apuração como executor de atos de intimidação para o grupo.",ls:["ap3"]},
-{id:"jorn",n:"Jornalistas ameaçados",ab:"JN",r:"Alvos de intimidação",c:"jud",t:3,
- info:"Colunistas que revelaram o caso foram alvo de ataques coordenados e de ameaças registradas nas mensagens apreendidas.",ls:["ap3"]},
-
-{id:"pec",n:"PEC da garantia do FGC",ab:"PEC",r:"Proposta legislativa",c:"pol",t:3,
- info:"Ampliava a cobertura do FGC — vantagem direta para quem captava via CDB. Voltou depois em novo projeto na Câmara.",ls:["ap3"]},
-{id:"motta",n:"Hugo Motta",ab:"HM",r:"Presidente da Câmara",c:"pol",t:3,
- info:"Citado em jantar com o banqueiro. Nega irregularidade.",ls:["ap3"]},
-{id:"alcolumbre",n:"Davi Alcolumbre",ab:"DA",r:"Presidente do Senado",c:"pol",t:3,
- info:"Citado como próximo ao banqueiro; o fundo de previdência do Amapá perdeu ~R$ 400 mi em papéis do grupo. Nega.",ls:["ap3"]},
-{id:"lira",n:"Arthur Lira",ab:"AL2",r:"Deputado federal (PP)",c:"pol",t:3,
- info:"Citado como próximo ao banqueiro; indicou Jhonatan de Jesus ao TCU. Nega irregularidade.",ls:["ap3"]},
-{id:"cajado",n:"Cláudio Cajado",ab:"CJ",r:"Deputado federal (PP)",c:"pol",t:3,
- info:"Encabeçou projeto que mexia no comando do Banco Central durante a crise.",ls:["ap3"]},
-{id:"barros",n:"Filipe Barros",ab:"FBa",r:"Deputado federal (PL)",c:"pol",t:3,
- info:"Apresentou projeto que retomava a chamada 'emenda Master'.",ls:["ap3"]},
-{id:"bacelar",n:"João Carlos Bacelar",ab:"JB",r:"Deputado federal (PL)",c:"pol",t:3,
- info:"Envelope com seu nome foi encontrado em endereço do banqueiro. Nega irregularidade.",ls:["ap3"]},
-{id:"ibaneis",n:"Ibaneis Rocha",ab:"IR",r:"Governador do DF",c:"pol",t:3,
- info:"Reuniu-se com o banqueiro no período da operação com o BRB, banco controlado pelo governo do DF. Nega.",ls:["ap3"]},
-{id:"eduardo",n:"Eduardo Bolsonaro",ab:"EB",r:"Deputado federal (PL)",c:"pol",t:3,
- info:"Citado nas tratativas do fundo que financiou o filme 'Dark Horse'. Nega irregularidade.",ls:["nd"]},
-{id:"haddad",n:"Fernando Haddad",ab:"FH",r:"Ministro da Fazenda",c:"pol",t:3,
- info:"Classificou o episódio como a maior fraude bancária da história do país.",ls:["ap3","ti"]},
-{id:"febraban",n:"Febraban (Isaac Sidney)",ab:"FE",r:"Entidade do setor bancário",c:"pol",t:3,
- info:"Reuniões com o grupo em 2019, na fase de expansão do banco.",ls:["ap3"]},
-{id:"lula",n:"Lula",ab:"LU",r:"Presidente da República",c:"pol",t:4,
- info:"Recebeu o banqueiro em reunião no Palácio do Planalto em dez/2024.",ls:["ap3"]},
-{id:"doria",n:"João Doria",ab:"JD",r:"Ex-governador de SP",c:"pol",t:4,
- info:"Aparece como contato na agenda do banqueiro.",ls:["ap3"]},
-{id:"joesley",n:"Joesley Batista",ab:"JO",r:"Empresário",c:"pol",t:4,
- info:"Citado em episódio de evento patrocinado pelo banco.",ls:["ap3"]},
-{id:"pastore",n:"Luiz Oswaldo Pastore",ab:"LO",r:"Empresário",c:"pol",t:4,
- info:"Forneceu o jato usado em viagem de Toffoli a Lima em nov/2025, junto com advogado de investigado.",ls:["ap3"]},
-{id:"maridt",n:"Maridt",ab:"MD",r:"Empresa de irmãos de Toffoli",c:"pol",t:4,
- info:"Sócia em fundo do Master ligado ao resort Tayayá.",ls:["ap3"]},
-{id:"tayaya",n:"Resort Tayayá",ab:"TY",r:"Ativo da família Toffoli",c:"pol",t:4,
- info:"Fundo do banco movimentou cerca de R$ 6,6 mi em participações no resort.",ls:["ap3","ap"]},
-{id:"monteiro",n:"Monteiro, Rusu, Cameirão e Bercht",ab:"MB",r:"Banca de advocacia",c:"pol",t:4,
- info:"Recebeu R$ 79 mi; com a Mytra Consultoria (R$ 30 mi), R$ 109 mi. Pagamento documentado não é, por si, prova de crime.",ls:["nd"]},
-{id:"warde",n:"Warde Advogados",ab:"WA",r:"Banca de advocacia",c:"pol",t:4,
- info:"Recebeu R$ 63,8 mi em pagamentos do grupo.",ls:["nd"]},
-{id:"gabino",n:"Gabino Kruschewsky Advogados",ab:"GB",r:"Banca de advocacia",c:"pol",t:4,
- info:"Recebeu R$ 54 mi em pagamentos do grupo.",ls:["nd"]},
-{id:"alvescorrea",n:"Alves Corrêa Verissimo",ab:"AC",r:"Banca de advocacia",c:"pol",t:4,
- info:"Recebeu R$ 32,9 mi em pagamentos do grupo.",ls:["nd"]},
-{id:"furtado",n:"Marcus Vinícius Furtado Coelho",ab:"MV",r:"Advogado, ex-presidente da OAB",c:"pol",t:4,
- info:"Escritório recebeu R$ 27,5 mi em pagamentos do grupo.",ls:["nd"]},
-{id:"arruda",n:"Augusto Arruda Botelho",ab:"AB",r:"Advogado",c:"pol",t:4,
- info:"Atuou na defesa do diretor de compliance do Master.",ls:["ap3"]},
-{id:"bancas",n:"Rede de 79 escritórios",ab:"79",r:"Beneficiários de pagamentos",c:"pol",t:4,
- info:"A investigação mapeou mais de R$ 500 mi pagos a 79 bancas entre 2021 e 2024. Receber pagamento não implica, por si, participação em crime.",ls:["nd"]}
-];
-
-var E=[
-["vorcaro","master","f","Controlador do banco. Segundo a apuração, decidia a captação de CDB caro e a originação dos ativos que sustentavam o balanço.",["wpt","mm"]],
-["master","colig","f","Mesmo conglomerado: liquidadas em 18/11/2025 e, no caso do Will Bank, em 21/01/2026.",["im"]],
-["master","brb","f","Núcleo da fraude: venda de carteiras de crédito ao BRB sob suspeita de falta de lastro — cerca de R$ 12,2 bi (Inquérito 5.026).",["mm","p360","cnn"]],
-["master","fictor","f","Compra anunciada com R$ 3 bi horas antes da prisão e da liquidação; tentativa final de evitar o colapso.",["wen"]],
-["brb","costa","f","Presidia o BRB quando as operações foram aprovadas; preso em 16/04/2026, com R$ 146 mi em imóveis apontados.",["wen","br"]],
-["brb","dirbrb","i","Laudo da PF de 21/08/2026 aponta falhas de governança e concentração de risco nas decisões do colegiado.",["br"]],
-["vorcaro","henrique","f","Pai do banqueiro, preso em 14/05/2026 na mesma investigação, junto com dois policiais federais.",["wen"]],
-["vorcaro","cunhado","f","Cunhado e operador financeiro apontado pela apuração: R$ 57,1 mi em repasses e doações de campanha em 2022.",["nd","ap3"]],
-["master","reag","f","Gestora ligada ao grupo; teve fundo liquidado pelo BC em 15/01/2026.",["wen"]],
-["vorcaro","exsocio","f","Duas distribuidoras do ex-sócio foram liquidadas pelo BC em 03/09/2026.",["br"]],
-["master","rioprev","f","O fundo previdenciário do RJ aplicou cerca de R$ 3 bi em fundos ligados ao grupo.",["wen"]],
-["rioprev","castro","p","Aplicações feitas durante seu governo; alvo da operação em 26/05/2026.",["wen"]],
-["master","bc","i","O BC negou a venda ao BRB em 03/09/2025 e decretou a liquidação extrajudicial em 18/11/2025.",["cnn","mm"]],
-["bc","galipolo","i","Presidente do BC no período; relatou contatos sobre o caso e nega tratativas.",["wen","cnn"]],
-["bc","campos","i","Presidia o BC quando o Master crescia; convocado pela CPI sobre a supervisão.",["wen"]],
-["bc","psneves","v","Servidor citado por suspeita de vantagens em relato do Diretor de Fiscalização à PF (12/08/2026).",["br","p360"]],
-["bc","belline","v","Citado na mesma apuração sobre corrupção e vazamento de informação de supervisão.",["br","p360"]],
-["vorcaro","psneves","v","Petição 15.504: contatos do banqueiro com servidores do BC, sob suspeita de compra de informação.",["p360"]],
-["vorcaro","belline","v","Mesma petição — relação apurada entre o banqueiro e servidores da fiscalização.",["p360"]],
-["bc","fgc","i","A liquidação acionou a garantia: R$ 40,6 bi pagos a ~800 mil investidores a partir de 21/01/2026.",["im"]],
-["master","fgc","f","O CDB do Master era vendido com o argumento da garantia de R$ 250 mil por CPF — o que sustentou a captação.",["im"]],
-["bc","tcu","i","O TCU inspeciona desde jan/2026 se houve falha de supervisão do BC.",["cnn"]],
-["tcu","jhonatan","i","Relator da inspeção; a PGR pediu apuração sobre sua atuação em 26/03/2026.",["wen","cnn"]],
-["master","cvm","i","A CVM julga irregularidades no FII Brazil Realty, ligado ao caso.",["br"]],
-["vorcaro","pf","v","Preso em 17/11/2025 e em 04/03/2026; depôs quase quatro horas em 28/08/2026 e teve duas delações rejeitadas.",["wen","oe"]],
-["pf","master","v","Operação Compliance Zero: nove fases sobre fraude, corrupção de servidores, lavagem e obstrução.",["wen","mm"]],
-["pf","andrei","i","Diretor-geral afastado por Mendonça em 08/09/2026; Fachin suspendeu a decisão no dia seguinte.",["cj","af"]],
-["pf","turma","v","Relatório de 218 páginas do celular de Vorcaro descreve 'A Turma', policiais supostamente cooptados.",["p360"]],
-["vorcaro","turma","v","Grupo apontado como estrutura de intimidação e obtenção de informação a serviço do banqueiro.",["p360"]],
-["vorcaro","projetodv","p","Campanha de defesa pública e ataque ao BC atribuída ao seu entorno (Inquérito 5.035).",["p360","br"]],
-["pf","projetodv","v","Inquérito 5.035 apura a contratação de influenciadores e a amplificação coordenada de conteúdo.",["p360"]],
-["vorcaro","stf","v","As investigações foram remetidas ao Supremo em 03/12/2025 por causa do foro de autoridades citadas.",["cj","cnn"]],
-["stf","toffoli","v","Primeiro relator: assumiu em dez/2025, impôs sigilo severo e deixou o caso em 12/02/2026.",["cnn","ap"]],
-["vorcaro","toffoli","v","Referências ao ministro no celular do banqueiro e negócio no resort Tayayá, da família, motivaram a saída da relatoria.",["ap","wen"]],
-["stf","mendonca","v","Relator sorteado em 12/02/2026; conduziu a quebra de sigilo das conversas.",["cj"]],
-["vorcaro","mendonca","v","Ouviu o banqueiro em gabinete no fim de agosto de 2026 e mandou a PF detalhar suas conversas com autoridades.",["br","cj"]],
-["mendonca","andrei","v","Afastamento preventivo determinado em 08/09/2026, com suspensão de relatórios sobre atos judiciais.",["cj"]],
-["mendonca","moraes","v","Mendonça quebrou o sigilo das mensagens que citam Moraes; Moraes pediu investigação contra ele por abuso de autoridade.",["af","ic","ap2"]],
-["vorcaro","moraes","v","28 mensagens atribuídas ao contato do banqueiro com o ministro, incluindo pergunta sobre deixar o país em 15/11/2025. Moraes nega interferência.",["af","ap","ic"]],
-["moraes","barci","f","O escritório da mulher do ministro tinha contrato de R$ 131 mi com o Master; R$ 80 mi confirmados como pagos.",["cnn","wen"]],
-["master","barci","f","Contratante da banca entre 2024 e 2027, com R$ 3,6 mi mensais; pagamentos cessaram com a liquidação.",["cnn"]],
-["vorcaro","barci","f","Mensagens apontam que a versão do contrato de R$ 131 mi foi editada em perfil identificado como o do ministro.",["af","br"]],
-["moraes","galipolo","i","Registros de ligações e reuniões no período da operação BRB–Master; ambos negam ter tratado do caso.",["wen","cnn"]],
-["stf","fachin","i","Presidente da Corte: suspendeu a decisão de afastamento e avocou a Pet 16.662 em 12/09/2026.",["cj"]],
-["fachin","mendonca","i","Fachin retirou o caso das mãos de Mendonça após as decisões de 08/09 e marcou sessão exclusiva.",["cj"]],
-["stf","gilmar","i","Anulou quebra de sigilo de fundo ligado ao caso e questionou procedimentos em ofício de 11/09/2026.",["wen","cj"]],
-["gonet","vorcaro","v","A PGR rejeitou formalmente a segunda proposta de delação em 15/06/2026.",["wen"]],
-["gonet","mendonca","v","A PGR apura interferência em relatório da PF e defende o fim do sigilo da rede de pagamentos.",["bd","cb"]],
-["cpi","master","p","A CPI apurou a operação BRB–Master e aprovou convocações e quebras de sigilo em 25/02/2026.",["wen"]],
-["cpi","vieira","p","Relator do parecer final, rejeitado por 6 a 4 em 14/04/2026.",["wen"]],
-["cpi","guedes","p","Convocado em 25/02/2026 para tratar do ambiente regulatório.",["wen"]],
-["cpi","campos","p","Convocado no mesmo pacote para explicar a supervisão do BC.",["wen"]],
-["cpi","toffoli","p","A comissão aprovou a convocação de irmãos do ministro em 25/02/2026.",["wen"]],
-["vorcaro","ciro","p","Alvo da 7ª fase (07/05/2026): apuração aponta R$ 300 mil mensais e atuação pela PEC que ampliava a garantia do FGC.",["wen"]],
-["ciro","fgc","p","A emenda defendida ampliaria a cobertura do fundo — vantagem direta para quem captava via CDB.",["wen"]],
-["vorcaro","wagner","p","Alvo da 9ª fase, em 18/06/2026, com 18 mandados em três estados.",["wen"]],
-["vorcaro","flavio","p","Negociação de US$ 24 mi para o fundo do filme; cerca de US$ 14 mi atribuídos ao banqueiro.",["af","ap2"]],
-["flavio","darkhorse","p","Fundo que financiou o filme, hoje no centro do pedido de levantamento de sigilo.",["af","br"]],
-["vorcaro","darkhorse","f","Transferências verificadas entre fev e mai/2025 ligam o banqueiro ao veículo de financiamento.",["wen","af"]],
-["vorcaro","kassab","p","Vorcaro afirma ter negociado R$ 5 mi em doações de campanha em 2022 como contrapartida. Kassab nega.",["af"]],
-["vorcaro","fabiofaria","p","Aparece entre os contatos nas mensagens divulgadas em set/2026.",["af"]],
-["vorcaro","nikolas","p","Citado nas mensagens divulgadas em set/2026.",["af"]],
-["vorcaro","mantega","p","Levantamento da apuração aponta consultoria de cerca de R$ 1 mi por mês.",["wen"]],
-["vorcaro","lewa","p","A apuração cita R$ 6 mi repassados a family office ligado à família.",["wen"]],
-["vorcaro","temer","p","Pagamentos citados em levantamento divulgado em abr/2026.",["wen"]],
-["vorcaro","acm","p","Pagamentos citados no mesmo levantamento de abr/2026.",["wen"]],
-["vorcaro","rueda","p","Pagamentos citados no levantamento de abr/2026.",["wen"]],
-["andrei","gonet","i","A apuração sobre interferência no relatório da PF corre na PGR após os afastamentos.",["bd"]],
-["vorcaro","tirreno","f","Empresa criada às pressas e usada, segundo a apuração, para empacotar os créditos vendidos ao BRB.",["ap3","p360"]],
-["tirreno","brb","f","Destino dos R$ 12,2 bi em créditos apontados como sem lastro.",["ap3"]],
-["master","tirreno","f","Veículo dentro do próprio grupo para a operação com o banco público.",["ap3"]],
-["vorcaro","maxima","f","Comprou o Banco Máxima em 2017 — a instituição que virou Banco Master.",["ap3"]],
-["maxima","master","f","Mesma instituição, rebatizada depois da aquisição.",["ap3"]],
-["oliver","maxima","f","Apareceu entre os investidores da compra de 2017.",["ap3"]],
-["oliver","aquilla","f","Aportes atribuídos a ele no veículo administrado por Benjamim Botelho.",["ap3"]],
-["aquilla","benjamim","f","Grupo administrado pelo controlador da Sefer.",["ap3"]],
-["benjamim","sefer","f","Controlador da corretora, com bens bloqueados na liquidação de 26/06/2026.",["tb"]],
-["sefer","master","f","Intermediava, desde 2017, captações do grupo junto a fundos de previdência.",["tb","ap3"]],
-["sefer","faex","f","Offshore bahamense ligada ao controlador, rastreada pelo liquidante do Master.",["tb"]],
-["sefer","bc","i","Liquidada pelo BC em 26/06/2026 por comprometimento financeiro e violação de normas.",["tb"]],
-["exsocio","pleno","f","Recebeu o Banco Voiter, depois Pleno, em ago/2025; liquidado em 18/02/2026.",["ap3"]],
-["pleno","bc","i","Liquidado pelo Banco Central em 18/02/2026.",["ap3"]],
-["master","bull","i","Diretor de compliance no período das operações investigadas.",["ap3"]],
-["bull","arruda","p","Defendido pelo advogado na apuração.",["ap3"]],
-["master","iprev","f","Fundo municipal de Maceió aplicou cerca de R$ 110 mi em papéis do banco.",["ap3"]],
-["master","amapa","f","Fundo de previdência do Amapá perdeu cerca de R$ 400 mi em papéis do grupo.",["ap3"]],
-["amapa","alcolumbre","p","Fundo do estado que ele representa no Senado; é citado como próximo ao banqueiro.",["ap3"]],
-["turma","marilson","v","Policial federal aposentado apontado como responsável pela espionagem do grupo.",["ap3"]],
-["turma","mourao","v","Apontado na apuração como líder do grupo de intimidação.",["ap3"]],
-["turma","jorn","v","Ameaças e ataques a jornalistas que revelaram o caso constam do material apreendido.",["ap3"]],
-["vorcaro","jorn","v","Mensagens registram intenção de agredir colunistas e campanhas de desinformação contra quem apurava o caso.",["ap3"]],
-["bc","aquino","i","Diretor de Fiscalização que participou de videoconferência com o banqueiro em 17/11/2025.",["ap3"]],
-["vorcaro","aquino","v","Contato direto no dia da prisão e da liquidação, sob apuração.",["ap3","wen"]],
-["bc","sidnei","i","Diretor que rejeitou pedido do grupo em 2017, antes da aquisição.",["ap3"]],
-["campos","psneves","i","Segundo a apuração, indicou servidores depois apontados como cooptados.",["ap3"]],
-["vorcaro","kassio","v","Ministro aparece como contato na agenda do banqueiro.",["ap3"]],
-["toffoli","maridt","f","Empresa de irmãos do ministro, sócia em fundo do Master.",["ap3"]],
-["maridt","tayaya","f","Sociedade no fundo ligado ao resort da família.",["ap3"]],
-["master","tayaya","f","Fundo do banco movimentou ~R$ 6,6 mi em participações no resort.",["ap3","ap"]],
-["toffoli","pastore","p","Jato do empresário usado na viagem do ministro a Lima, em nov/2025, junto a advogado de investigado.",["ap3"]],
-["master","monteiro","f","R$ 79 mi à banca; com a Mytra Consultoria, R$ 109 mi.",["nd"]],
-["master","warde","f","R$ 63,8 mi em pagamentos.",["nd"]],
-["master","gabino","f","R$ 54 mi em pagamentos.",["nd"]],
-["master","alvescorrea","f","R$ 32,9 mi em pagamentos.",["nd"]],
-["master","furtado","f","R$ 27,5 mi ao escritório do ex-presidente nacional da OAB.",["nd"]],
-["master","bancas","f","Mais de R$ 500 mi a 79 bancas entre 2021 e 2024, segundo a investigação.",["nd"]],
-["barci","bancas","f","O contrato de R$ 131 mi é o maior dessa rede de pagamentos a advogados.",["nd"]],
-["vorcaro","motta","p","Citado em jantar com o banqueiro. Nega irregularidade.",["ap3"]],
-["vorcaro","alcolumbre","p","Citado como próximo ao banqueiro no material da apuração.",["ap3"]],
-["vorcaro","lira","p","Citado como próximo ao banqueiro no material da apuração.",["ap3"]],
-["lira","jhonatan","p","Indicou ao TCU o relator que depois tentou questionar a liquidação.",["ap3"]],
-["cajado","bc","p","Encabeçou projeto que mexia no comando do Banco Central durante a crise.",["ap3"]],
-["ciro","pec","p","Autor da proposta que ampliava a garantia do FGC.",["ap3","wen"]],
-["barros","pec","p","Retomou a proposta em novo projeto depois da liquidação.",["ap3"]],
-["pec","fgc","p","Ampliação da cobertura do fundo beneficiava diretamente quem captava via CDB.",["ap3"]],
-["vorcaro","bacelar","p","Envelope com o nome do deputado encontrado em endereço do banqueiro. Nega.",["ap3"]],
-["vorcaro","ibaneis","p","Reuniões no período da operação com o BRB. Nega irregularidade.",["ap3"]],
-["ibaneis","brb","p","O governo do DF é o controlador do banco público que comprou as carteiras.",["ap3"]],
-["rueda","ibaneis","p","Apontado como o interlocutor que aproximou o banqueiro do governador.",["ap3"]],
-["eduardo","darkhorse","p","Citado nas tratativas do fundo que financiou o filme.",["nd"]],
-["vorcaro","lula","p","Reunião no Palácio do Planalto em dez/2024.",["ap3"]],
-["vorcaro","doria","p","Contato registrado na agenda do banqueiro.",["ap3"]],
-["vorcaro","joesley","p","Episódio em evento patrocinado pelo banco.",["ap3"]],
-["vorcaro","febraban","p","Reuniões com a entidade do setor em 2019, na fase de expansão.",["ap3"]],
-["master","haddad","i","O ministro da Fazenda classificou o caso como a maior fraude bancária da história do país.",["ap3","ti"]]
-];
+var WIKI={"vorcaro": "Daniel Vorcaro", "master": "Banco Master", "brb": "Banco de Brasília", "costa": "Banco de Brasília", "bc": "Banco Central do Brasil", "galipolo": "Gabriel Galípolo", "campos": "Roberto Campos Neto", "fgc": "Fundo Garantidor de Créditos", "tcu": "Tribunal de Contas da União", "jhonatan": "Jhonatan de Jesus", "cvm": "Comissão de Valores Mobiliários", "pf": "Polícia Federal (Brasil)", "andrei": "Andrei Rodrigues", "stf": "Supremo Tribunal Federal", "toffoli": "Dias Toffoli", "mendonca": "André Mendonça", "fachin": "Edson Fachin", "moraes": "Alexandre de Moraes", "gilmar": "Gilmar Mendes", "gonet": "Paulo Gonet", "cpi": "Comissão parlamentar de inquérito", "flavio": "Flávio Bolsonaro", "ciro": "Ciro Nogueira", "wagner": "Jaques Wagner", "castro": "Cláudio Castro", "kassab": "Gilberto Kassab", "fabiofaria": "Fábio Faria", "nikolas": "Nikolas Ferreira", "mantega": "Guido Mantega", "lewa": "Ricardo Lewandowski", "temer": "Michel Temer", "acm": "ACM Neto", "rueda": "Antonio Rueda", "guedes": "Paulo Guedes", "vieira": "Alessandro Vieira", "maxima": "Banco Máxima", "kassio": "Kassio Nunes Marques", "motta": "Hugo Motta", "alcolumbre": "Davi Alcolumbre", "lira": "Arthur Lira", "cajado": "Cláudio Cajado", "barros": "Filipe Barros", "bacelar": "João Carlos Bacelar", "ibaneis": "Ibaneis Rocha", "eduardo": "Eduardo Bolsonaro", "haddad": "Fernando Haddad", "febraban": "Febraban", "lula": "Luiz Inácio Lula da Silva", "doria": "João Doria", "joesley": "Joesley Batista", "furtado": "Marcus Vinícius Furtado Coêlho", "fux": "Luiz Fux"};
 
 
 /* =========================================================================
@@ -1005,22 +623,7 @@ const SITEKEY_BRUTA="__TURNSTILE_SITEKEY__";
 const SITEKEY=SITEKEY_BRUTA.startsWith("__")?"":SITEKEY_BRUTA;
 
 /* ---------- títulos na Wikipédia (pt) para foto + resumo ---------- */
-var WIKI={
- vorcaro:"Daniel Vorcaro", master:"Banco Master", brb:"Banco de Brasília", bc:"Banco Central do Brasil",
- fgc:"Fundo Garantidor de Créditos", tcu:"Tribunal de Contas da União", cvm:"Comissão de Valores Mobiliários",
- pf:"Polícia Federal (Brasil)", stf:"Supremo Tribunal Federal", febraban:"Febraban", maxima:"Banco Máxima",
- moraes:"Alexandre de Moraes", toffoli:"Dias Toffoli", mendonca:"André Mendonça", fachin:"Edson Fachin",
- gilmar:"Gilmar Mendes", kassio:"Kassio Nunes Marques", gonet:"Paulo Gonet", galipolo:"Gabriel Galípolo",
- campos:"Roberto Campos Neto", andrei:"Andrei Rodrigues", jhonatan:"Jhonatan de Jesus",
- ciro:"Ciro Nogueira", wagner:"Jaques Wagner", flavio:"Flávio Bolsonaro", eduardo:"Eduardo Bolsonaro",
- castro:"Cláudio Castro", kassab:"Gilberto Kassab", fabiofaria:"Fábio Faria", nikolas:"Nikolas Ferreira",
- mantega:"Guido Mantega", lewa:"Ricardo Lewandowski", temer:"Michel Temer", acm:"ACM Neto",
- rueda:"Antonio Rueda", guedes:"Paulo Guedes", vieira:"Alessandro Vieira", motta:"Hugo Motta",
- alcolumbre:"Davi Alcolumbre", lira:"Arthur Lira", cajado:"Cláudio Cajado", barros:"Filipe Barros",
- bacelar:"João Carlos Bacelar", ibaneis:"Ibaneis Rocha", lula:"Luiz Inácio Lula da Silva",
- doria:"João Doria", joesley:"Joesley Batista", haddad:"Fernando Haddad",
- furtado:"Marcus Vinícius Furtado Coêlho", costa:"Banco de Brasília", cpi:"Comissão parlamentar de inquérito",
-};
+/* WIKI vem do snapshot/API */
 var ERRATA=[];
 var RESP={};
 var GLOS=[];
@@ -1076,8 +679,39 @@ tlf.addEventListener("click",e=>{
 
 /* ---------- 03 rede ---------- */
 const byId=new Map(N.map(d=>[d.id,d]));
+const idDe=d=>typeof d==="object"?d.id:d;
 const links=E.map(([s,t,k,x,ls])=>({source:s,target:t,k,info:x,ls}));
 const deg=new Map(); links.forEach(l=>{deg.set(l.source,(deg.get(l.source)||0)+1);deg.set(l.target,(deg.get(l.target)||0)+1)});
+/* quantias vindas do caminho do dinheiro, para rotular as ligacoes */
+const VALOR=new Map();
+const curto=v=>{
+  const t=String(v).replace(/\s+/g," ").trim();
+  const m=t.match(/(?:R\$|US\$)\s?[\d.,]+\s?(?:mil|mi|bi|milh[oõ]es|bilh[oõ]es)?/i)
+       || t.match(/[≈~]?\s?[\d.,]+\s?(?:mil\s)?euros/i);
+  const curtinho=(m?m[0]:t).trim();
+  return curtinho.length>20?curtinho.slice(0,19)+"…":curtinho;
+};
+(TRILHAS||[]).forEach(t=>(t.passos||[]).forEach(x=>{
+  if(!x.deRef||!x.paraRef||!x.valor||x.valor==="—") return;
+  const v=curto(x.valor);
+  [x.deRef+"|"+x.paraRef, x.paraRef+"|"+x.deRef].forEach(k=>{
+    const l=VALOR.get(k)||[];
+    if(!l.includes(v)) l.push(v);
+    VALOR.set(k,l);
+  });
+}));
+const passosDe=id=>{
+  const fora=[];
+  (TRILHAS||[]).forEach(t=>(t.passos||[]).forEach((x,i)=>{
+    if(x.deRef===id||x.paraRef===id) fora.push({t,x,i});
+  }));
+  return fora;
+};
+const valorDe=l=>{
+  const v=VALOR.get(idDe(l.source)+"|"+idDe(l.target));
+  if(!v||!v.length) return "";
+  return v.slice(0,2).join(" · ")+(v.length>2?" …":"");
+};
 const RAD=[0,265,445,625,800];
 const R=d=>d.t===0?34:d.t===1?20:d.t===2?19:d.t===3?16:14;
 
@@ -1100,6 +734,7 @@ const sim=d3.forceSimulation(N)
  .force("collide",d3.forceCollide(d=>R(d)+15))
  .force("x",d3.forceX(0).strength(.02)).force("y",d3.forceY(0).strength(.02));
 
+const gVal=gRoot.append("g");
 const link=gLink.selectAll("line").data(links).join("line").attr("class",d=>"edge "+d.k);
 const hit=gHit.selectAll("line").data(links).join("line").attr("class","hit")
  .on("mouseenter",(e,d)=>{tipEdge(e,d);focusEdge(d)})
@@ -1122,13 +757,24 @@ node.filter(d=>respostasDe(d.id).length).append("circle").attr("class","resp")
 node.append("text").attr("class","lab").attr("font-size",d=>d.t>=3?9.5:10.5)
   .attr("dy",d=>R(d)+12).text(d=>d.n.length>26?d.n.slice(0,24)+"…":d.n);
 
+const valLab=gVal.selectAll("text").data(links.filter(l=>valorDe(l))).join("text")
+  .attr("class","vlab").attr("text-anchor","middle").text(l=>valorDe(l));
+
 sim.on("tick",()=>{
   link.attr("x1",d=>d.source.x).attr("y1",d=>d.source.y).attr("x2",d=>d.target.x).attr("y2",d=>d.target.y);
   hit.attr("x1",d=>d.source.x).attr("y1",d=>d.source.y).attr("x2",d=>d.target.x).attr("y2",d=>d.target.y);
   node.attr("transform",d=>`translate(${d.x},${d.y})`);
+  valLab.attr("x",d=>(d.source.x+d.target.x)/2).attr("y",d=>(d.source.y+d.target.y)/2-5);
 });
 
-const zoom=d3.zoom().scaleExtent([.14,3.2]).on("zoom",e=>gRoot.attr("transform",e.transform));
+/* os rotulos de quantia mantem o mesmo tamanho na tela em qualquer zoom */
+function escalaRotulos(k){
+  valLab.attr("font-size",(11/k).toFixed(2)).attr("stroke-width",(3/k).toFixed(2));
+}
+const zoom=d3.zoom().scaleExtent([.14,3.2]).on("zoom",e=>{
+  gRoot.attr("transform",e.transform);
+  escalaRotulos(e.transform.k);
+});
 svg.call(zoom);
 function stageBox(){const b=document.getElementById("stage").getBoundingClientRect();
   return {w:b.width||900,h:b.height||600}}
@@ -1161,7 +807,8 @@ function clearFocus(){node.classed("dim",false);gRender()}
 
 const tip=document.getElementById("tip");
 function tipEdge(e,d){
-  tip.innerHTML=`<b>${RTYPE[d.k][0]} · ${byId.get(d.source.id||d.source).n} ↔ ${byId.get(d.target.id||d.target).n}</b>${d.info}`;
+  const q=valorDe(d);
+  tip.innerHTML=`<b>${RTYPE[d.k][0]}${q?" · "+q:""} · ${byId.get(d.source.id||d.source).n} ↔ ${byId.get(d.target.id||d.target).n}</b>${d.info}`;
   tip.style.opacity="1";moveTip(e);
 }
 function tipNode(e,d){
@@ -1220,18 +867,27 @@ function showNode(d){
    ${credLine(d.id)}
    <div class="blk"><h4>Ligações</h4><div class="conn">${cs.map((c,i)=>
      `<button data-i="${i}"><i style="--d:${RTYPE[c.l.k][1]}"></i><span><b>${c.o.n}</b> — ${c.l.info}</span></button>`).join("")}</div></div>
+   ${blocoDinheiro(d.id)}
    <div class="blk"><h4>Fontes</h4>${srcHtml(d.ls)}</div>
    <div class="blk"><button class="fix" data-id="${d.id}" type="button">corrigir este verbete</button></div>
    <p class="warn">Investigado não é condenado. Prisões citadas são cautelares e nenhuma acusação aqui foi julgada.</p>`;
-  panel.querySelectorAll(".conn button").forEach(b=>b.onclick=()=>showEdge(cs[+b.dataset.i].l));
+  panel.querySelectorAll(".conn button[data-i]").forEach(b=>b.onclick=()=>showEdge(cs[+b.dataset.i].l));
   if(typeof marcarTermos==="function") marcarTermos(panel.querySelector(".txt")?.parentElement||panel);
   panel.scrollTop=0;
+}
+function blocoDinheiro(id){
+  const l=passosDe(id);
+  if(!l.length) return "";
+  return `<div class="blk"><h4>No caminho do dinheiro</h4><div class="conn">${l.map(({t,x,i})=>
+    `<button class="tri" data-tri="${t.id}" data-pas="${i}"><i style="--d:var(--c-mkt)"></i><span><b>${x.de} → ${x.para}</b>${
+      x.valor&&x.valor!=="—"?" — "+x.valor:""}${x.data?" · "+x.data:""}</span></button>`).join("")}</div></div>`;
 }
 function showEdge(d){
   const a=byId.get(d.source.id||d.source), b=byId.get(d.target.id||d.target);
   panel.innerHTML=`
    <p class="role" style="--k:${RTYPE[d.k][1]}">Vínculo ${RTYPE[d.k][0].toLowerCase()}</p>
    <h3>${a.n} ↔ ${b.n}</h3>
+   ${valorDe(d)?`<p><span class="pval">${valorDe(d)}</span> <span class="pdata">quantia apontada no caminho do dinheiro</span></p>`:""}
    <p class="txt">${d.info}</p>
    <div class="blk"><h4>Fontes do vínculo</h4>${srcHtml(d.ls)}</div>
    <div class="blk"><h4>Abrir ficha</h4><div class="conn">
@@ -1253,18 +909,19 @@ gf.innerHTML=Object.entries(CATG).map(([k,v])=>
  +`<input type="search" id="g-q" placeholder="buscar nome…" aria-label="Buscar no grafo">`
  +`<span class="hint">arraste os nós · scroll para zoom</span>`;
 const gOff=new Set(); let gFar=true, soDin=false;
-const idDe=d=>typeof d==="object"?d.id:d;
+const eDin=l=>l.k==="f"||!!valorDe(l);
 const noDin=new Set();
-links.forEach(l=>{ if(l.k==="f"){ noDin.add(idDe(l.source)); noDin.add(idDe(l.target)) } });
+links.forEach(l=>{ if(eDin(l)){ noDin.add(idDe(l.source)); noDin.add(idDe(l.target)) } });
 function gVis(d){return (!gOff.has(d.c)&&(gFar||d.t<3))||d.id==="vorcaro"}
-function eVis(l){ return gVis(l.source)&&gVis(l.target)&&(!soDin||l.k==="f") }
+function eVis(l){ return gVis(l.source)&&gVis(l.target)&&(!soDin||eDin(l)) }
 function gRender(){
   node.style("display",d=>gVis(d)&&(!soDin||noDin.has(d.id))?null:"none");
   link.style("display",l=>eVis(l)?null:"none")
-      .attr("stroke-opacity",l=>soDin&&l.k==="f"?.9:.5)
-      .attr("stroke-width",l=>soDin&&l.k==="f"?2.2:1.4)
-      .attr("marker-end",l=>soDin&&l.k==="f"?"url(#seta)":null);
+      .attr("stroke-opacity",l=>soDin&&eDin(l)?.9:.5)
+      .attr("stroke-width",l=>soDin&&eDin(l)?2.2:1.4)
+      .attr("marker-end",l=>soDin&&eDin(l)?"url(#seta)":null);
   hit.style("display",l=>eVis(l)?null:"none");
+  valLab.style("display",l=>soDin&&eVis(l)?null:"none");
 }
 gf.addEventListener("click",e=>{
   const b=e.target.closest(".chip"); if(!b) return;
@@ -1302,10 +959,10 @@ function fluxoRender(){
   dFil.querySelectorAll(".chip[data-tr]").forEach(c=>c.setAttribute("aria-pressed",String(Number(c.dataset.tr)===trAtual)));
   if(!t){ dRes.textContent=""; fluxoEl.innerHTML=`<p class="sec-note">Nenhuma trilha publicada ainda.</p>`; return }
   dRes.innerHTML=t.resumo+icones(t.ls);
-  fluxoEl.innerHTML=t.passos.map(p=>{
+  fluxoEl.innerHTML=t.passos.map((p,i)=>{
     const ok=p.status!=="apuracao";
     const selo=p.status==="registro"?"registro oficial":p.status==="decidido"?"decisão publicada":"em apuração";
-    return `<div class="passo${ok?" ok":""}">
+    return `<div class="passo${ok?" ok":""}" id="p-${t.id}-${i}">
       <div class="pcab">${nomeNo(p.de,p.deRef)}<span class="pa" aria-label="para">→</span>${nomeNo(p.para,p.paraRef)}</div>
       <div class="pmeta">${p.valor?`<span class="pval">${p.valor}</span>`:""}${p.data?`<span class="pdata">${p.data}</span>`:""}
         <span class="pselo">${selo}</span>${icones(p.ls)}</div>
@@ -1321,6 +978,18 @@ dFil.addEventListener("click",e=>{
   trAtual=Number(b.dataset.tr); fluxoRender();
 });
 fluxoRender();
+document.addEventListener("click",e=>{
+  const b=e.target.closest("button.tri"); if(!b) return;
+  const i=TRILHAS.findIndex(t=>t.id===b.dataset.tri);
+  if(i<0) return;
+  pilha.push({y:scrollY,rotulo:rotuloSecao()}); pintarVoltar();
+  trAtual=i; fluxoRender();
+  const alvo=document.getElementById(`p-${b.dataset.tri}-${b.dataset.pas}`);
+  if(alvo){
+    alvo.scrollIntoView({behavior:"smooth",block:"center"});
+    alvo.classList.remove("piscar"); void alvo.offsetWidth; alvo.classList.add("piscar");
+  }
+});
 
 /* ---------- 04 quem é quem ---------- */
 const cardsEl=document.getElementById("cards");

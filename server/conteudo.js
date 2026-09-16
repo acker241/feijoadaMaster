@@ -31,14 +31,25 @@ async function semear() {
       for (const e of seed.eventos) await c.query("INSERT INTO eventos (fase,ordem,data_txt,categoria,quem,texto) VALUES ($1,$2,$3,$4,$5,$6)", [e.fase, e.ordem, e.data_txt, e.categoria, e.quem, e.texto]);
       feito.push(`${seed.eventos.length} eventos`);
     }
-    if (await vazia("verbetes")) {
-      for (const v of seed.verbetes) await c.query("INSERT INTO verbetes (id,nome,sigla,papel,categoria,anel,info,fontes,wiki,ordem) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT (id) DO NOTHING", [v.id, v.nome, v.sigla, v.papel, v.categoria, v.anel, v.info, v.fontes, v.wiki, v.ordem]);
-      feito.push(`${seed.verbetes.length} verbetes`);
+    /* verbetes e vinculos entram por identidade: o que ja existe fica como esta
+       (inclusive o que foi editado no painel), o que e novo no seed aparece */
+    let verNovos = 0;
+    for (const v of seed.verbetes) {
+      const r = await c.query("INSERT INTO verbetes (id,nome,sigla,papel,categoria,anel,info,fontes,wiki,ordem) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT (id) DO NOTHING", [v.id, v.nome, v.sigla, v.papel, v.categoria, v.anel, v.info, v.fontes, v.wiki, v.ordem]);
+      verNovos += r.rowCount;
     }
-    if (await vazia("vinculos")) {
-      for (const l of seed.vinculos) await c.query("INSERT INTO vinculos (origem,destino,tipo,info,fontes,ordem) VALUES ($1,$2,$3,$4,$5,$6)", [l.origem, l.destino, l.tipo, l.info, l.fontes, l.ordem]);
-      feito.push(`${seed.vinculos.length} vínculos`);
+    if (verNovos) feito.push(`${verNovos} verbetes`);
+
+    let vinNovos = 0;
+    for (const l of seed.vinculos) {
+      const r = await c.query(
+        `INSERT INTO vinculos (origem,destino,tipo,info,fontes,ordem)
+         SELECT $1,$2,$3,$4,$5,$6
+         WHERE NOT EXISTS (SELECT 1 FROM vinculos WHERE (origem=$1 AND destino=$2) OR (origem=$2 AND destino=$1))`,
+        [l.origem, l.destino, l.tipo, l.info, l.fontes, l.ordem]);
+      vinNovos += r.rowCount;
     }
+    if (vinNovos) feito.push(`${vinNovos} vínculos`);
     if (await vazia("barras")) {
       for (const b of seed.barras) await c.query("INSERT INTO barras (rotulo,valor,nota,ordem) VALUES ($1,$2,$3,$4)", [b.rotulo, b.valor, b.nota, b.ordem]);
       feito.push(`${seed.barras.length} barras`);
