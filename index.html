@@ -176,6 +176,14 @@ input[type=search]{font-family:Karla,sans-serif;font-size:13.5px;padding:6px 12p
 .node{cursor:pointer}
 .node circle.av{stroke:var(--halo);stroke-width:2}
 .node circle.rim{fill:none;stroke-width:2.5}
+.node.sel circle.av{stroke:var(--ink);stroke-width:3.5}
+.trilha-rede{border-bottom:1px solid var(--rule);padding-bottom:12px;margin-bottom:14px}
+.trilha-rede .caminho{font-size:14px;color:var(--ink-2);margin:4px 0 6px;line-height:1.45}
+.trilha-rede .caminho b{color:var(--ink)}
+.trilha-rede .dica{font-size:12.5px;color:var(--ink-3);margin:0}
+.trilha-rede .voltar-passo{margin-top:8px;font:700 12.5px Karla,sans-serif;background:none;border:1px solid var(--rule-strong);
+  color:var(--ink-2);padding:4px 10px;border-radius:2px;cursor:pointer}
+.trilha-rede .voltar-passo:hover{color:var(--ink);border-color:var(--ink-3)}
 .node text.ini{font-family:Karla,sans-serif;font-weight:800;fill:var(--halo);text-anchor:middle;pointer-events:none}
 .node text.lab{font-family:Karla,sans-serif;font-weight:600;fill:var(--ink-2);text-anchor:middle;paint-order:stroke;
   stroke:var(--paper);stroke-width:3.5px;pointer-events:none}
@@ -400,7 +408,7 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
 <section id="rede">
   <div class="wrap">
     <div class="sec-head"><span class="n">01</span><h2>Rede de relações</h2>
-      <p class="sec-note">Vorcaro no centro, 90 nós em cinco anéis de distância do fato. Passe o mouse em uma linha para ver o que liga os dois; clique para abrir a ficha com as fontes.</p>
+      <p class="sec-note">Vorcaro no centro, 90 nós em cinco anéis de distância do fato. Passe o mouse em uma linha para ver o que liga os dois; clique para abrir a ficha com as fontes e deixar o destaque fixo. Clicar numa ligação acende os próximos nós; clique numa ligação acesa para seguir a trilha. Clique no fundo ou em <b>Limpar</b> para desfazer.</p>
     </div>
     <div class="chips" id="g-filters"></div>
     <div class="graph-shell">
@@ -737,14 +745,14 @@ const sim=d3.forceSimulation(N)
 const gVal=gRoot.append("g");
 const link=gLink.selectAll("line").data(links).join("line").attr("class",d=>"edge "+d.k);
 const hit=gHit.selectAll("line").data(links).join("line").attr("class","hit")
- .on("mouseenter",(e,d)=>{tipEdge(e,d);focusEdge(d)})
- .on("mousemove",moveTip).on("mouseleave",()=>{hideTip();clearFocus()})
- .on("click",(e,d)=>showEdge(d));
+ .on("mouseenter",(e,d)=>{tipEdge(e,d);sel&&sel.nos?realca(d):focusEdge(d)})
+ .on("mousemove",moveTip).on("mouseleave",()=>{hideTip();aplicaSel()})
+ .on("click",(e,d)=>selLig(d));
 
 const node=gNode.selectAll("g").data(N).join("g").attr("class","node")
- .on("mouseenter",(e,d)=>{tipNode(e,d);focusNode(d)})
- .on("mousemove",moveTip).on("mouseleave",()=>{hideTip();clearFocus()})
- .on("click",(e,d)=>{fmEv("no",d.id,true);showNode(d)})
+ .on("mouseenter",(e,d)=>{tipNode(e,d);if(!(sel&&sel.nos))focusNode(d)})
+ .on("mousemove",moveTip).on("mouseleave",()=>{hideTip();aplicaSel()})
+ .on("click",(e,d)=>selNo(d))
  .call(d3.drag()
    .on("start",(e,d)=>{if(!e.active)sim.alphaTarget(.2).restart();d.fx=d.x;d.fy=d.y})
    .on("drag",(e,d)=>{d.fx=e.x;d.fy=e.y})
@@ -799,11 +807,70 @@ function focusNode(d){
   link.attr("stroke-opacity",l=>(l.source.id===d.id||l.target.id===d.id)?.95:.07)
       .attr("stroke-width",l=>(l.source.id===d.id||l.target.id===d.id)?2.4:1.4);
 }
+/* com trilha ativa o hover so engrossa a ligacao, sem apagar a trilha */
+function realca(d){ link.filter(l=>l===d).attr("stroke-opacity",1).attr("stroke-width",3.6) }
 function focusEdge(d){
   node.classed("dim",n=>n.id!==d.source.id&&n.id!==d.target.id);
   link.attr("stroke-opacity",l=>l===d?1:.06).attr("stroke-width",l=>l===d?3:1.4);
 }
-function clearFocus(){node.classed("dim",false);gRender()}
+/* trilha: nos percorridos em ordem + ligacoes usadas; a ponta e o ultimo no.
+   Acende a trilha e os proximos nos a partir da ponta (sem voltar a trilha). */
+function focusTrilha(t){
+  const naTrilha=new Set(t.nos), usadas=new Set(t.ligs), ponta=t.nos[t.nos.length-1];
+  const prox=l=>!usadas.has(l)&&(l.source.id===ponta&&!naTrilha.has(l.target.id)||l.target.id===ponta&&!naTrilha.has(l.source.id));
+  const keep=new Set(naTrilha);
+  links.forEach(l=>{if(prox(l)){keep.add(l.source.id);keep.add(l.target.id)}});
+  node.classed("dim",n=>!keep.has(n.id));
+  link.attr("stroke-opacity",l=>usadas.has(l)?1:prox(l)?.85:.06).attr("stroke-width",l=>usadas.has(l)?3.6:prox(l)?2.2:1.4);
+}
+
+/* selecao fixa: o destaque do clique fica ate clicar no fundo ou em Limpar;
+   passar o mouse em outro no so mostra uma previa e volta para a selecao */
+let sel=null;
+function aplicaSel(){
+  gRender();
+  node.classed("sel",n=>!!sel&&(sel.n===n||!!sel.nos&&sel.nos.includes(n.id)));
+  if(!sel){ node.classed("dim",false); return }
+  sel.n?focusNode(sel.n):focusTrilha(sel);
+}
+function selNo(d){ fmEv("no",d.id,true); sel={n:d}; aplicaSel(); showNode(d) }
+/* clicar numa ligacao que sai da ponta estende a trilha; se a outra ponta ja
+   esta na trilha (loop), nada muda; qualquer outra ligacao comeca trilha nova */
+function selLig(d){
+  const a=d.source.id, b=d.target.id;
+  if(sel&&sel.nos){
+    const ponta=sel.nos[sel.nos.length-1];
+    if(a===ponta||b===ponta){
+      const outro=a===ponta?b:a;
+      if(sel.nos.includes(outro)) return;
+      sel.nos.push(outro); sel.ligs.push(d);
+      return mostraTrilha();
+    }
+  }
+  fmEv("ligacao",a+"~"+b,true);
+  let de;
+  if(sel&&sel.n&&(sel.n.id===a||sel.n.id===b)) de=sel.n.id;
+  else de=byId.get(a).t<=byId.get(b).t?a:b;
+  sel={nos:[de,de===a?b:a],ligs:[d]};
+  mostraTrilha();
+}
+function mostraTrilha(){
+  aplicaSel();
+  showEdge(sel.ligs[sel.ligs.length-1]);
+  const passos=sel.nos.map(id=>byId.get(id).n);
+  const bloco=document.createElement("div");
+  bloco.className="trilha-rede";
+  bloco.innerHTML=`<p class="meta">TRILHA · ${sel.ligs.length} ${sel.ligs.length>1?"PASSOS":"PASSO"}</p>
+    <p class="caminho">${passos.map((n,i)=>i===passos.length-1?`<b>${n}</b>`:n).join(" → ")}</p>
+    <p class="dica">Clique numa ligação acesa para seguir a partir de <b>${passos[passos.length-1]}</b>.</p>
+    ${sel.ligs.length>1?`<button type="button" class="voltar-passo">↶ voltar um passo</button>`:""}`;
+  panel.prepend(bloco);
+  bloco.querySelector(".voltar-passo")?.addEventListener("click",()=>{
+    sel.nos.pop(); sel.ligs.pop(); mostraTrilha();
+  });
+}
+function limparSel(){ if(sel){ sel=null; aplicaSel(); panel.querySelector(".trilha-rede")?.remove() } }
+svg.on("click.sel",e=>{ if(!e.target.closest(".node,.hit")) limparSel() });
 
 const tip=document.getElementById("tip");
 function tipEdge(e,d){
@@ -871,7 +938,7 @@ function showNode(d){
    <div class="blk"><h4>Fontes</h4>${srcHtml(d.ls)}</div>
    <div class="blk"><button class="fix" data-id="${d.id}" type="button">corrigir este verbete</button></div>
    <p class="warn">Investigado não é condenado. Prisões citadas são cautelares e nenhuma acusação aqui foi julgada.</p>`;
-  panel.querySelectorAll(".conn button[data-i]").forEach(b=>b.onclick=()=>showEdge(cs[+b.dataset.i].l));
+  panel.querySelectorAll(".conn button[data-i]").forEach(b=>b.onclick=()=>selLig(cs[+b.dataset.i].l));
   if(typeof marcarTermos==="function") marcarTermos(panel.querySelector(".txt")?.parentElement||panel);
   panel.scrollTop=0;
 }
@@ -884,7 +951,6 @@ function blocoDinheiro(id){
 }
 function showEdge(d){
   const a=byId.get(d.source.id||d.source), b=byId.get(d.target.id||d.target);
-  fmEv("ligacao",a&&b?a.id+"~"+b.id:null,true);
   panel.innerHTML=`
    <p class="role" style="--k:${RTYPE[d.k][1]}">Vínculo ${RTYPE[d.k][0].toLowerCase()}</p>
    <h3>${a.n} ↔ ${b.n}</h3>
@@ -896,8 +962,8 @@ function showEdge(d){
      <button id="pb"><i style="--d:${CATG[b.c].c}"></i><span><b>${b.n}</b> — ${b.r}</span></button>
    </div></div>
    <p class="warn">O vínculo descrito reflete o que consta de investigações em curso e de reportagens — não uma conclusão judicial.</p>`;
-  panel.querySelector("#pa").onclick=()=>{fmEv("no",a.id,true);showNode(a)};
-  panel.querySelector("#pb").onclick=()=>{fmEv("no",b.id,true);showNode(b)};
+  panel.querySelector("#pa").onclick=()=>selNo(a);
+  panel.querySelector("#pb").onclick=()=>selNo(b);
   panel.scrollTop=0;
 }
 showNode(byId.get("vorcaro"));
@@ -907,6 +973,7 @@ gf.innerHTML=Object.entries(CATG).map(([k,v])=>
   `<button class="chip" data-cat="${k}" aria-pressed="true" style="--d:${v.c}"><span class="dot"></span>${v.n}</button>`).join("")
  +`<button class="chip" id="g-far" aria-pressed="true">Anéis externos</button>`
  +`<button class="chip" id="g-din" aria-pressed="false" style="--d:var(--c-mkt)"><span class="dot"></span>Seguir o dinheiro</button>`
+ +`<button class="chip" id="g-reset" type="button" title="Desfaz seleção, filtros, busca e zoom">↺ Limpar</button>`
  +`<input type="search" id="g-q" placeholder="buscar nome…" aria-label="Buscar no grafo">`
  +`<span class="hint">arraste os nós · scroll para zoom</span>`;
 const gOff=new Set(); let gFar=true, soDin=false;
@@ -926,19 +993,28 @@ function gRender(){
 }
 gf.addEventListener("click",e=>{
   const b=e.target.closest(".chip"); if(!b) return;
+  if(b.id==="g-reset") return resetRede();
   if(b.id==="g-far"){gFar=!gFar;b.setAttribute("aria-pressed",gFar)}
   else if(b.id==="g-din"){soDin=!soDin;b.setAttribute("aria-pressed",soDin)}
   else if(b.dataset.cat){const k=b.dataset.cat; gOff.has(k)?gOff.delete(k):gOff.add(k);
     b.setAttribute("aria-pressed",!gOff.has(k))}
-  gRender();
+  aplicaSel();
 });
+function resetRede(){
+  sel=null; gOff.clear(); gFar=true; soDin=false;
+  gf.querySelectorAll(".chip[aria-pressed]").forEach(c=>c.setAttribute("aria-pressed",String(c.id!=="g-din")));
+  document.getElementById("g-q").value="";
+  aplicaSel();
+  showNode(byId.get("vorcaro"));
+  fit(true);
+}
 document.getElementById("g-q").addEventListener("input",e=>{
   fmEv("busca","rede",true);
   const q=e.target.value.trim().toLowerCase();
-  if(!q){node.classed("dim",false);return}
+  if(!q){aplicaSel();return}
   const hits=N.filter(d=>d.n.toLowerCase().includes(q)||d.r.toLowerCase().includes(q));
   node.classed("dim",d=>!hits.includes(d));
-  if(hits.length===1){ fmEv("no",hits[0].id,true); showNode(hits[0]) }
+  if(hits.length===1) selNo(hits[0]);
 });
 gRender();
 
@@ -1112,7 +1188,7 @@ function paintNode(id,d){
   });
   await Promise.all(workers);
   cardsRender();
-  if(PHOTO.has("vorcaro")) showNode(byId.get("vorcaro"));
+  if(PHOTO.has("vorcaro")&&!sel) showNode(byId.get("vorcaro"));
   await fetchLicenses();
   credsRender();
   cardsRender();
