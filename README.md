@@ -1,13 +1,18 @@
 # Feijoada do Master
 
-Página única (agregador) sobre o caso Banco Master: escala do dano, linha do tempo em 5 fases,
-rede de 90 nomes e verbetes "quem é quem". Dados consolidados em 15/09/2026.
+Página única (agregador) sobre o caso Banco Master: escala do dano, caminho do dinheiro, linha do
+tempo, rede de relações e verbetes "quem é quem", com glossário e errata. O conteúdo fica no banco
+e é editado pelo painel `/admin`. Contexto técnico completo para quem mantém o código: `CLAUDE.md`.
 
 ## Arquivos
 
 - `index.html` — o site inteiro (HTML, CSS, JS e dados numa página).
-- `server/` — backend Node: `server.js` (site + API + painel), `admin.js` (telas do `/admin`),
-  `db.js`, `schema.sql`, `hash-senha.js`. Só uma dependência: `pg`.
+- `server/` — backend Node: `server.js` (site + API + painel), `conteudo.js` + `seed.json`
+  (conteúdo no banco e semeadura inicial), `admin*.js` (telas do `/admin`), `metricas.js`
+  (visitas anônimas), `noticias.js` + `triagem.js` + `embeddings.js` (monitor de notícias),
+  `db.js`, `schema.sql`, `hash-senha.js`. Dependências: `pg`, `@anthropic-ai/sdk`,
+  `@huggingface/transformers`.
+- `CLAUDE.md` — arquitetura, decisões, testes locais e pendências.
 - `Dockerfile`, `railway.json`, `compose-teste.yml`, `.env.example` — deploy e teste local.
 - `README.md` — este arquivo.
 - `FONTES.md` — todas as fontes, com endereço e o que cada uma sustenta, mais as fontes de imagem.
@@ -45,7 +50,12 @@ crédito ao autor, algumas não permitem uso comercial.
 
 ## Editar conteúdo
 
-Os dados ficam em blocos JavaScript no fim do `index.html`:
+O conteúdo publicado vem do banco, pelo painel `/admin/conteudo`: cada alteração pede um motivo e
+entra na errata pública. O `server/seed.json` só preenche tabelas vazias e nunca sobrescreve edição
+feita no painel. O snapshot abaixo, embutido no `index.html`, só aparece quando a API de dados não
+responde.
+
+Os blocos do snapshot, no fim do `index.html`:
 
 - `BARS` — barras da escala do dano.
 - `PHASES` — fases e eventos da linha do tempo.
