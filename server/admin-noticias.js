@@ -68,26 +68,48 @@ function topo(sub, ativo) {
   </div>`;
 }
 
+const CATS = [
+  ["ler", "para ler"], ["fato_novo", "fatos novos"], ["desdobramento", "desdobramentos"], ["declaracao", "declarações"],
+  ["analise", "análise e opinião"], ["campanha", "campanha"], ["fora", "fora do caso"], ["sem", "sem triagem"], ["todas", "todas"],
+];
+const ROTULO_CAT = {
+  fato_novo: ["fato novo", "var(--verde)"], desdobramento: ["desdobramento", "var(--azul)"], declaracao: ["declaração", "var(--dende)"],
+  analise: ["análise/opinião", "var(--ink-3)"], campanha: ["campanha", "var(--vinho)"], fora: ["fora do caso", "var(--ink-3)"],
+};
+const ROTULO_SITE = { sim: "já está no site", parcial: "parcialmente no site", nao: "novo para o site" };
+
 function linhaStatus(o) {
   const u = o.ultima;
   const quando = u ? `última coleta ${dataSP(u.quando)} · ${u.novas} nova(s) em ${u.segundos}s${u.pessoas ? " · incluiu busca por pessoa" : ""}` : "nenhuma coleta registrada ainda";
+  const t = o.triagem || {};
+  const tri = !t.ativa ? "Triagem por IA desligada (falta ANTHROPIC_API_KEY)."
+    : t.lote ? `Triagem por IA: lote com ${t.lote.grupos} grupo(s) em processamento desde ${dataSP(t.lote.criado)}.`
+    : t.ultima ? `Última triagem por IA ${dataSP(t.ultima.quando)}: ${t.ultima.grupos} grupo(s)${t.ultima.falhas ? `, ${t.ultima.falhas} pedido(s) com falha` : ""}.`
+    : "Triagem por IA ainda não rodou.";
   return `<div class="status">${o.rodando ? "<b>Coleta em andamento</b> — recarregue em alguns minutos. " : ""}${esc(quando)}.
     Coleta automática a cada ${o.horas}h; busca por pessoa uma vez por dia.
     <form class="inline" method="post" action="/admin/noticias/coletar"><button type="submit" ${o.rodando ? "disabled" : ""} style="margin-left:8px">coletar agora</button></form>
+    <br>${esc(tri)}
+    ${t.ativa && !t.lote ? `<form class="inline" method="post" action="/admin/noticias/triar"><button type="submit" style="margin-left:8px">triar agora</button></form>` : ""}
     ${o.msg ? `<br><b>${esc(o.msg)}</b>` : ""}</div>`;
 }
 
-exports.fila = (rows, o) => {
+exports.fila = (grupos, o) => {
   const qs = (mud) => {
     const f = { ...o.filtro, ...mud };
     const p = new URLSearchParams();
-    for (const [k, v] of Object.entries(f)) if (v) p.set(k, v);
+    for (const [k, v] of Object.entries(f)) if (v && !(k === "cat" && v === "ler")) p.set(k, v);
     const s = p.toString();
     return "/admin/noticias" + (s ? "?" + s : "");
   };
   const volta = qs({});
   const abas = STATUS.map(([s, rot]) =>
     `<a class="tab ${o.filtro.status === s ? "on" : ""}" href="${qs({ status: s })}">${rot} <b>${o.contagens[s] ?? 0}</b></a>`).join("");
+  const pc = o.porCat || {};
+  const totalCat = Object.values(pc).reduce((a, n) => a + n, 0);
+  const contaCat = (c) => c === "todas" ? totalCat : c === "ler" ? (pc.fato_novo || 0) + (pc.desdobramento || 0) + (pc.sem || 0) : (pc[c] || 0);
+  const abasCat = CATS.map(([c, rot]) =>
+    `<a class="tab ${o.filtro.cat === c ? "on" : ""}" href="${qs({ cat: c })}">${rot} <b>${contaCat(c)}</b></a>`).join("");
 
   const opPessoa = o.pessoas.map((p) =>
     `<option value="${esc(p.id)}" ${o.filtro.pessoa === p.id ? "selected" : ""}>${esc(o.nomes[p.id] || p.id)} (${p.n})</option>`).join("");
@@ -95,32 +117,46 @@ exports.fila = (rows, o) => {
     `<option value="${esc(v.dominio)}" ${o.filtro.veiculo === v.dominio ? "selected" : ""}>${esc(v.nome)}</option>`).join("");
   const opGrupo = GRUPOS.map((g) => `<option value="${g}" ${o.filtro.grupo === g ? "selected" : ""}>${g}</option>`).join("");
 
-  const botoes = (r) => ["relevante", "usado", "descartado", "novo"].filter((s) => s !== r.status).map((s) => `
+  const botoes = (g) => ["relevante", "usado", "descartado", "novo"]
+    .filter((s) => (s === "novo" ? !g.todas_novas : !(s === g.status && !g.todas_novas))).map((s) => `
       <form class="inline" method="post" action="/admin/noticias/acao">
-        <input type="hidden" name="ids" value="${r.id}"><input type="hidden" name="status" value="${s}"><input type="hidden" name="volta" value="${esc(volta)}">
+        <input type="hidden" name="grupos" value="${g.id}"><input type="hidden" name="status" value="${s}"><input type="hidden" name="volta" value="${esc(volta)}">
         <button type="submit">${{ relevante: "relevante", usado: "usada no site", descartado: "descartar", novo: "voltar para novas" }[s]}</button>
       </form>`).join("");
 
-  const itens = rows.length ? rows.map((r) => `
-  <article class="item">
-    <h3><a href="${esc(r.url)}" target="_blank" rel="noopener noreferrer">${esc(r.titulo)}</a></h3>
-    <div class="meta">${esc(r.veiculo || r.dominio || "?")} · ${dataSP(r.publicado_em || r.encontrado_em)} · via ${esc(r.via || "?")}${o.fontesSite.has(r.dominio) ? `<span class="selo" style="color:var(--verde)">já é fonte do site</span>` : ""}${r.status !== "novo" ? `<span class="selo">${esc(r.status)}</span>` : ""}</div>
-    ${r.resumo ? `<p class="resumo">${esc(r.resumo.slice(0, 320))}${r.resumo.length > 320 ? "…" : ""}</p>` : ""}
-    ${r.pessoas.length ? `<div class="tags">${r.pessoas.map((p) => `<a class="tag" href="${qs({ pessoa: p })}">${esc(o.nomes[p] || p)}</a>`).join("")}</div>` : ""}
-    <div class="acoes">${botoes(r)}
+  const card = (g) => {
+    const membros = g.membros || [];
+    const veiculos = [...new Set(membros.map((m) => m.veiculo).filter(Boolean))];
+    const cat = ROTULO_CAT[g.categoria];
+    const fonte = membros.some((m) => o.fontesSite.has(m.dominio));
+    return `
+  <article class="item" ${cat ? `style="border-left:3px solid ${cat[1]}"` : ""}>
+    <h3><a href="${esc(g.url)}" target="_blank" rel="noopener noreferrer">${esc(g.titulo)}</a></h3>
+    <div class="meta">${esc(g.veiculo || g.dominio || "?")}${veiculos.length > 1 ? ` + ${veiculos.length - 1} veículo(s)` : ""} · ${dataSP(g.quando)}
+      ${cat ? `<span class="selo" style="color:${cat[1]}">${cat[0]}</span>` : `<span class="selo">sem triagem</span>`}
+      ${g.no_site ? `<span class="selo">${ROTULO_SITE[g.no_site] || esc(g.no_site)}</span>` : ""}
+      ${fonte ? `<span class="selo" style="color:var(--verde)">veículo já é fonte do site</span>` : ""}
+      ${!g.todas_novas ? `<span class="selo">${esc(g.status)}</span>` : ""}</div>
+    ${g.motivo_ia ? `<p class="resumo"><b>IA:</b> ${esc(g.motivo_ia)}</p>` : g.resumo ? `<p class="resumo">${esc(g.resumo.slice(0, 280))}${g.resumo.length > 280 ? "…" : ""}</p>` : ""}
+    ${g.pessoas.length ? `<div class="tags">${g.pessoas.map((p) => `<a class="tag" href="${qs({ pessoa: p })}">${esc(o.nomes[p] || p)}</a>`).join("")}</div>` : ""}
+    ${membros.length > 1 ? `<details class="resumo" style="margin-top:8px"><summary>${membros.length} matérias sobre esta história</summary>
+      <ul style="margin:6px 0 0;padding-left:18px">${membros.map((m) => `<li><a href="${esc(m.url)}" target="_blank" rel="noopener noreferrer">${esc(m.titulo)}</a> <span class="meta">${esc(m.veiculo || "")} · ${dataSP(m.quando)}</span></li>`).join("")}</ul></details>` : ""}
+    <div class="acoes">${botoes(g)}
       <form class="inline" method="post" action="/admin/noticias/acao">
-        <input type="hidden" name="ids" value="${r.id}"><input type="hidden" name="volta" value="${esc(volta)}">
-        <input type="text" name="nota" placeholder="nota interna" value="${esc(r.nota || "")}"><button type="submit">salvar nota</button>
+        <input type="hidden" name="grupos" value="${g.id}"><input type="hidden" name="volta" value="${esc(volta)}">
+        <input type="text" name="nota" placeholder="nota interna" value="${esc(g.nota || "")}"><button type="submit">salvar nota</button>
       </form>
     </div>
-  </article>`).join("") : `<p class="vazio">Nenhuma notícia com esse filtro.</p>`;
+  </article>`;
+  };
+  const itens = grupos.length ? grupos.map(card).join("") : `<p class="vazio">Nenhuma notícia com esse filtro.</p>`;
 
-  const lote = rows.length && o.filtro.status === "novo" ? `
+  const lote = grupos.length && o.filtro.status === "novo" ? `
     <form method="post" action="/admin/noticias/acao" style="margin:4px 0 14px">
-      <input type="hidden" name="ids" value="${rows.map((r) => r.id).join(",")}"><input type="hidden" name="status" value="descartado">
+      <input type="hidden" name="grupos" value="${grupos.map((g) => g.id).join(",")}"><input type="hidden" name="status" value="descartado">
       <input type="hidden" name="volta" value="${esc(volta)}">
-      <button type="submit">descartar as ${rows.length} listadas</button>
-      ${o.noFiltro > rows.length ? `<button type="submit" name="lote" value="filtro">descartar todas as ${o.noFiltro} deste filtro</button>` : ""}
+      <button type="submit">descartar as ${grupos.length} histórias listadas</button>
+      ${o.noFiltro > grupos.length ? `<button type="submit" name="lote" value="filtro">descartar todas as ${o.noFiltro} deste filtro</button>` : ""}
     </form>` : "";
 
   return pagina("Notícias — Feijoada do Master", `
@@ -128,8 +164,10 @@ exports.fila = (rows, o) => {
   ${topo("monitor de notícias", "fila")}
   ${linhaStatus(o)}
   <div class="tabs" style="margin-top:0">${abas}</div>
+  <div class="tabs" style="margin-top:-4px">${abasCat}</div>
   <form class="filtros" method="get" action="/admin/noticias">
     <input type="hidden" name="status" value="${esc(o.filtro.status)}">
+    <input type="hidden" name="cat" value="${esc(o.filtro.cat)}">
     <select name="pessoa"><option value="">todas as pessoas</option>${opPessoa}</select>
     <select name="grupo"><option value="">todos os grupos</option>${opGrupo}</select>
     <select name="veiculo"><option value="">todos os veículos</option>${opVeiculo}</select>
@@ -139,7 +177,7 @@ exports.fila = (rows, o) => {
   </form>
   ${lote}
   ${itens}
-  <p class="meta" style="margin-top:18px">Mostrando ${Math.min(rows.length, o.limite)} de ${o.noFiltro}, dos mais recentes. Nada aqui entra no site sozinho: correções continuam pelo editor de conteúdo, com motivo na errata. Descartadas somem depois de 60 dias.</p>
+  <p class="meta" style="margin-top:18px">Mostrando ${grupos.length} de ${o.noFiltro} histórias, das mais recentes. Cada card junta a mesma história publicada por vários veículos; as ações valem para todas. A categoria vem da IA e serve só para ordenar: nada é descartado sozinho, e nada entra no site sem passar pelo editor de conteúdo.</p>
 </div>`);
 };
 

@@ -13,6 +13,7 @@ const adminConteudo = require("./admin-conteudo");
 const metricas = require("./metricas");
 const adminStats = require("./admin-stats");
 const noticias = require("./noticias");
+const triagem = require("./triagem");
 const adminNoticias = require("./admin-noticias");
 
 const PORTA = Number(process.env.PORT || 8080);
@@ -352,6 +353,7 @@ async function rotaAdmin(req, res, url) {
 /* ---------- monitor de noticias (painel) ---------- */
 const STATUS_NOTICIA = new Set(["novo", "relevante", "usado", "descartado"]);
 const GRUPOS_VEICULO = new Set(["grande", "independente", "especializado", "regional", "outros"]);
+const CATS_FILA = new Set(["ler", "fato_novo", "desdobramento", "declaracao", "analise", "campanha", "fora", "sem", "todas"]);
 
 /* filtro da fila, a partir da querystring; serve para listar e para descartar em lote */
 function filtroNoticias(params) {
@@ -362,6 +364,7 @@ function filtroNoticias(params) {
     grupo: GRUPOS_VEICULO.has(params.get("grupo")) ? params.get("grupo") : "",
     veiculo: params.get("veiculo") || "",
     q: (params.get("q") || "").trim().slice(0, 100),
+    cat: CATS_FILA.has(params.get("cat")) ? params.get("cat") : "ler",
   };
   const cond = [], vals = [];
   const add = (sql, v) => { vals.push(v); cond.push(sql.replace("?", "$" + vals.length)); };
@@ -370,7 +373,12 @@ function filtroNoticias(params) {
   if (filtro.veiculo) add("n.dominio = ?", filtro.veiculo);
   if (filtro.grupo) add("v.grupo = ?", filtro.grupo);
   if (filtro.q) add("n.titulo ILIKE ?", "%" + filtro.q.replace(/[%_\\]/g, "\\$&") + "%");
-  return { filtro, where: cond.length ? "WHERE " + cond.join(" AND ") : "", vals };
+  const whereSemCat = cond.length ? "WHERE " + cond.join(" AND ") : "";
+  /* "ler" = o que pode mudar o site: fato novo, desdobramento e o que a IA ainda nao viu */
+  if (filtro.cat === "ler") cond.push("(n.categoria IS NULL OR n.categoria IN ('fato_novo','desdobramento'))");
+  else if (filtro.cat === "sem") cond.push("n.categoria IS NULL");
+  else if (filtro.cat !== "todas") add("n.categoria = ?", filtro.cat);
+  return { filtro, where: cond.length ? "WHERE " + cond.join(" AND ") : "", whereSemCat, vals, valsSemCat: vals.slice(0, vals.length - (filtro.cat !== "ler" && filtro.cat !== "sem" && filtro.cat !== "todas" ? 1 : 0)) };
 }
 
 async function rotaNoticias(req, res, url) {
@@ -379,11 +387,13 @@ async function rotaNoticias(req, res, url) {
 
   if (req.method === "POST" && url.pathname === "/admin/noticias/acao") {
     const corpo = new URLSearchParams(await lerCorpo(req, 64 * 1024));
-    const ids = String(corpo.get("ids") || "").split(",").map(Number).filter((n) => Number.isInteger(n) && n > 0).slice(0, 500);
+    /* ids de grupo: a acao vale para todas as noticias da mesma historia */
+    const ids = String(corpo.get("grupos") || corpo.get("ids") || "").split(",").map(Number).filter((n) => Number.isInteger(n) && n > 0).slice(0, 500);
     const status = corpo.get("status");
     const nota = corpo.get("nota");
-    if (ids.length && STATUS_NOTICIA.has(status)) await pool.query("UPDATE noticias SET status=$1 WHERE id = ANY($2::bigint[])", [status, ids]);
-    if (ids.length && nota !== null) await pool.query("UPDATE noticias SET nota=$1 WHERE id = ANY($2::bigint[])", [nota.slice(0, 2000) || null, ids]);
+    const doGrupo = "(id = ANY($2::bigint[]) OR grupo = ANY($2::bigint[]))";
+    if (ids.length && STATUS_NOTICIA.has(status)) await pool.query(`UPDATE noticias SET status=$1 WHERE ${doGrupo}`, [status, ids]);
+    if (ids.length && nota !== null) await pool.query(`UPDATE noticias SET nota=$1 WHERE ${doGrupo}`, [nota.slice(0, 2000) || null, ids]);
     const volta = corpo.get("volta") || "";
     if (corpo.get("lote") === "filtro" && STATUS_NOTICIA.has(status) && volta.startsWith("/admin/noticias")) {
       const { filtro, where, vals } = filtroNoticias(new URL(volta, "http://painel").searchParams);
@@ -402,6 +412,11 @@ async function rotaNoticias(req, res, url) {
         .catch((e) => console.error("[noticias] coleta manual:", e.message));
     }
     return redirecionar("/admin/noticias?msg=" + encodeURIComponent("Coleta iniciada. Leva alguns minutos; recarregue a página depois."));
+  }
+
+  if (req.method === "POST" && url.pathname === "/admin/noticias/triar") {
+    triagem.rodar().catch((e) => console.error("[triagem] manual:", e.message));
+    return redirecionar("/admin/noticias?msg=" + encodeURIComponent("Triagem iniciada: agrupa agora e manda para a IA; o resultado costuma chegar em alguns minutos."));
   }
 
   if (req.method === "POST" && url.pathname === "/admin/noticias/veiculo") {
@@ -432,13 +447,24 @@ async function rotaNoticias(req, res, url) {
 
   /* fila */
   const LIMITE = 150;
-  const { filtro, where, vals } = filtroNoticias(url.searchParams);
+  const { filtro, where, whereSemCat, vals, valsSemCat } = filtroNoticias(url.searchParams);
+  const base = "FROM noticias n LEFT JOIN veiculos v ON v.dominio = n.dominio";
 
-  const [lista, cont, noFiltro, pessoas, veiculos, nomes, fontes, ultima] = await Promise.all([
-    pool.query(`SELECT n.* FROM noticias n LEFT JOIN veiculos v ON v.dominio = n.dominio ${where}
-                ORDER BY coalesce(n.publicado_em, n.encontrado_em) DESC LIMIT ${LIMITE}`, vals),
-    pool.query("SELECT status, count(*)::int AS n FROM noticias GROUP BY status"),
-    pool.query(`SELECT count(*)::int AS n FROM noticias n LEFT JOIN veiculos v ON v.dominio = n.dominio ${where}`, vals),
+  const [lista, cont, noFiltro, porCat, pessoas, veiculos, nomes, fontes, ultima, triagemInfo] = await Promise.all([
+    pool.query(`
+      WITH m AS (SELECT n.* ${base} ${where})
+      SELECT r.id, r.titulo, r.url, r.veiculo, r.dominio, r.resumo, r.categoria, r.no_site, r.motivo_ia,
+             max(coalesce(m.publicado_em, m.encontrado_em)) AS quando, count(*)::int AS qtd,
+             bool_and(m.status = 'novo') AS todas_novas, min(m.status) AS status,
+             string_agg(DISTINCT m.nota, ' | ') AS nota,
+             (SELECT coalesce(array_agg(DISTINCT p), '{}') FROM noticias x, unnest(x.pessoas) p WHERE x.grupo = r.id OR x.id = r.id) AS pessoas,
+             json_agg(json_build_object('titulo', m.titulo, 'url', m.url, 'veiculo', coalesce(m.veiculo, m.dominio), 'dominio', m.dominio,
+                      'quando', coalesce(m.publicado_em, m.encontrado_em)) ORDER BY coalesce(m.publicado_em, m.encontrado_em) DESC) AS membros
+        FROM m JOIN noticias r ON r.id = coalesce(m.grupo, m.id)
+       GROUP BY r.id ORDER BY quando DESC LIMIT ${LIMITE}`, vals),
+    pool.query("SELECT status, count(DISTINCT coalesce(grupo, id))::int AS n FROM noticias GROUP BY status"),
+    pool.query(`SELECT count(DISTINCT coalesce(n.grupo, n.id))::int AS n ${base} ${where}`, vals),
+    pool.query(`SELECT coalesce(n.categoria, 'sem') AS cat, count(DISTINCT coalesce(n.grupo, n.id))::int AS n ${base} ${whereSemCat} GROUP BY 1`, valsSemCat),
     pool.query(`SELECT p AS id, count(*)::int AS n FROM noticias, unnest(pessoas) p
                 WHERE $1::text IS NULL OR status = $1 GROUP BY p ORDER BY n DESC LIMIT 80`,
       [filtro.status === "todas" ? null : filtro.status]),
@@ -446,6 +472,7 @@ async function rotaNoticias(req, res, url) {
     pool.query("SELECT id, nome FROM verbetes"),
     pool.query("SELECT url FROM fontes"),
     pool.query("SELECT valor FROM meta WHERE chave='noticias_ultima'"),
+    triagem.situacao(),
   ]);
   const contagens = Object.fromEntries(cont.rows.map((r) => [r.status, r.n]));
   contagens.todas = cont.rows.reduce((a, r) => a + r.n, 0);
@@ -456,7 +483,8 @@ async function rotaNoticias(req, res, url) {
   try { ultimaColeta = ultima.rows[0] ? JSON.parse(ultima.rows[0].valor) : null; } catch { /* registro corrompido: mostra como sem coleta */ }
 
   return html(adminNoticias.fila(lista.rows, {
-    filtro, contagens, noFiltro: noFiltro.rows[0].n, pessoas: pessoas.rows, veiculos: veiculos.rows, limite: LIMITE,
+    filtro, contagens, noFiltro: noFiltro.rows[0].n, porCat: Object.fromEntries(porCat.rows.map((r) => [r.cat, r.n])),
+    triagem: triagemInfo, pessoas: pessoas.rows, veiculos: veiculos.rows, limite: LIMITE,
     nomes: Object.fromEntries(nomes.rows.map((r) => [r.id, r.nome])),
     fontesSite, ultima: ultimaColeta, rodando: noticias.estaRodando(),
     horas: Math.max(1, Number(process.env.NOTICIAS_HORAS || 6)), msg: url.searchParams.get("msg"),
@@ -517,6 +545,6 @@ const servidor = http.createServer(async (req, res) => {
   if (!ok) { console.error("[db] banco inacessível — o site serve o snapshot embutido e não grava mensagens"); return; }
   try { await conteudo.semear(); } catch (e) { console.error("[conteudo] semeadura falhou:", e.message); }
   metricas.limpar();
-  try { await noticias.semear(); noticias.agendar(avisarNoticias); } catch (e) { console.error("[noticias] nao iniciou:", e.message); }
+  try { await noticias.semear(); noticias.agendar(avisarNoticias); triagem.agendar(); } catch (e) { console.error("[noticias] nao iniciou:", e.message); }
   setInterval(metricas.limpar, 24 * 60 * 60_000).unref();
 })();

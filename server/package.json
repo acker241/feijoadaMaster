@@ -12,6 +12,7 @@
     "hash-senha": "node hash-senha.js"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.126.0",
     "pg": "^8.23.0"
   }
 }

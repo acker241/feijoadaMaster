@@ -9,6 +9,7 @@
 "use strict";
 
 const { pool } = require("./db");
+const triagem = require("./triagem");
 
 const HORAS = Math.max(1, Number(process.env.NOTICIAS_HORAS || 6));
 const ATIVO = process.env.NOTICIAS_ATIVO !== "0";
@@ -229,6 +230,7 @@ async function coletar({ pessoasTambem = false, motivo = "agenda" } = {}) {
     ultimoResumo = { quando: new Date(), novas: novas.length, segundos: Math.round((Date.now() - inicio) / 1000), motivo, pessoas: pessoasTambem };
     await pool.query("INSERT INTO meta (chave,valor) VALUES ('noticias_ultima',$1) ON CONFLICT (chave) DO UPDATE SET valor=EXCLUDED.valor", [JSON.stringify(ultimoResumo)]);
     console.log(`[noticias] coleta (${motivo}) terminou: ${novas.length} nova(s) em ${ultimoResumo.segundos}s`);
+    await triagem.rodar();
     return { novas, resumo: ultimoResumo };
   } catch (e) {
     console.error("[noticias] coleta falhou:", e.message);

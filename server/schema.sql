@@ -200,3 +200,14 @@ CREATE TABLE IF NOT EXISTS noticias (
 );
 CREATE INDEX IF NOT EXISTS noticias_status_idx ON noticias (status, publicado_em DESC);
 CREATE INDEX IF NOT EXISTS noticias_pessoas_idx ON noticias USING gin (pessoas);
+
+-- ---------- triagem das noticias ----------
+-- grupo = id da noticia que representa a mesma historia em varios veiculos
+-- categoria/no_site/motivo_ia vem da classificacao por IA e valem para o grupo todo
+ALTER TABLE noticias ADD COLUMN IF NOT EXISTS grupo BIGINT;
+ALTER TABLE noticias ADD COLUMN IF NOT EXISTS categoria TEXT;
+ALTER TABLE noticias ADD COLUMN IF NOT EXISTS no_site TEXT;
+ALTER TABLE noticias ADD COLUMN IF NOT EXISTS motivo_ia TEXT;
+ALTER TABLE noticias ADD COLUMN IF NOT EXISTS classificado_em TIMESTAMPTZ;
+CREATE INDEX IF NOT EXISTS noticias_grupo_idx ON noticias (grupo);
+CREATE INDEX IF NOT EXISTS noticias_categoria_idx ON noticias (categoria);
