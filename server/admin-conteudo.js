@@ -209,7 +209,7 @@ exports.conteudo = (ent, rows, o, contagens, q, errata) => {
   return pagina(`Conteúdo — ${ent}`, `
   <p class="sub">Painel · conteúdo do site</p>
   <h1>Feijoada <span>do Master</span></h1>
-  <div class="tabs">${tabs}<span class="sp"></span><a class="tab" href="/admin">mensagens</a><a class="tab" href="/admin/stats">estatísticas</a><a class="tab" href="/admin/sair">sair</a></div>
+  <div class="tabs">${tabs}<span class="sp"></span><a class="tab" href="/admin">mensagens</a><a class="tab" href="/admin/noticias">notícias</a><a class="tab" href="/admin/stats">estatísticas</a><a class="tab" href="/admin/sair">sair</a></div>
   <p class="aviso">Em <b>respostas</b> ficam as manifestações de quem é citado — nota oficial, defesa, recurso, decisão judicial favorável, retificação de veículo. Marcadas como destaque, elas aparecem <b>acima</b> do texto do verbete, com selo próprio. Toda alteração daqui entra na <b>errata pública</b> da página, com campo, valor antigo, valor novo e o motivo que você escrever. Remoção de verbete apaga também os vínculos dele.</p>
   <form class="busca" method="get" action="/admin/conteudo">
     <input type="hidden" name="ent" value="${ent}">

@@ -12,6 +12,8 @@ const conteudo = require("./conteudo");
 const adminConteudo = require("./admin-conteudo");
 const metricas = require("./metricas");
 const adminStats = require("./admin-stats");
+const noticias = require("./noticias");
+const adminNoticias = require("./admin-noticias");
 
 const PORTA = Number(process.env.PORT || 8080);
 const SITEKEY = process.env.TURNSTILE_SITEKEY || "";
@@ -149,6 +151,27 @@ async function avisarTelegram(m) {
       signal: AbortSignal.timeout(8000),
     });
   } catch (e) { console.error("[telegram] falhou:", e.message); }
+}
+
+/* resumo do monitor de noticias: uma mensagem por coleta com novidade */
+async function avisarNoticias(novas) {
+  if (!TG_TOKEN || !TG_CHAT) return;
+  const texto = [
+    `${novas.length} notícia(s) nova(s) sobre o caso`,
+    "",
+    ...novas.slice(0, 8).map((n) => `• ${n.veiculo}: ${n.titulo}`.slice(0, 220)),
+    novas.length > 8 ? `… e mais ${novas.length - 8}` : null,
+    "",
+    SITE_URL ? `${SITE_URL}/admin/noticias` : "/admin/noticias",
+  ].filter((l) => l !== null).join("\n");
+  try {
+    await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: TG_CHAT, text: texto, disable_web_page_preview: true }),
+      signal: AbortSignal.timeout(8000),
+    });
+  } catch (e) { console.error("[telegram] aviso de noticias falhou:", e.message); }
 }
 
 /* ---------- sessao do admin ---------- */
@@ -295,6 +318,8 @@ async function rotaAdmin(req, res, url) {
     return enviar(res, 200, adminConteudo.conteudo(ent, filtradas, opcoes, contagens, q, err), "text/html; charset=utf-8", CSP_ADMIN);
   }
 
+  if (url.pathname.startsWith("/admin/noticias")) return await rotaNoticias(req, res, url);
+
   if (url.pathname === "/admin/stats") {
     const d = Number(url.searchParams.get("dias"));
     const dias = [7, 30, 90, 365].includes(d) ? d : 30;
@@ -322,6 +347,120 @@ async function rotaAdmin(req, res, url) {
   const { rows } = await pool.query(`SELECT * FROM mensagens ${where} ORDER BY criado_em DESC LIMIT 200`, vals);
   const cont = await pool.query("SELECT status, count(*)::int AS n FROM mensagens GROUP BY status");
   return enviar(res, 200, admin.lista(rows, cont.rows, { status: filtroStatus, tipo: filtroTipo }, [...TIPOS]), "text/html; charset=utf-8", CSP_ADMIN);
+}
+
+/* ---------- monitor de noticias (painel) ---------- */
+const STATUS_NOTICIA = new Set(["novo", "relevante", "usado", "descartado"]);
+const GRUPOS_VEICULO = new Set(["grande", "independente", "especializado", "regional", "outros"]);
+
+/* filtro da fila, a partir da querystring; serve para listar e para descartar em lote */
+function filtroNoticias(params) {
+  const st = params.get("status");
+  const filtro = {
+    status: STATUS_NOTICIA.has(st) || st === "todas" ? st : "novo",
+    pessoa: params.get("pessoa") || "",
+    grupo: GRUPOS_VEICULO.has(params.get("grupo")) ? params.get("grupo") : "",
+    veiculo: params.get("veiculo") || "",
+    q: (params.get("q") || "").trim().slice(0, 100),
+  };
+  const cond = [], vals = [];
+  const add = (sql, v) => { vals.push(v); cond.push(sql.replace("?", "$" + vals.length)); };
+  if (filtro.status !== "todas") add("n.status = ?", filtro.status);
+  if (filtro.pessoa) add("? = ANY(n.pessoas)", filtro.pessoa);
+  if (filtro.veiculo) add("n.dominio = ?", filtro.veiculo);
+  if (filtro.grupo) add("v.grupo = ?", filtro.grupo);
+  if (filtro.q) add("n.titulo ILIKE ?", "%" + filtro.q.replace(/[%_\\]/g, "\\$&") + "%");
+  return { filtro, where: cond.length ? "WHERE " + cond.join(" AND ") : "", vals };
+}
+
+async function rotaNoticias(req, res, url) {
+  const html = (corpo) => enviar(res, 200, corpo, "text/html; charset=utf-8", CSP_ADMIN);
+  const redirecionar = (destino) => { res.statusCode = 302; res.setHeader("Location", destino); return res.end(); };
+
+  if (req.method === "POST" && url.pathname === "/admin/noticias/acao") {
+    const corpo = new URLSearchParams(await lerCorpo(req, 64 * 1024));
+    const ids = String(corpo.get("ids") || "").split(",").map(Number).filter((n) => Number.isInteger(n) && n > 0).slice(0, 500);
+    const status = corpo.get("status");
+    const nota = corpo.get("nota");
+    if (ids.length && STATUS_NOTICIA.has(status)) await pool.query("UPDATE noticias SET status=$1 WHERE id = ANY($2::bigint[])", [status, ids]);
+    if (ids.length && nota !== null) await pool.query("UPDATE noticias SET nota=$1 WHERE id = ANY($2::bigint[])", [nota.slice(0, 2000) || null, ids]);
+    const volta = corpo.get("volta") || "";
+    if (corpo.get("lote") === "filtro" && STATUS_NOTICIA.has(status) && volta.startsWith("/admin/noticias")) {
+      const { filtro, where, vals } = filtroNoticias(new URL(volta, "http://painel").searchParams);
+      if (filtro.status === "novo") {
+        await pool.query(`UPDATE noticias SET status=$${vals.length + 1}
+          WHERE id IN (SELECT n.id FROM noticias n LEFT JOIN veiculos v ON v.dominio = n.dominio ${where})`, [...vals, status]);
+      }
+    }
+    return redirecionar(volta.startsWith("/admin/noticias") ? volta : "/admin/noticias");
+  }
+
+  if (req.method === "POST" && url.pathname === "/admin/noticias/coletar") {
+    if (!noticias.estaRodando()) {
+      noticias.coletar({ pessoasTambem: true, motivo: "manual" })
+        .then((r) => { if (r.novas && r.novas.length) avisarNoticias(r.novas); })
+        .catch((e) => console.error("[noticias] coleta manual:", e.message));
+    }
+    return redirecionar("/admin/noticias?msg=" + encodeURIComponent("Coleta iniciada. Leva alguns minutos; recarregue a página depois."));
+  }
+
+  if (req.method === "POST" && url.pathname === "/admin/noticias/veiculo") {
+    const c = new URLSearchParams(await lerCorpo(req, 16 * 1024));
+    const dominio = String(c.get("dominio") || "").trim().toLowerCase()
+      .replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/.*$/, "");
+    const nome = String(c.get("nome") || "").trim().slice(0, 80);
+    const grupo = GRUPOS_VEICULO.has(c.get("grupo")) ? c.get("grupo") : "outros";
+    const rss = String(c.get("rss") || "").split(/\s+/).filter((u) => /^https?:\/\/\S+$/i.test(u)).join(" ") || null;
+    const busca = c.get("busca") === "1", ativo = c.get("ativo") === "1";
+    let msg;
+    if (!/^[a-z0-9.-]+\.[a-z]{2,}$/.test(dominio) || !nome) msg = "Domínio ou nome inválido.";
+    else if (c.get("novo")) {
+      const r = await pool.query("INSERT INTO veiculos (dominio,nome,grupo,rss,busca,ativo) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (dominio) DO NOTHING",
+        [dominio, nome, grupo, rss, busca, ativo]);
+      msg = r.rowCount ? `${nome} incluído.` : `${dominio} já estava cadastrado.`;
+    } else {
+      await pool.query("UPDATE veiculos SET nome=$2, grupo=$3, rss=$4, busca=$5, ativo=$6 WHERE dominio=$1", [dominio, nome, grupo, rss, busca, ativo]);
+      msg = `${nome} salvo.`;
+    }
+    return redirecionar("/admin/noticias/veiculos?msg=" + encodeURIComponent(msg));
+  }
+
+  if (url.pathname === "/admin/noticias/veiculos") {
+    const { rows } = await pool.query("SELECT * FROM veiculos ORDER BY ativo DESC, grupo, nome");
+    return html(adminNoticias.veiculos(rows, { msg: url.searchParams.get("msg") }));
+  }
+
+  /* fila */
+  const LIMITE = 150;
+  const { filtro, where, vals } = filtroNoticias(url.searchParams);
+
+  const [lista, cont, noFiltro, pessoas, veiculos, nomes, fontes, ultima] = await Promise.all([
+    pool.query(`SELECT n.* FROM noticias n LEFT JOIN veiculos v ON v.dominio = n.dominio ${where}
+                ORDER BY coalesce(n.publicado_em, n.encontrado_em) DESC LIMIT ${LIMITE}`, vals),
+    pool.query("SELECT status, count(*)::int AS n FROM noticias GROUP BY status"),
+    pool.query(`SELECT count(*)::int AS n FROM noticias n LEFT JOIN veiculos v ON v.dominio = n.dominio ${where}`, vals),
+    pool.query(`SELECT p AS id, count(*)::int AS n FROM noticias, unnest(pessoas) p
+                WHERE $1::text IS NULL OR status = $1 GROUP BY p ORDER BY n DESC LIMIT 80`,
+      [filtro.status === "todas" ? null : filtro.status]),
+    pool.query("SELECT dominio, nome FROM veiculos ORDER BY nome"),
+    pool.query("SELECT id, nome FROM verbetes"),
+    pool.query("SELECT url FROM fontes"),
+    pool.query("SELECT valor FROM meta WHERE chave='noticias_ultima'"),
+  ]);
+  const contagens = Object.fromEntries(cont.rows.map((r) => [r.status, r.n]));
+  contagens.todas = cont.rows.reduce((a, r) => a + r.n, 0);
+  const fontesSite = new Set(fontes.rows.map((f) => {
+    try { return new URL(f.url).hostname.replace(/^www\d*\./, ""); } catch { return null; }
+  }).filter(Boolean));
+  let ultimaColeta = null;
+  try { ultimaColeta = ultima.rows[0] ? JSON.parse(ultima.rows[0].valor) : null; } catch { /* registro corrompido: mostra como sem coleta */ }
+
+  return html(adminNoticias.fila(lista.rows, {
+    filtro, contagens, noFiltro: noFiltro.rows[0].n, pessoas: pessoas.rows, veiculos: veiculos.rows, limite: LIMITE,
+    nomes: Object.fromEntries(nomes.rows.map((r) => [r.id, r.nome])),
+    fontesSite, ultima: ultimaColeta, rodando: noticias.estaRodando(),
+    horas: Math.max(1, Number(process.env.NOTICIAS_HORAS || 6)), msg: url.searchParams.get("msg"),
+  }));
 }
 
 /* ---------- servidor ---------- */
@@ -378,5 +517,6 @@ const servidor = http.createServer(async (req, res) => {
   if (!ok) { console.error("[db] banco inacessível — o site serve o snapshot embutido e não grava mensagens"); return; }
   try { await conteudo.semear(); } catch (e) { console.error("[conteudo] semeadura falhou:", e.message); }
   metricas.limpar();
+  try { await noticias.semear(); noticias.agendar(avisarNoticias); } catch (e) { console.error("[noticias] nao iniciou:", e.message); }
   setInterval(metricas.limpar, 24 * 60 * 60_000).unref();
 })();

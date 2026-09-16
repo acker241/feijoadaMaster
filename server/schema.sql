@@ -168,3 +168,35 @@ CREATE TABLE IF NOT EXISTS metricas (
   disp       TEXT
 );
 CREATE INDEX IF NOT EXISTS metricas_dia_tipo_idx ON metricas (dia, tipo);
+
+-- ---------- monitor de noticias ----------
+-- veiculos: onde procurar. rss = feeds proprios separados por espaco; busca = usar Google News com site:
+CREATE TABLE IF NOT EXISTS veiculos (
+  dominio       TEXT PRIMARY KEY,
+  nome          TEXT NOT NULL,
+  grupo         TEXT NOT NULL DEFAULT 'outros',
+  rss           TEXT,
+  busca         BOOLEAN NOT NULL DEFAULT true,
+  ativo         BOOLEAN NOT NULL DEFAULT true,
+  ultima_coleta TIMESTAMPTZ,
+  ultimo_erro   TEXT,
+  achadas       INT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS noticias (
+  id            BIGSERIAL PRIMARY KEY,
+  chave         TEXT NOT NULL UNIQUE,
+  titulo        TEXT NOT NULL,
+  url           TEXT NOT NULL,
+  dominio       TEXT,
+  veiculo       TEXT,
+  resumo        TEXT,
+  publicado_em  TIMESTAMPTZ,
+  encontrado_em TIMESTAMPTZ NOT NULL DEFAULT now(),
+  pessoas       TEXT[] NOT NULL DEFAULT '{}',
+  via           TEXT,
+  status        TEXT NOT NULL DEFAULT 'novo',
+  nota          TEXT
+);
+CREATE INDEX IF NOT EXISTS noticias_status_idx ON noticias (status, publicado_em DESC);
+CREATE INDEX IF NOT EXISTS noticias_pessoas_idx ON noticias USING gin (pessoas);

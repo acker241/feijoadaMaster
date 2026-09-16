@@ -140,7 +140,7 @@ exports.stats = (r) => {
   <p class="sub">Painel · estatísticas de visita</p>
   <h1>Feijoada <span>do Master</span></h1>
   <div class="tabs">${periodos}<span class="sp"></span>
-    <a class="tab" href="/admin">mensagens</a><a class="tab" href="/admin/conteudo">editar conteúdo</a><a class="tab" href="/admin/sair">sair</a></div>
+    <a class="tab" href="/admin">mensagens</a><a class="tab" href="/admin/noticias">notícias</a><a class="tab" href="/admin/conteudo">editar conteúdo</a><a class="tab" href="/admin/sair">sair</a></div>
 
   <div class="tiles">${tiles}</div>
 
