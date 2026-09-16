@@ -326,6 +326,9 @@ const SCHEMA_CONSOLIDAR = {
 /* blocos por ancora: a pessoa citada (ja marcada na coleta) ou, sem pessoa, a palavra
    mais rara do titulo. Componentes por semelhanca encadeavam tudo via "Moraes"/"STF". */
 const ANCORAS_GENERICAS = new Set(["stf", "pf", "bc", "master", "vorcaro"]);
+/* sobrenomes que sao palavra comum ou nome muito frequente: formariam blocos sem sentido */
+const SOBRENOME_COMUM = new Set(("central federal jesus maxima pleno escritorios ameacados maceio amapa silva souza costa ferreira "
+  + "rocha soares martin vieira batista barros santana rodrigues castro faria coelho vinicius").split(" "));
 async function blocosParaConsolidar(dias) {
   const { rows } = await pool.query(`
     SELECT r.id, r.titulo, r.status, max(coalesce(m.publicado_em, m.encontrado_em)) AS quando,
@@ -335,7 +338,23 @@ async function blocosParaConsolidar(dias) {
      GROUP BY r.id
     HAVING max(coalesce(m.publicado_em, m.encontrado_em)) >= now() - make_interval(days => $1)
      ORDER BY quando`, [dias]);
-  const itens = rows.map((r) => ({ ...r, id: Number(r.id), r: radicais(r.titulo), t: new Date(r.quando).getTime() }));
+  /* titulo com so o sobrenome ("Gonet confirma...") nao recebe a marca da pessoa na coleta;
+     aqui o sobrenome conta quando e exclusivo de uma pessoa da rede e nao e palavra comum */
+  const ver = (await pool.query("SELECT id, nome FROM verbetes")).rows;
+  const contaSobrenome = new Map();
+  const sobrenomes = ver.map((v) => {
+    const partes = norm(v.nome.split(/[(,]/)[0]).trim().split(/s+/);
+    const sob = partes.length > 1 ? partes[partes.length - 1] : null;
+    if (sob) contaSobrenome.set(sob, (contaSobrenome.get(sob) || 0) + 1);
+    return [v.id, sob];
+  }).filter(([, sob]) => sob && sob.length >= 5);
+  const exclusivos = sobrenomes.filter(([, sob]) => contaSobrenome.get(sob) === 1 && !VAZIAS.has(sob) && !SOBRENOME_COMUM.has(sob) && /^[a-z]+$/.test(sob))
+    .map(([id, sob]) => [id, new RegExp("(^|[^a-z])" + sob + "($|[^a-z])")]);
+  const itens = rows.map((r) => {
+    const t = norm(r.titulo);
+    const pessoas = new Set([...(r.pessoas || []), ...exclusivos.filter(([, re]) => re.test(t)).map(([id]) => id)]);
+    return { ...r, pessoas: [...pessoas], id: Number(r.id), r: radicais(r.titulo), t: new Date(r.quando).getTime() };
+  });
   const df = new Map();
   for (const i of itens) for (const w of i.r) df.set(w, (df.get(w) || 0) + 1);
   const porAncora = new Map();
