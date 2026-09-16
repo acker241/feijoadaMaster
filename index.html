@@ -1474,13 +1474,18 @@ document.addEventListener("click",e=>{
     alvo.innerHTML=`<p class="sec-note">Nenhuma alteração registrada desde a publicação. Toda correção feita daqui para frente aparece nesta lista, com o que mudou e por quê.</p>`;
     return;
   }
+  /* posicao interna nao interessa ao leitor; fontes aparecem so como contagem, sem citar nomes */
+  const visiveis=ERRATA.filter(e=>e.campo!=="ordem");
+  const qtdFontes=t=>{const n=String(t||"").split(/\s+/).filter(Boolean).length;return n===1?"1 fonte":n+" fontes"};
   alvo.innerHTML=`<div class="tablewrap"><table class="lic"><thead><tr><th>Quando</th><th>O que mudou</th><th>De → para</th><th>Motivo</th></tr></thead><tbody>`
-   +ERRATA.map(e=>{
+   +visiveis.map(e=>{
      const q=new Date(e.em).toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo"});
      const corta=t=>!t?"—":(t.length>140?t.slice(0,138)+"…":t);
      return `<tr><td style="white-space:nowrap">${q}</td>
       <td><b>${e.rotulo||e.entidade}</b><br><span style="color:var(--ink-3);font-size:12.5px">${rot[e.entidade]||e.entidade} ${e.acao}${e.campo?` · ${e.campo}`:""}</span></td>
-      <td>${e.campo?`<span style="color:var(--c-jud)">${corta(e.antes)}</span> → <span style="color:var(--c-reg)">${corta(e.depois)}</span>`:"—"}</td>
+      <td>${!e.campo?"—":e.campo==="fontes"
+        ?`<span style="color:var(--c-jud)">${qtdFontes(e.antes)}</span> → <span style="color:var(--c-reg)">${qtdFontes(e.depois)}</span>`
+        :`<span style="color:var(--c-jud)">${corta(e.antes)}</span> → <span style="color:var(--c-reg)">${corta(e.depois)}</span>`}</td>
       <td>${e.motivo?e.motivo:"—"}</td></tr>`}).join("")
    +`</tbody></table></div>`;
 })();
