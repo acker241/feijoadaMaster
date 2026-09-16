@@ -11,7 +11,9 @@
 const { pool } = require("./db");
 const triagem = require("./triagem");
 
-const HORAS = Math.max(1, Number(process.env.NOTICIAS_HORAS || 6));
+/* coleta + triagem em horarios fixos de Brasilia (ex.: "07:00,12:00,18:00") */
+const HORARIOS = String(process.env.NOTICIAS_HORARIOS || "07:00,12:00,18:00").split(",")
+  .map((h) => h.trim()).filter((h) => /^\d{2}:\d{2}$/.test(h)).sort();
 const ATIVO = process.env.NOTICIAS_ATIVO !== "0";
 const UA = "Mozilla/5.0 (compatible; FeijoadaDoMaster-monitor/1.0; +https://www.feijoadadomaster.com.br)";
 const PAUSA_GN_MS = 1500;
@@ -245,16 +247,29 @@ async function precisaPessoas() {
   return !r.rows.length || Date.now() - new Date(r.rows[0].valor).getTime() > 20 * 3600000;
 }
 
-/* aviso: um resumo por coleta, so quando ha novidade */
+/* aviso: um resumo por coleta, so quando ha novidade.
+   A cada minuto ve se passou de um horario ainda nao rodado hoje; o registro fica
+   em meta para reinicio do servidor nao repetir a rodada. Horario perdido ha mais
+   de 3h (servidor fora do ar) e pulado. */
 function agendar(avisar) {
   if (!ATIVO) { console.log("[noticias] monitor desligado (NOTICIAS_ATIVO=0)"); return; }
-  const rodada = async (motivo) => {
-    const r = await coletar({ pessoasTambem: await precisaPessoas().catch(() => false), motivo });
+  const verificar = async () => {
+    if (rodando) return;
+    const agora = new Date();
+    const dia = agora.toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" });
+    const hhmm = agora.toLocaleTimeString("en-GB", { timeZone: "America/Sao_Paulo", hour: "2-digit", minute: "2-digit" });
+    const minutos = (h) => Number(h.slice(0, 2)) * 60 + Number(h.slice(3, 5));
+    const devido = HORARIOS.filter((h) => h <= hhmm && minutos(hhmm) - minutos(h) <= 180).pop();
+    if (!devido) return;
+    const marca = `${dia} ${devido}`;
+    const r0 = await pool.query("SELECT valor FROM meta WHERE chave='noticias_rodada'");
+    if (r0.rows.length && r0.rows[0].valor >= marca) return;
+    await pool.query("INSERT INTO meta (chave,valor) VALUES ('noticias_rodada',$1) ON CONFLICT (chave) DO UPDATE SET valor=EXCLUDED.valor", [marca]);
+    const r = await coletar({ pessoasTambem: await precisaPessoas().catch(() => false), motivo: `agenda ${devido}` });
     if (r.novas && r.novas.length && avisar) avisar(r.novas);
   };
-  setTimeout(() => rodada("inicio"), 2 * 60_000).unref();
-  setInterval(() => rodada("agenda"), HORAS * 3600_000).unref();
-  console.log(`[noticias] monitor ligado: a cada ${HORAS}h`);
+  setInterval(() => { verificar().catch((e) => console.error("[noticias] agenda falhou:", e.message)); }, 60_000).unref();
+  console.log(`[noticias] monitor ligado: coleta e triagem às ${HORARIOS.join(", ")} (Brasília)`);
 }
 
-module.exports = { semear, coletar, agendar, estaRodando: () => rodando, lerFeed, VEICULOS };
+module.exports = { semear, coletar, agendar, estaRodando: () => rodando, lerFeed, VEICULOS, HORARIOS };

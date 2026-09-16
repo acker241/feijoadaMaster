@@ -7,3 +7,6 @@ idx*.html
 
 _novo/
 _up/
+
+# modelo de embeddings baixado localmente
+server/.modelos/

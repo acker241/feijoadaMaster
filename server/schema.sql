@@ -211,3 +211,9 @@ ALTER TABLE noticias ADD COLUMN IF NOT EXISTS motivo_ia TEXT;
 ALTER TABLE noticias ADD COLUMN IF NOT EXISTS classificado_em TIMESTAMPTZ;
 CREATE INDEX IF NOT EXISTS noticias_grupo_idx ON noticias (grupo);
 CREATE INDEX IF NOT EXISTS noticias_categoria_idx ON noticias (categoria);
+
+-- ---------- agrupamento por embeddings ----------
+-- vetor = embedding do titulo (384 dimensoes); assunto = grupo lider do tema
+ALTER TABLE noticias ADD COLUMN IF NOT EXISTS vetor REAL[];
+ALTER TABLE noticias ADD COLUMN IF NOT EXISTS assunto BIGINT;
+CREATE INDEX IF NOT EXISTS noticias_assunto_idx ON noticias (assunto);

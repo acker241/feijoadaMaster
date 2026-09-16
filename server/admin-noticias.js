@@ -86,14 +86,15 @@ function linhaStatus(o) {
     : t.lote ? `Triagem por IA: lote com ${t.lote.grupos} grupo(s) em processamento desde ${dataSP(t.lote.criado)}.`
     : t.ultima ? `Última triagem por IA ${dataSP(t.ultima.quando)}: ${t.ultima.grupos} grupo(s)${t.ultima.falhas ? `, ${t.ultima.falhas} pedido(s) com falha` : ""}.`
     : "Triagem por IA ainda não rodou.";
-  const con = t.consolidacao ? ` Juntando histórias repetidas (${t.consolidacao.historias} em análise).`
-    : t.consolidada ? ` Última junção de repetidas ${dataSP(t.consolidada.quando)}: ${t.consolidada.fundidos} juntada(s).` : "";
-  return `<div class="status">${o.rodando ? "<b>Coleta em andamento</b> — recarregue em alguns minutos. " : ""}${esc(quando)}.
-    Coleta automática a cada ${o.horas}h; busca por pessoa uma vez por dia.
+  const a = t.agrupamento;
+  const agr = a ? ` Último agrupamento ${dataSP(a.quando)}: ${a.juntadas} história(s) juntadas por semelhança, ${a.assuntos} assunto(s) com 2+ histórias.` : "";
+  const horarios = (o.horarios || []).join(", ");
+  return `<div class="status">${o.rodando || t.rodando ? "<b>Coleta ou triagem em andamento</b> — recarregue em alguns minutos. " : ""}${esc(quando)}.
+    Coleta e triagem automáticas às ${esc(horarios)} (Brasília); busca por pessoa uma vez por dia.
     <form class="inline" method="post" action="/admin/noticias/coletar"><button type="submit" ${o.rodando ? "disabled" : ""} style="margin-left:8px">coletar agora</button></form>
-    <br>${esc(tri + con)}
+    <br>${esc(tri + agr)}
     ${t.ativa && !t.lote ? `<form class="inline" method="post" action="/admin/noticias/triar"><button type="submit" style="margin-left:8px">triar agora</button></form>
-      <form class="inline" method="post" action="/admin/noticias/retriar"><button type="submit" style="margin-left:4px" title="Classifica de novo todas as histórias abertas e junta as repetidas. Usa créditos da API (menos de US$ 1 para a fila atual).">refazer triagem das abertas</button></form>` : ""}
+      <form class="inline" method="post" action="/admin/noticias/retriar"><button type="submit" style="margin-left:4px" title="Classifica de novo todas as histórias abertas. Usa créditos da API (menos de US$ 1 para a fila atual).">refazer triagem das abertas</button></form>` : ""}
     ${o.msg ? `<br><b>${esc(o.msg)}</b>` : ""}</div>`;
 }
 
@@ -132,13 +133,20 @@ exports.fila = (grupos, o) => {
   const card = (g, i) => {
     const seguinte = (grupos[i + 1] || grupos[i - 1] || {}).id;
     const membros = g.membros || [];
-    const veiculos = [...new Set(membros.map((m) => m.veiculo).filter(Boolean))];
     const cat = ROTULO_CAT[g.categoria];
     const fonte = membros.some((m) => o.fontesSite.has(m.dominio));
+    const emAlta = g.recentes >= 3;
+    const exclusivo = g.categoria === "fato_novo" && g.veics === 1;
+    const assunto = g.historias_assunto > 1
+      ? `<a class="selo" style="text-decoration:none" href="${qs({ assunto: g.assunto, cat: "todas" })}" title="histórias do mesmo tema">assunto: ${g.historias_assunto} histórias · ${g.veics_assunto} veículos</a>` : "";
     return `
   <article class="item" id="g${g.id}" ${cat ? `style="border-left:3px solid ${cat[1]}"` : ""}>
     <h3><a href="${esc(g.url)}" target="_blank" rel="noopener noreferrer">${esc(g.titulo)}</a></h3>
-    <div class="meta">${esc(g.veiculo || g.dominio || "?")}${veiculos.length > 1 ? ` + ${veiculos.length - 1} veículo(s)` : ""} · ${dataSP(g.quando)}
+    <div class="meta">${esc(g.veiculo || g.dominio || "?")} · ${dataSP(g.quando)}
+      <span class="selo" title="veículos que deram esta história">${g.veics} veículo(s)${g.grandes ? ` · ${g.grandes} grande(s)` : ""}</span>
+      ${emAlta ? `<span class="selo" style="color:var(--vinho)" title="3 ou mais veículos nas últimas 24h">em alta</span>` : ""}
+      ${exclusivo ? `<span class="selo" style="color:var(--verde)" title="fato novo publicado por um só veículo">exclusivo</span>` : ""}
+      ${assunto}
       ${cat ? `<span class="selo" style="color:${cat[1]}">${cat[0]}</span>` : `<span class="selo">sem triagem</span>`}
       ${g.no_site ? `<span class="selo">${ROTULO_SITE[g.no_site] || esc(g.no_site)}</span>` : ""}
       ${fonte ? `<span class="selo" style="color:var(--verde)">veículo já é fonte do site</span>` : ""}
@@ -171,9 +179,16 @@ exports.fila = (grupos, o) => {
   ${linhaStatus(o)}
   <div class="tabs" style="margin-top:0">${abas}</div>
   <div class="tabs" style="margin-top:-4px">${abasCat}</div>
+  <div class="filtros">ordenar por:
+    <a class="tab ${o.filtro.ordem ? "" : "on"}" href="${qs({ ordem: null })}">mais recentes</a>
+    <a class="tab ${o.filtro.ordem ? "on" : ""}" href="${qs({ ordem: "repercussao" })}">mais repercutidas</a>
+    ${o.filtro.assunto ? `<span class="sp"></span><b>mostrando um assunto</b> <a class="tab" href="${qs({ assunto: null })}">ver todos</a>` : ""}
+  </div>
   <form class="filtros" method="get" action="/admin/noticias">
     <input type="hidden" name="status" value="${esc(o.filtro.status)}">
     <input type="hidden" name="cat" value="${esc(o.filtro.cat)}">
+    ${o.filtro.ordem ? `<input type="hidden" name="ordem" value="${esc(o.filtro.ordem)}">` : ""}
+    ${o.filtro.assunto ? `<input type="hidden" name="assunto" value="${esc(o.filtro.assunto)}">` : ""}
     <select name="pessoa"><option value="">todas as pessoas</option>${opPessoa}</select>
     <select name="grupo"><option value="">todos os grupos</option>${opGrupo}</select>
     <select name="veiculo"><option value="">todos os veículos</option>${opVeiculo}</select>
@@ -183,7 +198,7 @@ exports.fila = (grupos, o) => {
   </form>
   ${lote}
   ${itens}
-  <p class="meta" style="margin-top:18px">Mostrando ${grupos.length} de ${o.noFiltro} histórias, das mais recentes. Cada card junta a mesma história publicada por vários veículos; as ações valem para todas. A categoria vem da IA e serve só para ordenar: nada é descartado sozinho, e nada entra no site sem passar pelo editor de conteúdo.</p>
+  <p class="meta" style="margin-top:18px">Mostrando ${grupos.length} de ${o.noFiltro} histórias, das mais recentes. Cada card junta a mesma história publicada por vários veículos; as ações valem para todas. Repercussão conta veículos distintos, com mais peso para os grandes; "exclusivo" marca fato novo publicado por um só veículo, que pode ser relevante mesmo sem repercussão. A categoria vem da IA e serve só para ordenar: nada é descartado sozinho, e nada entra no site sem passar pelo editor de conteúdo.</p>
 </div>`);
 };
 

@@ -365,6 +365,8 @@ function filtroNoticias(params) {
     veiculo: params.get("veiculo") || "",
     q: (params.get("q") || "").trim().slice(0, 100),
     cat: CATS_FILA.has(params.get("cat")) ? params.get("cat") : "ler",
+    assunto: /^\d+$/.test(params.get("assunto") || "") ? params.get("assunto") : "",
+    ordem: params.get("ordem") === "repercussao" ? "repercussao" : "",
   };
   const cond = [], vals = [];
   const add = (sql, v) => { vals.push(v); cond.push(sql.replace("?", "$" + vals.length)); };
@@ -373,6 +375,7 @@ function filtroNoticias(params) {
   if (filtro.veiculo) add("n.dominio = ?", filtro.veiculo);
   if (filtro.grupo) add("v.grupo = ?", filtro.grupo);
   if (filtro.q) add("n.titulo ILIKE ?", "%" + filtro.q.replace(/[%_\\]/g, "\\$&") + "%");
+  if (filtro.assunto) add("n.assunto = ?", filtro.assunto);
   const whereSemCat = cond.length ? "WHERE " + cond.join(" AND ") : "";
   /* "ler" = o que pode mudar o site: fato novo, desdobramento e o que a IA ainda nao viu */
   if (filtro.cat === "ler") cond.push("(n.categoria IS NULL OR n.categoria IN ('fato_novo','desdobramento'))");
@@ -460,9 +463,12 @@ async function rotaNoticias(req, res, url) {
   const base = "FROM noticias n LEFT JOIN veiculos v ON v.dominio = n.dominio";
 
   const [lista, cont, noFiltro, porCat, pessoas, veiculos, nomes, fontes, ultima, triagemInfo] = await Promise.all([
+    /* repercussao: veiculos distintos que deram a historia, com peso por tamanho
+       (grande 3, independente/especializado 2, regional/fora do cadastro 1) */
     pool.query(`
-      WITH m AS (SELECT n.* ${base} ${where})
-      SELECT r.id, r.titulo, r.url, r.veiculo, r.dominio, r.resumo, r.categoria, r.no_site, r.motivo_ia,
+      WITH m AS (SELECT n.* ${base} ${where}), g AS (
+      SELECT r.id, r.titulo, r.url, r.veiculo, r.dominio, r.resumo, r.categoria, r.no_site, r.motivo_ia, r.assunto,
+             rep.veics, rep.grandes, rep.recentes, rep.peso, ass.historias AS historias_assunto, ass.veics AS veics_assunto,
              max(coalesce(m.publicado_em, m.encontrado_em)) AS quando, count(*)::int AS qtd,
              bool_and(m.status = 'novo') AS todas_novas, min(m.status) AS status,
              string_agg(DISTINCT m.nota, ' | ') AS nota,
@@ -470,7 +476,19 @@ async function rotaNoticias(req, res, url) {
              json_agg(json_build_object('titulo', m.titulo, 'url', m.url, 'veiculo', coalesce(m.veiculo, m.dominio), 'dominio', m.dominio,
                       'quando', coalesce(m.publicado_em, m.encontrado_em)) ORDER BY coalesce(m.publicado_em, m.encontrado_em) DESC) AS membros
         FROM m JOIN noticias r ON r.id = coalesce(m.grupo, m.id)
-       GROUP BY r.id ORDER BY quando DESC LIMIT ${LIMITE}`, vals),
+        LEFT JOIN LATERAL (
+          SELECT count(*)::int AS veics, count(*) FILTER (WHERE d.g = 'grande')::int AS grandes,
+                 count(*) FILTER (WHERE d.recente)::int AS recentes,
+                 coalesce(sum(CASE d.g WHEN 'grande' THEN 3 WHEN 'independente' THEN 2 WHEN 'especializado' THEN 2 ELSE 1 END), 0)::int AS peso
+            FROM (SELECT coalesce(x.veiculo, x.dominio) AS k, max(vx.grupo) AS g,
+                         bool_or(coalesce(x.publicado_em, x.encontrado_em) >= now() - interval '24 hours') AS recente
+                    FROM noticias x LEFT JOIN veiculos vx ON vx.dominio = x.dominio
+                   WHERE x.grupo = r.id GROUP BY 1) d) rep ON true
+        LEFT JOIN LATERAL (
+          SELECT count(DISTINCT x.grupo)::int AS historias, count(DISTINCT coalesce(x.veiculo, x.dominio))::int AS veics
+            FROM noticias x WHERE r.assunto IS NOT NULL AND x.assunto = r.assunto) ass ON true
+       GROUP BY r.id, rep.veics, rep.grandes, rep.recentes, rep.peso, ass.historias, ass.veics)
+      SELECT * FROM g ORDER BY ${filtro.ordem === "repercussao" ? "peso DESC, quando DESC" : "quando DESC"} LIMIT ${LIMITE}`, vals),
     pool.query("SELECT status, count(DISTINCT coalesce(grupo, id))::int AS n FROM noticias GROUP BY status"),
     pool.query(`SELECT count(DISTINCT coalesce(n.grupo, n.id))::int AS n ${base} ${where}`, vals),
     pool.query(`SELECT coalesce(n.categoria, 'sem') AS cat, count(DISTINCT coalesce(n.grupo, n.id))::int AS n ${base} ${whereSemCat} GROUP BY 1`, valsSemCat),
@@ -496,7 +514,7 @@ async function rotaNoticias(req, res, url) {
     triagem: triagemInfo, pessoas: pessoas.rows, veiculos: veiculos.rows, limite: LIMITE,
     nomes: Object.fromEntries(nomes.rows.map((r) => [r.id, r.nome])),
     fontesSite, ultima: ultimaColeta, rodando: noticias.estaRodando(),
-    horas: Math.max(1, Number(process.env.NOTICIAS_HORAS || 6)), msg: url.searchParams.get("msg"),
+    horarios: noticias.HORARIOS, msg: url.searchParams.get("msg"),
   }));
 }
 
