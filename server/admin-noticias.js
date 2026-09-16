@@ -117,20 +117,23 @@ exports.fila = (grupos, o) => {
     `<option value="${esc(v.dominio)}" ${o.filtro.veiculo === v.dominio ? "selected" : ""}>${esc(v.nome)}</option>`).join("");
   const opGrupo = GRUPOS.map((g) => `<option value="${g}" ${o.filtro.grupo === g ? "selected" : ""}>${g}</option>`).join("");
 
-  const botoes = (g) => ["relevante", "usado", "descartado", "novo"]
+  /* ancora: mudar status tira o card da lista, entao a pagina volta no card seguinte */
+  const botoes = (g, seguinte) => ["relevante", "usado", "descartado", "novo"]
     .filter((s) => (s === "novo" ? !g.todas_novas : !(s === g.status && !g.todas_novas))).map((s) => `
       <form class="inline" method="post" action="/admin/noticias/acao">
         <input type="hidden" name="grupos" value="${g.id}"><input type="hidden" name="status" value="${s}"><input type="hidden" name="volta" value="${esc(volta)}">
+        <input type="hidden" name="ancora" value="${seguinte ? "g" + seguinte : ""}">
         <button type="submit">${{ relevante: "relevante", usado: "usada no site", descartado: "descartar", novo: "voltar para novas" }[s]}</button>
       </form>`).join("");
 
-  const card = (g) => {
+  const card = (g, i) => {
+    const seguinte = (grupos[i + 1] || grupos[i - 1] || {}).id;
     const membros = g.membros || [];
     const veiculos = [...new Set(membros.map((m) => m.veiculo).filter(Boolean))];
     const cat = ROTULO_CAT[g.categoria];
     const fonte = membros.some((m) => o.fontesSite.has(m.dominio));
     return `
-  <article class="item" ${cat ? `style="border-left:3px solid ${cat[1]}"` : ""}>
+  <article class="item" id="g${g.id}" ${cat ? `style="border-left:3px solid ${cat[1]}"` : ""}>
     <h3><a href="${esc(g.url)}" target="_blank" rel="noopener noreferrer">${esc(g.titulo)}</a></h3>
     <div class="meta">${esc(g.veiculo || g.dominio || "?")}${veiculos.length > 1 ? ` + ${veiculos.length - 1} veículo(s)` : ""} · ${dataSP(g.quando)}
       ${cat ? `<span class="selo" style="color:${cat[1]}">${cat[0]}</span>` : `<span class="selo">sem triagem</span>`}
@@ -141,15 +144,15 @@ exports.fila = (grupos, o) => {
     ${g.pessoas.length ? `<div class="tags">${g.pessoas.map((p) => `<a class="tag" href="${qs({ pessoa: p })}">${esc(o.nomes[p] || p)}</a>`).join("")}</div>` : ""}
     ${membros.length > 1 ? `<details class="resumo" style="margin-top:8px"><summary>${membros.length} matérias sobre esta história</summary>
       <ul style="margin:6px 0 0;padding-left:18px">${membros.map((m) => `<li><a href="${esc(m.url)}" target="_blank" rel="noopener noreferrer">${esc(m.titulo)}</a> <span class="meta">${esc(m.veiculo || "")} · ${dataSP(m.quando)}</span></li>`).join("")}</ul></details>` : ""}
-    <div class="acoes">${botoes(g)}
+    <div class="acoes">${botoes(g, seguinte)}
       <form class="inline" method="post" action="/admin/noticias/acao">
-        <input type="hidden" name="grupos" value="${g.id}"><input type="hidden" name="volta" value="${esc(volta)}">
+        <input type="hidden" name="grupos" value="${g.id}"><input type="hidden" name="volta" value="${esc(volta)}"><input type="hidden" name="ancora" value="g${g.id}">
         <input type="text" name="nota" placeholder="nota interna" value="${esc(g.nota || "")}"><button type="submit">salvar nota</button>
       </form>
     </div>
   </article>`;
   };
-  const itens = grupos.length ? grupos.map(card).join("") : `<p class="vazio">Nenhuma notícia com esse filtro.</p>`;
+  const itens = grupos.length ? grupos.map((g, i) => card(g, i)).join("") : `<p class="vazio">Nenhuma notícia com esse filtro.</p>`;
 
   const lote = grupos.length && o.filtro.status === "novo" ? `
     <form method="post" action="/admin/noticias/acao" style="margin:4px 0 14px">

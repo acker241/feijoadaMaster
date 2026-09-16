@@ -402,7 +402,8 @@ async function rotaNoticias(req, res, url) {
           WHERE id IN (SELECT n.id FROM noticias n LEFT JOIN veiculos v ON v.dominio = n.dominio ${where})`, [...vals, status]);
       }
     }
-    return redirecionar(volta.startsWith("/admin/noticias") ? volta : "/admin/noticias");
+    const ancora = /^g\d+$/.test(corpo.get("ancora") || "") ? "#" + corpo.get("ancora") : "";
+    return redirecionar((volta.startsWith("/admin/noticias") ? volta : "/admin/noticias") + ancora);
   }
 
   if (req.method === "POST" && url.pathname === "/admin/noticias/coletar") {
