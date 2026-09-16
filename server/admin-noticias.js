@@ -90,7 +90,8 @@ function linhaStatus(o) {
     Coleta automática a cada ${o.horas}h; busca por pessoa uma vez por dia.
     <form class="inline" method="post" action="/admin/noticias/coletar"><button type="submit" ${o.rodando ? "disabled" : ""} style="margin-left:8px">coletar agora</button></form>
     <br>${esc(tri)}
-    ${t.ativa && !t.lote ? `<form class="inline" method="post" action="/admin/noticias/triar"><button type="submit" style="margin-left:8px">triar agora</button></form>` : ""}
+    ${t.ativa && !t.lote ? `<form class="inline" method="post" action="/admin/noticias/triar"><button type="submit" style="margin-left:8px">triar agora</button></form>
+      <form class="inline" method="post" action="/admin/noticias/retriar"><button type="submit" style="margin-left:4px" title="Classifica de novo todas as histórias abertas e junta as repetidas. Usa créditos da API (menos de US$ 1 para a fila atual).">refazer triagem das abertas</button></form>` : ""}
     ${o.msg ? `<br><b>${esc(o.msg)}</b>` : ""}</div>`;
 }
 

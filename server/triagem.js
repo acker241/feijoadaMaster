@@ -90,6 +90,9 @@ Diga também se o fato central já está no site, comparando com o CONTEÚDO DO 
 - nao: nada disso está no site.
 
 motivo: uma frase curta em português (até 20 palavras) justificando a categoria, citando o fato concreto quando houver.
+
+mesma_historia_que: o agrupamento automático só junta títulos quase iguais, então a mesma história costuma chegar repetida com outras palavras (ex.: "Conselho do MPF analisa menções de Vorcaro a Gonet" e "Conselho do MP analisará mensagens de Vorcaro que citam Gonet"). Se o grupo relata o MESMO fato ou episódio de um item de HISTÓRIAS JÁ NA FILA, ou de outro grupo deste mesmo envio, informe o id dele; senão, 0. Mesma pessoa ou mesmo tema não basta: precisa ser o mesmo acontecimento. Etapas diferentes (pedido, depois decisão, depois entrega) são histórias diferentes.
+
 Responda para todos os grupos recebidos, usando exatamente os ids informados.`;
 
 async function contextoDoSite() {
@@ -116,8 +119,9 @@ const SCHEMA = {
           categoria: { type: "string", enum: CATEGORIAS },
           no_site: { type: "string", enum: NO_SITE },
           motivo: { type: "string" },
+          mesma_historia_que: { type: "integer" },
         },
-        required: ["id", "categoria", "no_site", "motivo"],
+        required: ["id", "categoria", "no_site", "motivo", "mesma_historia_que"],
         additionalProperties: false,
       },
     },
@@ -128,7 +132,7 @@ const SCHEMA = {
 
 async function gruposPendentes() {
   const { rows } = await pool.query(`
-    SELECT r.id, r.titulo, r.resumo,
+    SELECT r.id, r.titulo, r.resumo, max(coalesce(m.publicado_em, m.encontrado_em)) AS quando,
            array_agg(DISTINCT m.veiculo) FILTER (WHERE m.veiculo IS NOT NULL) AS veiculos,
            (array_agg(m.titulo ORDER BY m.id))[1:4] AS titulos
       FROM noticias r JOIN noticias m ON m.grupo = r.id
@@ -136,7 +140,46 @@ async function gruposPendentes() {
      GROUP BY r.id
      ORDER BY max(coalesce(m.publicado_em, m.encontrado_em)) DESC
      LIMIT ${MAX_GRUPOS_POR_LOTE}`);
+  /* em ordem de data, para cada bloco cobrir um periodo curto e a lista de historias proximas ser pequena */
+  return rows.reverse();
+}
+
+/* historias ja na fila perto das datas do bloco, para a IA apontar repeticao com outras palavras */
+async function historiasProximas(bloco) {
+  const t = bloco.map((g) => new Date(g.quando).getTime());
+  const { rows } = await pool.query(`
+    SELECT r.id, r.titulo FROM noticias r
+     WHERE r.grupo = r.id AND NOT (r.id = ANY($1::bigint[]))
+       AND coalesce(r.publicado_em, r.encontrado_em) BETWEEN $2 AND $3
+     ORDER BY coalesce(r.publicado_em, r.encontrado_em) DESC LIMIT 350`,
+    [bloco.map((g) => g.id), new Date(Math.min(...t) - 2 * 86400000), new Date(Math.max(...t) + 2 * 86400000)]);
   return rows;
+}
+
+/* junta o grupo origem no destino; o destino manda na classificacao e na decisao ja tomada */
+async function fundir(origem, destino) {
+  const r = await pool.query(
+    "SELECT id, grupo, status, categoria, no_site, motivo_ia FROM noticias WHERE id = ANY($1::bigint[])", [[origem, destino]]);
+  const o = r.rows.find((x) => Number(x.id) === origem), d = r.rows.find((x) => Number(x.id) === destino);
+  if (!o || !d || Number(o.grupo) !== origem || Number(d.grupo) !== destino) return false;
+  const cli = await pool.connect();
+  try {
+    await cli.query("BEGIN");
+    await cli.query("UPDATE noticias SET grupo = $1 WHERE grupo = $2", [destino, origem]);
+    if (d.categoria) {
+      await cli.query("UPDATE noticias SET categoria=$2, no_site=$3, motivo_ia=$4, classificado_em=now() WHERE grupo=$1",
+        [destino, d.categoria, d.no_site, d.motivo_ia]);
+    } else if (o.categoria) {
+      await cli.query("UPDATE noticias SET categoria=$2, no_site=$3, motivo_ia=$4, classificado_em=now() WHERE grupo=$1",
+        [destino, o.categoria, o.no_site, o.motivo_ia]);
+    }
+    if (d.status !== "novo") await cli.query("UPDATE noticias SET status=$2 WHERE grupo=$1 AND status='novo'", [destino, d.status]);
+    await cli.query("COMMIT");
+    return true;
+  } catch (e) {
+    await cli.query("ROLLBACK");
+    throw e;
+  } finally { cli.release(); }
 }
 
 let loteEmAndamento = false;
@@ -157,7 +200,9 @@ async function classificar() {
     ];
     const pedidos = [];
     for (let i = 0; i < grupos.length; i += GRUPOS_POR_PEDIDO) {
-      const bloco = grupos.slice(i, i + GRUPOS_POR_PEDIDO).map((g) => ({
+      const originais = grupos.slice(i, i + GRUPOS_POR_PEDIDO);
+      const proximas = await historiasProximas(originais);
+      const bloco = originais.map((g) => ({
         id: Number(g.id),
         titulos: [...new Set([g.titulo, ...(g.titulos || [])])].slice(0, 4),
         veiculos: (g.veiculos || []).slice(0, 8),
@@ -169,7 +214,9 @@ async function classificar() {
           model: MODELO,
           max_tokens: 4000,
           system: sistema,
-          messages: [{ role: "user", content: "Grupos de notícias para classificar:\n" + JSON.stringify(bloco) }],
+          messages: [{ role: "user", content:
+            "HISTÓRIAS JÁ NA FILA (id: título):\n" + (proximas.map((h) => `${h.id}: ${h.titulo}`).join("\n") || "(nenhuma)")
+            + "\n\nGrupos de notícias para classificar:\n" + JSON.stringify(bloco) }],
           output_config: { format: { type: "json_schema", schema: SCHEMA } },
         },
       });
@@ -198,6 +245,7 @@ async function conferirLote() {
     const lote = await api.messages.batches.retrieve(info.id);
     if (lote.processing_status !== "ended") return { andamento: lote.processing_status, contagem: lote.request_counts };
     let gravados = 0, falhas = 0;
+    const fusoes = [];
     const uso = { entrada: 0, saida: 0, cache: 0 };
     for await (const r of await api.messages.batches.results(info.id)) {
       if (r.result.type !== "succeeded") { falhas++; continue; }
@@ -217,11 +265,20 @@ async function conferirLote() {
          WHERE n.grupo = u.g AND n.categoria IS NULL`,
         [ok.map((i) => i.id), ok.map((i) => i.categoria), ok.map((i) => i.no_site), ok.map((i) => String(i.motivo || ""))]);
       gravados += ok.length;
+      for (const it of ok) {
+        const alvo = Number(it.mesma_historia_que);
+        if (Number.isInteger(alvo) && alvo > 0 && alvo !== it.id) fusoes.push([it.id, alvo]);
+      }
+    }
+    /* fusoes depois de gravar tudo, para o destino ja ter classificacao quando existir */
+    let fundidos = 0;
+    for (const [origem, destino] of fusoes) {
+      try { if (await fundir(origem, destino)) fundidos++; } catch (e) { console.error("[triagem] fusao falhou:", e.message); }
     }
     await pool.query("DELETE FROM meta WHERE chave='triagem_lote'");
-    const resumo = { quando: new Date().toISOString(), lote: info.id, grupos: gravados, falhas, uso };
+    const resumo = { quando: new Date().toISOString(), lote: info.id, grupos: gravados, fundidos, falhas, uso };
     await pool.query("INSERT INTO meta (chave,valor) VALUES ('triagem_ultima',$1) ON CONFLICT (chave) DO UPDATE SET valor=EXCLUDED.valor", [JSON.stringify(resumo)]);
-    console.log(`[triagem] lote ${info.id} terminou: ${gravados} grupo(s) classificados, ${falhas} pedido(s) com falha; tokens entrada=${uso.entrada} cache=${uso.cache} saida=${uso.saida}`);
+    console.log(`[triagem] lote ${info.id} terminou: ${gravados} grupo(s) classificados, ${fundidos} juntado(s) a outra história, ${falhas} pedido(s) com falha; tokens entrada=${uso.entrada} cache=${uso.cache} saida=${uso.saida}`);
     return resumo;
   } catch (e) {
     console.error("[triagem] conferir lote falhou:", e.status || "", e.message);
@@ -229,6 +286,11 @@ async function conferirLote() {
     if (e.status === 404) await pool.query("DELETE FROM meta WHERE chave='triagem_lote'");
     return { erro: e.message };
   }
+}
+
+async function refazerAbertas() {
+  const r = await pool.query("UPDATE noticias SET categoria=NULL, no_site=NULL, motivo_ia=NULL, classificado_em=NULL WHERE status='novo' AND categoria IS NOT NULL");
+  return r.rowCount;
 }
 
 async function situacao() {
@@ -252,4 +314,4 @@ function agendar() {
   }, 5 * 60_000).unref();
 }
 
-module.exports = { agrupar, classificar, conferirLote, rodar, agendar, situacao, CATEGORIAS, palavras, parecidos };
+module.exports = { agrupar, classificar, conferirLote, rodar, agendar, situacao, refazerAbertas, CATEGORIAS, palavras, parecidos };

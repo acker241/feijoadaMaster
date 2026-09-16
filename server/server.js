@@ -420,6 +420,14 @@ async function rotaNoticias(req, res, url) {
     return redirecionar("/admin/noticias?msg=" + encodeURIComponent("Triagem iniciada: agrupa agora e manda para a IA; o resultado costuma chegar em alguns minutos."));
   }
 
+  if (req.method === "POST" && url.pathname === "/admin/noticias/retriar") {
+    const t = await triagem.situacao();
+    if (!t.ativa || t.lote) return redirecionar("/admin/noticias?msg=" + encodeURIComponent("Há um lote em andamento; espere terminar para refazer a triagem."));
+    const n = await triagem.refazerAbertas();
+    triagem.classificar().catch((e) => console.error("[triagem] refazer:", e.message));
+    return redirecionar("/admin/noticias?msg=" + encodeURIComponent(n + " notícia(s) abertas voltaram para a triagem, agora juntando histórias repetidas. O resultado chega em alguns minutos."));
+  }
+
   if (req.method === "POST" && url.pathname === "/admin/noticias/veiculo") {
     const c = new URLSearchParams(await lerCorpo(req, 16 * 1024));
     const dominio = String(c.get("dominio") || "").trim().toLowerCase()
