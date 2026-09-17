@@ -179,7 +179,7 @@ input[type=search]{font-family:Karla,sans-serif;font-size:13.5px;padding:6px 12p
 
 /* grafo */
 .graph-shell{display:grid;grid-template-columns:minmax(0,1fr) 322px;border:1px solid var(--rule-strong);background:var(--surface);min-height:0}
-#stage{position:relative;height:700px;background:var(--paper)}
+#stage{position:relative;height:clamp(600px,76vh,900px);background:var(--paper)}
 #g{display:block;width:100%;height:100%;cursor:grab}
 #g:active{cursor:grabbing}
 .ringc{fill:none;stroke:var(--ring);stroke-width:1}
@@ -226,9 +226,20 @@ aside.ficha h3{font-size:21px;margin:0 0 2px;letter-spacing:-.015em;text-wrap:ba
 .srcl{display:grid;gap:8px;font-size:13px}
 .srcl a{color:var(--ink-2)}
 .warn{font-size:12.5px;color:var(--ink-3);margin-top:18px;border-top:1px solid var(--rule);padding-top:13px;line-height:1.5}
-.zoomb{position:absolute;right:12px;bottom:12px;display:grid;gap:6px}
-.zoomb button{width:32px;height:32px;border:1px solid var(--rule-strong);background:var(--surface);color:var(--ink);
+.zoomb{position:absolute;right:12px;bottom:12px;display:grid;gap:6px;z-index:2}
+.zoomb button{width:38px;height:38px;border:1px solid var(--rule-strong);background:var(--surface);color:var(--ink);
   font-size:15px;cursor:pointer;border-radius:3px;font-family:"DM Mono",monospace}
+.zoomb button:hover{border-color:var(--ink-3)}
+
+/* rede em tela cheia: o grafo ocupa a janela toda e a ficha vira painel lateral */
+.graph-shell.cheio{position:fixed;inset:0;z-index:60;border:0;max-width:none;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.graph-shell.cheio #stage{height:100%}
+.graph-shell.cheio aside.ficha{max-height:none}
+body.travado{overflow:hidden}
+.sair-cheio{position:absolute;left:12px;top:12px;z-index:3;font:700 12.5px Karla,sans-serif;
+  background:var(--surface);border:1px solid var(--rule-strong);color:var(--ink-2);padding:7px 12px;border-radius:3px;cursor:pointer}
+.sair-cheio:hover{color:var(--ink);border-color:var(--ink-3)}
 
 /* quem e quem */
 .ringgroup{margin-top:38px}
@@ -361,11 +372,38 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
 #tip b{display:block;font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;opacity:.72;margin-bottom:4px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 @media (max-width:620px){.frow.two{grid-template-columns:1fr}}
+@media (max-width:620px){
+  /* filtros numa faixa que desliza: o conteudo da secao comeca mais acima */
+  .chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-bottom:14px;gap:8px;
+    padding-bottom:4px;-webkit-overflow-scrolling:touch;
+    mask-image:linear-gradient(to right,#000 88%,transparent)}
+  .chips::-webkit-scrollbar{display:none}
+  .chips>*{flex:0 0 auto}
+  .chips input[type=search]{flex:0 0 200px;width:200px}
+  .chips .hint{display:none}
+  .busca-fora{margin:-6px 0 14px}
+  .busca-fora input[type=search]{width:100%}
+  .dica-grafo{font-family:"DM Mono",monospace;font-size:11px;color:var(--ink-3);margin:0 0 10px}
+  .sec-note.curto{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .sec-mais{font:700 12.5px Karla,sans-serif;background:none;border:0;border-bottom:1px solid var(--rule-strong);
+    color:var(--ink-2);padding:2px 0;margin-top:6px;cursor:pointer}
+  .chip{padding:8px 13px;font-size:13.5px}
+  input[type=search]{width:100%;padding:9px 14px;font-size:15px}
+  .zoomb button{width:42px;height:42px;font-size:17px}
+  nav a{padding:10px 8px}
+}
 @media (max-width:620px){.passo{padding-left:22px}.pcab{font-size:15px}}
 @media (max-width:900px){
   .graph-shell{grid-template-columns:1fr}
-  #stage{height:520px}
+  #stage{height:clamp(440px,64vh,660px)}
   aside.ficha{border-left:0;border-top:1px solid var(--rule-strong);max-height:none}
+  /* em tela cheia no celular a ficha sobe por cima, sem empurrar o grafo */
+  .graph-shell.cheio{grid-template-columns:1fr;grid-template-rows:1fr}
+  .graph-shell.cheio aside.ficha{position:absolute;left:0;right:0;bottom:0;max-height:52%;
+    background:var(--surface);border-top:1px solid var(--rule-strong);box-shadow:0 -10px 24px rgba(0,0,0,.18)}
+  .graph-shell.cheio aside.ficha:empty{display:none}
+  /* com a ficha ocupando a parte de baixo, os controles sobem para o topo */
+  .graph-shell.cheio .zoomb{top:12px;right:12px;bottom:auto}
   .ev{grid-template-columns:1fr;gap:5px}
   .bar-row,.axis{grid-template-columns:1fr;gap:5px}
 }
@@ -440,6 +478,7 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
           <button id="zin" title="Aproximar">+</button>
           <button id="zout" title="Afastar">−</button>
           <button id="zfit" title="Reenquadrar">⤾</button>
+          <button id="zmax" title="Abrir a rede em tela cheia" aria-label="Abrir a rede em tela cheia" aria-pressed="false"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4"/></svg></button>
         </div>
       </div>
       <aside class="ficha" id="panel"></aside>
@@ -826,10 +865,18 @@ const zoom=d3.zoom().scaleExtent([.14,3.2]).on("zoom",e=>{
 svg.call(zoom);
 function stageBox(){const b=document.getElementById("stage").getBoundingClientRect();
   return {w:b.width||900,h:b.height||600}}
-function fit(anim){
+/* em tela cheia no celular a ficha cobre a parte de baixo: o grafo se acomoda no que sobra */
+function areaLivre(){
   const {w,h}=stageBox();
+  const f=document.querySelector(".graph-shell.cheio aside.ficha");
+  if(!f||getComputedStyle(f).position!=="absolute") return {w,h,topo:h/2};
+  const livre=Math.max(180,h-f.getBoundingClientRect().height);
+  return {w,h:livre,topo:livre/2};
+}
+function fit(anim){
+  const {w,h,topo}=areaLivre();
   const k=Math.max(.16,Math.min(w/1960,h/1860,1.1));
-  const t=d3.zoomIdentity.translate(w/2,h/2).scale(k);
+  const t=d3.zoomIdentity.translate(w/2,topo).scale(k);
   anim?svg.transition().duration(350).call(zoom.transform,t):svg.call(zoom.transform,t);
 }
 let fitted=false;
@@ -839,6 +886,30 @@ requestAnimationFrame(()=>{const {w,h}=stageBox(); if(!fitted&&w>60&&h>60){fitte
 d3.select("#zin").on("click",()=>svg.transition().call(zoom.scaleBy,1.35));
 d3.select("#zout").on("click",()=>svg.transition().call(zoom.scaleBy,.72));
 d3.select("#zfit").on("click",()=>fit(true));
+
+/* tela cheia: o grafo passa a ocupar a janela inteira; Esc ou o botao voltam */
+(function telaCheia(){
+  const casca=document.querySelector(".graph-shell"), palco=document.getElementById("stage"),
+        bt=document.getElementById("zmax");
+  if(!casca||!bt) return;
+  const sair=document.createElement("button");
+  sair.type="button"; sair.className="sair-cheio"; sair.hidden=true; sair.textContent="✕ sair da tela cheia";
+  palco.appendChild(sair);
+  const alternar=(ligar)=>{
+    const cheio=ligar??!casca.classList.contains("cheio");
+    casca.classList.toggle("cheio",cheio);
+    document.body.classList.toggle("travado",cheio);
+    sair.hidden=!cheio;
+    bt.setAttribute("aria-pressed",cheio);
+    bt.title=cheio?"Sair da tela cheia":"Abrir a rede em tela cheia";
+    /* o palco mudou de tamanho: reenquadra depois do novo layout */
+    requestAnimationFrame(()=>requestAnimationFrame(()=>fit(true)));
+    if(!cheio) casca.scrollIntoView({block:"center"});
+  };
+  bt.addEventListener("click",()=>alternar());
+  sair.addEventListener("click",()=>alternar(false));
+  addEventListener("keydown",e=>{ if(e.key==="Escape"&&casca.classList.contains("cheio")) alternar(false) });
+})();
 
 function focusNode(d){
   const keep=new Set([d.id]);
@@ -984,6 +1055,17 @@ function showNode(d){
   panel.querySelectorAll(".conn button[data-i]").forEach(b=>b.onclick=()=>selLig(cs[+b.dataset.i].l));
   if(typeof marcarTermos==="function") marcarTermos(panel.querySelector(".txt")?.parentElement||panel);
   panel.scrollTop=0;
+  verFicha();
+}
+/* no celular a ficha fica embaixo do grafo: leva o leitor ate ela */
+function verFicha(){
+  if(!matchMedia("(max-width:900px)").matches) return;
+  if(document.querySelector(".graph-shell.cheio")){
+    /* a ficha acabou de cobrir parte do palco: reenquadra no espaco que sobrou */
+    requestAnimationFrame(()=>fit(true));
+    return;
+  }
+  panel.scrollIntoView({behavior:"smooth",block:"nearest"});
 }
 function blocoDinheiro(id){
   const l=passosDe(id);
@@ -1008,6 +1090,7 @@ function showEdge(d){
   panel.querySelector("#pa").onclick=()=>selNo(a);
   panel.querySelector("#pb").onclick=()=>selNo(b);
   panel.scrollTop=0;
+  verFicha();
 }
 showNode(byId.get("vorcaro"));
 
@@ -1018,7 +1101,15 @@ gf.innerHTML=Object.entries(CATG).map(([k,v])=>
  +`<button class="chip" id="g-din" aria-pressed="false" style="--d:var(--c-mkt)"><span class="dot"></span>Seguir o dinheiro</button>`
  +`<button class="chip" id="g-reset" type="button" title="Desfaz seleção, filtros, busca e zoom">↺ Limpar</button>`
  +`<input type="search" id="g-q" placeholder="buscar nome…" aria-label="Buscar no grafo">`
- +`<span class="hint">arraste os nós · scroll para zoom</span>`;
+ +`<span class="hint">${matchMedia("(pointer:coarse)").matches
+      ? "arraste para mover · pinça para zoom · o botão no canto abre em tela cheia"
+      : "arraste os nós · scroll para zoom · o botão no canto abre em tela cheia"}</span>`;
+if(matchMedia("(pointer:coarse)").matches){
+  const d=document.createElement("p");
+  d.className="dica-grafo";
+  d.textContent="arraste para mover · pinça para zoom";
+  gf.after(d);
+}
 const gOff=new Set(); let gFar=true, soDin=false;
 const eDin=l=>l.k==="f"||!!valorDe(l);
 const noDin=new Set();
@@ -1540,6 +1631,56 @@ document.addEventListener("click",e=>{
         :`<span style="color:var(--c-jud)">${corta(e.antes)}</span> → <span style="color:var(--c-reg)">${corta(e.depois)}</span>`}</td>
       <td>${e.motivo?e.motivo:"—"}</td></tr>`}).join("")
    +`</tbody></table></div>`;
+})();
+
+/* no celular a busca sai da faixa de filtros e ganha a linha inteira */
+(function buscaFora(){
+  const estreito=()=>matchMedia("(max-width:620px)").matches;
+  const grupos=[...document.querySelectorAll(".chips")]
+    .map(c=>({chips:c,input:c.querySelector("input[type=search]")}))
+    .filter(g=>g.input);
+  grupos.forEach(g=>{
+    g.caixa=document.createElement("div");
+    g.caixa.className="busca-fora";
+    g.caixa.hidden=true;
+    g.chips.after(g.caixa);
+  });
+  const aplicar=()=>{
+    const e=estreito();
+    grupos.forEach(g=>{
+      g.caixa.hidden=!e;
+      if(e && g.input.parentElement!==g.caixa) g.caixa.appendChild(g.input);
+      else if(!e && g.input.parentElement===g.caixa) g.chips.appendChild(g.input);
+    });
+  };
+  aplicar();
+  addEventListener("resize",aplicar);
+})();
+
+/* no celular os textos de apoio abrem no toque: a tela chega antes ao conteudo */
+(function notasCurtas(){
+  const estreito=()=>matchMedia("(max-width:620px)").matches;
+  const notas=[...document.querySelectorAll(".sec-note")].filter(n=>n.textContent.trim().length>170);
+  const botoes=notas.map(n=>{
+    const b=document.createElement("button");
+    b.type="button"; b.className="sec-mais"; b.textContent="ler mais";
+    b.addEventListener("click",()=>{
+      const aberto=!n.classList.toggle("curto");
+      b.textContent=aberto?"ler menos":"ler mais";
+    });
+    n.after(b);
+    return b;
+  });
+  const aplicar=()=>{
+    const e=estreito();
+    notas.forEach((n,i)=>{
+      botoes[i].hidden=!e;
+      if(e){ if(botoes[i].textContent==="ler mais") n.classList.add("curto"); }
+      else { n.classList.remove("curto"); botoes[i].textContent="ler mais"; }
+    });
+  };
+  aplicar();
+  addEventListener("resize",aplicar);
 })();
 
 /* marcação nos textos longos da linha do tempo e do bloco inicial */
