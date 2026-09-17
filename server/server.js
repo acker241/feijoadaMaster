@@ -356,6 +356,9 @@ const GRUPOS_VEICULO = new Set(["grande", "independente", "especializado", "regi
 const CATS_FILA = new Set(["ler", "fato_novo", "desdobramento", "declaracao", "analise", "campanha", "fora", "sem", "todas"]);
 
 /* filtro da fila, a partir da querystring; serve para listar e para descartar em lote */
+/* aceita "2026-09-14" ou "2026-09-14T18:30" */
+const DATA_FILTRO = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2})?$/;
+
 function filtroNoticias(params) {
   const st = params.get("status");
   const filtro = {
@@ -367,6 +370,8 @@ function filtroNoticias(params) {
     cat: CATS_FILA.has(params.get("cat")) ? params.get("cat") : "ler",
     assunto: /^\d+$/.test(params.get("assunto") || "") ? params.get("assunto") : "",
     ordem: params.get("ordem") === "repercussao" ? "repercussao" : "",
+    de: DATA_FILTRO.test(params.get("de") || "") ? params.get("de") : "",
+    ate: DATA_FILTRO.test(params.get("ate") || "") ? params.get("ate") : "",
   };
   const cond = [], vals = [];
   const add = (sql, v) => { vals.push(v); cond.push(sql.replace("?", "$" + vals.length)); };
@@ -375,6 +380,10 @@ function filtroNoticias(params) {
   if (filtro.veiculo) add("n.dominio = ?", filtro.veiculo);
   if (filtro.grupo) add("v.grupo = ?", filtro.grupo);
   if (filtro.q) add("n.titulo ILIKE ?", "%" + filtro.q.replace(/[%_\\]/g, "\\$&") + "%");
+  /* datas em horario de Brasilia; sem hora, "de" comeca 00:00 e "ate" pega o dia inteiro */
+  const noDia = "coalesce(n.publicado_em, n.encontrado_em) AT TIME ZONE 'America/Sao_Paulo'";
+  if (filtro.de) add(noDia + " >= ?::timestamp", filtro.de.includes("T") ? filtro.de : filtro.de + "T00:00");
+  if (filtro.ate) add(noDia + " <= ?::timestamp", filtro.ate.includes("T") ? filtro.ate : filtro.ate + "T23:59:59.999");
   if (filtro.assunto) add("n.assunto = ?", filtro.assunto);
   const whereSemCat = cond.length ? "WHERE " + cond.join(" AND ") : "";
   /* "ler" = o que pode mudar o site: fato novo, desdobramento e o que a IA ainda nao viu */

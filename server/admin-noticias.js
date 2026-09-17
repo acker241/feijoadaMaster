@@ -193,8 +193,10 @@ exports.fila = (grupos, o) => {
     <select name="grupo"><option value="">todos os grupos</option>${opGrupo}</select>
     <select name="veiculo"><option value="">todos os veículos</option>${opVeiculo}</select>
     <input type="search" name="q" placeholder="buscar no título" value="${esc(o.filtro.q || "")}">
+    <label class="meta">de <input type="datetime-local" name="de" value="${esc(o.filtro.de || "")}" title="data e hora de Brasília; sem hora, começa 00:00"></label>
+    <label class="meta">até <input type="datetime-local" name="ate" value="${esc(o.filtro.ate || "")}" title="data e hora de Brasília; sem hora, pega o dia inteiro"></label>
     <button class="pri" type="submit">filtrar</button>
-    ${o.filtro.pessoa || o.filtro.grupo || o.filtro.veiculo || o.filtro.q ? `<a class="tab" href="${qs({ pessoa: null, grupo: null, veiculo: null, q: null })}">limpar filtros</a>` : ""}
+    ${o.filtro.pessoa || o.filtro.grupo || o.filtro.veiculo || o.filtro.q || o.filtro.de || o.filtro.ate ? `<a class="tab" href="${qs({ pessoa: null, grupo: null, veiculo: null, q: null, de: null, ate: null })}">limpar filtros</a>` : ""}
   </form>
   ${lote}
   ${itens}
