@@ -121,6 +121,20 @@ section+section{border-top:1px solid var(--rule)}
 .subhead{font-family:"DM Mono",monospace;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-3);
   margin:38px 0 12px;border-bottom:1px solid var(--rule-strong);padding-bottom:9px;font-weight:400}
 
+/* blocos dobraveis (fontes e errata): fecham por padrao, o leitor abre quando quer */
+.dobra{margin:38px 0 0;border-bottom:1px solid var(--rule-strong)}
+.dobra>summary{cursor:pointer;list-style:none;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;
+  font-family:"DM Mono",monospace;font-size:11px;text-transform:uppercase;letter-spacing:.12em;
+  color:var(--ink-3);padding-bottom:9px}
+.dobra>summary::-webkit-details-marker{display:none}
+.dobra>summary:hover,.dobra>summary:focus-visible{color:var(--ink)}
+.dobra>summary .conta{text-transform:none;letter-spacing:0;font-size:12.5px}
+.dobra>summary .abrir{margin-left:auto;color:var(--dende)}
+.dobra>summary .abrir::after{content:"mostrar"}
+.dobra[open]>summary .abrir::after{content:"ocultar"}
+.dobra[open]>summary{border-bottom:1px solid var(--rule)}
+.dobra>*:not(summary){margin:14px 0 20px}
+
 /* barras */
 .bars{display:grid;gap:9px}
 .bar-row{display:grid;grid-template-columns:minmax(120px,215px) minmax(0,1fr);gap:16px;align-items:center}
@@ -490,8 +504,10 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
     <b>A resposta do citado vem primeiro.</b> Quando alguém citado nesta página se manifesta — nota oficial, defesa nos autos, recurso, decisão judicial favorável — a manifestação entra no verbete <b>acima</b> do nosso texto, com selo próprio, e prevalece sobre a descrição da notícia. O verbete fica marcado na rede e pode ser filtrado na seção 04. Retificação publicada por um veículo tem o mesmo tratamento.<br><br>
     <b>Presunção de inocência.</b> Nenhuma acusação reunida aqui foi julgada. Prisões citadas são cautelares, relatórios policiais são peça de investigação e não sentença, e os citados negam irregularidades ou ainda não apresentaram defesa final. Parte do que veio a público em setembro de 2026 saiu de mensagens de celular divulgadas dentro de uma disputa entre ministros do STF — o que exige cautela adicional sobre contexto e autenticidade de cada trecho. Pedidos de correção ou de resposta devem ser enviados ao responsável pelo site e serão publicados.<br><br>
     <b>Imagens.</b> Os retratos são carregados da Wikipédia e do Wikimedia Commons no navegador de quem acessa, com link para a página de origem de cada pessoa, onde consta a licença da foto. Onde não há imagem livre disponível, a página mostra um monograma. Antes de usar qualquer foto fora deste contexto, verifique a licença no arquivo original.</p>
-    <h3 class="subhead">Fontes jornalísticas e documentais</h3>
-    <div class="tablewrap"><div id="srcs"></div></div>
+    <details class="dobra" id="fontes-dobra">
+      <summary>Fontes jornalísticas e documentais <span class="conta" id="srcs-n"></span><span class="abrir"></span></summary>
+      <div class="tablewrap"><div id="srcs"></div></div>
+    </details>
   </div>
 </section>
 
@@ -530,7 +546,10 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
     <div class="sec-head"><span class="n">09</span><h2>Errata</h2>
       <p class="sec-note">Cada correção feita no conteúdo fica registrada aqui, com o valor antigo, o novo e o motivo. É o compromisso da seção 05 cumprido em forma de lista.</p>
     </div>
-    <div id="errata"></div>
+    <details class="dobra" id="errata-dobra">
+      <summary>Correções registradas <span class="conta" id="errata-n"></span><span class="abrir"></span></summary>
+      <div id="errata"></div>
+    </details>
   </div>
 </section>
 
@@ -1163,6 +1182,8 @@ document.getElementById("srcs").innerHTML=`<table class="lic"><thead><tr><th>Fon
     <td class="u"><a href="${u}" target="_blank" rel="noopener">${u}</a></td>
     <td style="white-space:nowrap">${usoFonte(id)}</td></tr>`}).join("")
  +`</tbody></table>`;
+{const n=document.getElementById("srcs-n"),q=Object.keys(L).length;
+ if(n) n.textContent=q===1?"1 fonte":q+" fontes";}
 
 /* ---------- fotos e resumos (Wikipédia, no navegador do leitor) ---------- */
 function fileFromUrl(u){
@@ -1498,12 +1519,15 @@ document.addEventListener("click",e=>{
 (function errata(){
   const alvo=document.getElementById("errata"); if(!alvo) return;
   const rot={verbete:"verbete",vinculo:"vínculo",evento:"evento",fase:"fase",fonte:"fonte",barra:"valor"};
+  const conta=document.getElementById("errata-n");
   if(!ERRATA.length){
     alvo.innerHTML=`<p class="sec-note">Nenhuma alteração registrada desde a publicação. Toda correção feita daqui para frente aparece nesta lista, com o que mudou e por quê.</p>`;
+    if(conta) conta.textContent="nenhum registro";
     return;
   }
   /* posicao interna nao interessa ao leitor; fontes aparecem so como contagem, sem citar nomes */
   const visiveis=ERRATA.filter(e=>e.campo!=="ordem");
+  if(conta) conta.textContent=visiveis.length===1?"1 registro":visiveis.length+" registros";
   const qtdFontes=t=>{const n=String(t||"").split(/\s+/).filter(Boolean).length;return n===1?"1 fonte":n+" fontes"};
   alvo.innerHTML=`<div class="tablewrap"><table class="lic"><thead><tr><th>Quando</th><th>O que mudou</th><th>De → para</th><th>Motivo</th></tr></thead><tbody>`
    +visiveis.map(e=>{
