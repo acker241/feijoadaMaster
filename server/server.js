@@ -463,6 +463,19 @@ async function rotaNoticias(req, res, url) {
     return redirecionar("/admin/noticias/veiculos?msg=" + encodeURIComponent(msg));
   }
 
+  /* export da fila com o filtro da tela, para analise fora do painel */
+  if (url.pathname === "/admin/noticias/export.json") {
+    const { where, vals } = filtroNoticias(url.searchParams);
+    const { rows } = await pool.query(`
+      SELECT n.id, n.grupo, n.assunto, n.titulo, n.url, n.dominio, coalesce(n.veiculo, n.dominio) AS veiculo,
+             v.grupo AS porte, n.publicado_em, n.encontrado_em, n.pessoas, n.status, n.categoria, n.no_site,
+             n.motivo_ia, n.nota, n.via
+        FROM noticias n LEFT JOIN veiculos v ON v.dominio = n.dominio ${where}
+       ORDER BY coalesce(n.publicado_em, n.encontrado_em) DESC`, vals);
+    res.setHeader("Content-Disposition", `attachment; filename="fila-noticias-${new Date().toISOString().slice(0, 10)}.json"`);
+    return json(res, 200, rows);
+  }
+
   if (url.pathname === "/admin/noticias/veiculos") {
     const { rows } = await pool.query("SELECT * FROM veiculos ORDER BY ativo DESC, grupo, nome");
     return html(adminNoticias.veiculos(rows, { msg: url.searchParams.get("msg") }));
