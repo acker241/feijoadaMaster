@@ -33,8 +33,8 @@ Um serviço Node (sem framework) + Postgres no Railway.
 | `/admin` | mensagens recebidas |
 | `/admin/conteudo` | editor de conteúdo com errata (`/salvar`, `/remover`) |
 | `/admin/stats` | estatísticas de visita (7/30/90/365 dias) |
-| `/admin/noticias` | fila de notícias; `/acao`, `/coletar`, `/triar`, `/retriar`, `/veiculos`, `/veiculo` |
-| `/healthz` | healthcheck do Railway |
+| `/admin/noticias` | fila de notícias; `/acao`, `/coletar`, `/triar`, `/retriar`, `/veiculos`, `/veiculo`, `/export.json` |
+| `/healthz` | healthcheck do Railway; `versao` traz o commit que está no ar |
 
 ## Monitor de notícias (`/admin/noticias`)
 
@@ -58,6 +58,9 @@ Regras:
 - Juntar grupos nunca apaga nada. O destino é quem já tem decisão tomada, senão o maior; a notícia
   que entra herda status e classificação.
 - A IA só rotula e ordena. Descartar é sempre ação humana.
+- A fila filtra por período (campos "de" e "até", horário de Brasília, sobre `publicado_em` com queda
+  para `encontrado_em`); o mesmo filtro vale para as ações em lote e para `/admin/noticias/export.json`,
+  que baixa as notícias do recorte para análise fora do painel.
 - Na fila, cada card é uma história, com as ações valendo para o grupo inteiro. Mostra veículos e
   grandes, "em alta" (3+ veículos em 24h), "exclusivo" (fato novo publicado por um veículo só), link
   para o assunto e ordenação por repercussão (peso: grande 3, independente/especializado 2, resto 1).
@@ -118,7 +121,8 @@ o `DATABASE_URL` de produção; para usar banco local, sobrescreva dentro do com
 - Apagar no console da Anthropic a chave de API antiga, criada sem workspace (a atual é do workspace Default).
 - Telegram não configurado (`TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID`).
 - Ficha de Fernando Haddad ainda diz "Ministro da Fazenda"; em set/2026 ele é ex-ministro e candidato.
-- Motivo da errata de 16/09/2026 sobre Zettel foi gravado sem acento ("correcao… sao…").
+- Motivos de errata gravados sem acento (16/09/2026 sobre Zettel e os de 17/09/2026): rodar
+  `railway run node server/corrige-motivos.js --aplicar`. Ao gravar pelo painel, escrever o motivo com acento.
 - Mesmo fato às vezes fica em duas histórias (limite 0,78 é conservador); o link do assunto junta.
 - Imagem Docker grande (~2 GB); dá para enxugar dependências não usadas do transformers.js.
 - Notícias em inglês do mesmo fato não se juntam às em português com o modelo atual.
