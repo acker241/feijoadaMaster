@@ -353,6 +353,8 @@ async function rotaAdmin(req, res, url) {
 /* ---------- monitor de noticias (painel) ---------- */
 const STATUS_NOTICIA = new Set(["novo", "relevante", "usado", "descartado"]);
 const GRUPOS_VEICULO = new Set(["grande", "independente", "especializado", "regional", "outros"]);
+const VERSAO = String(process.env.RAILWAY_GIT_COMMIT_SHA || "").slice(0, 7) || null;
+
 const CATS_FILA = new Set(["ler", "fato_novo", "desdobramento", "declaracao", "analise", "campanha", "fora", "sem", "todas"]);
 
 /* filtro da fila, a partir da querystring; serve para listar e para descartar em lote */
@@ -531,7 +533,8 @@ async function rotaNoticias(req, res, url) {
 const servidor = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
   try {
-    if (url.pathname === "/healthz") return json(res, 200, { ok: true, sitekey: !!SITEKEY, turnstile: !!SECRET });
+    /* versao = commit em producao, para conferir se o deploy do Railway ja subiu */
+    if (url.pathname === "/healthz") return json(res, 200, { ok: true, sitekey: !!SITEKEY, turnstile: !!SECRET, versao: VERSAO });
     if (url.pathname === "/api/mensagem") {
       if (req.method !== "POST") return json(res, 405, { erro: "use POST" });
       return await rotaMensagem(req, res);
