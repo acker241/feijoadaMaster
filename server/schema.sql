@@ -217,3 +217,22 @@ CREATE INDEX IF NOT EXISTS noticias_categoria_idx ON noticias (categoria);
 ALTER TABLE noticias ADD COLUMN IF NOT EXISTS vetor REAL[];
 ALTER TABLE noticias ADD COLUMN IF NOT EXISTS assunto BIGINT;
 CREATE INDEX IF NOT EXISTS noticias_assunto_idx ON noticias (assunto);
+
+-- ---------- escala: comparacao com outros golpes ----------
+-- valor em R$ bilhoes, nominal da epoca; ref_mes (AAAA-MM) e o mes a que o valor
+-- se refere, ponto de partida da correcao pelo IPCA
+CREATE TABLE IF NOT EXISTS golpes (
+  id            TEXT PRIMARY KEY,
+  nome          TEXT NOT NULL,
+  periodo       TEXT NOT NULL,
+  valor         NUMERIC(12,3) NOT NULL,
+  metrica       TEXT NOT NULL,
+  situacao      TEXT NOT NULL,
+  envolvidos    TEXT,
+  valor_txt     TEXT,
+  texto         TEXT NOT NULL,
+  situacao_txt  TEXT,
+  ref_mes       TEXT,
+  fontes        TEXT[] NOT NULL DEFAULT '{}',
+  ordem         INT NOT NULL DEFAULT 0
+);

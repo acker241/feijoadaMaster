@@ -596,6 +596,7 @@ const servidor = http.createServer(async (req, res) => {
   const ok = await migrar();
   if (!ok) { console.error("[db] banco inacessível — o site serve o snapshot embutido e não grava mensagens"); return; }
   try { await conteudo.semear(); } catch (e) { console.error("[conteudo] semeadura falhou:", e.message); }
+  require("./ipca").agendar(() => conteudo.invalidar());
   metricas.limpar();
   try { await noticias.semear(); noticias.agendar(avisarNoticias); triagem.agendar(); } catch (e) { console.error("[noticias] nao iniciou:", e.message); }
   setInterval(metricas.limpar, 24 * 60 * 60_000).unref();

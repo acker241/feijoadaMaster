@@ -5,6 +5,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { pool } = require("./db");
+const ipca = require("./ipca");
 
 /* ---------- semeadura ---------- */
 async function semear() {
@@ -50,6 +51,13 @@ async function semear() {
       vinNovos += r.rowCount;
     }
     if (vinNovos) feito.push(`${vinNovos} vínculos`);
+    if (await vazia("golpes")) {
+      for (const g of seed.golpes || []) await c.query(
+        `INSERT INTO golpes (id,nome,periodo,valor,metrica,situacao,envolvidos,valor_txt,texto,situacao_txt,ref_mes,fontes,ordem)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) ON CONFLICT (id) DO NOTHING`,
+        [g.id, g.nome, g.periodo, g.valor, g.metrica, g.situacao, g.envolvidos, g.valor_txt, g.texto, g.situacao_txt, g.ref_mes, g.fontes, g.ordem]);
+      feito.push(`${(seed.golpes || []).length} golpes`);
+    }
     if (await vazia("barras")) {
       for (const b of seed.barras) await c.query("INSERT INTO barras (rotulo,valor,nota,ordem) VALUES ($1,$2,$3,$4)", [b.rotulo, b.valor, b.nota, b.ordem]);
       feito.push(`${seed.barras.length} barras`);
@@ -100,7 +108,7 @@ function invalidar() { cache = null; }
    guarda em meta um hash do conteudo; quando o hash muda, a data vira agora.
    Na primeira vez, usa a errata publica mais recente como ponto de partida. */
 async function marcaConteudo(saida) {
-  const { atualizado, ...conteudo } = saida;
+  const { atualizado, IPCA, ...conteudo } = saida;
   const hash = require("node:crypto").createHash("sha1").update(JSON.stringify(conteudo)).digest("hex");
   const r = await pool.query("SELECT chave, valor FROM meta WHERE chave IN ('conteudo_hash','conteudo_em')");
   const m = Object.fromEntries(r.rows.map((x) => [x.chave, x.valor]));
@@ -118,7 +126,7 @@ async function marcaConteudo(saida) {
 
 async function dados() {
   if (cache) return cache;
-  const [fon, cat, ane, tip, bar, fas, eve, ver, vin, err, resp, glo, tri, pas] = await Promise.all([
+  const [fon, cat, ane, tip, bar, fas, eve, ver, vin, err, resp, glo, tri, pas, gol, serie] = await Promise.all([
     pool.query("SELECT * FROM fontes ORDER BY id"),
     pool.query("SELECT * FROM categorias ORDER BY ordem"),
     pool.query("SELECT * FROM aneis ORDER BY nivel"),
@@ -133,6 +141,8 @@ async function dados() {
     pool.query("SELECT * FROM glossario ORDER BY ordem, termo"),
     pool.query("SELECT * FROM trilhas ORDER BY ordem, id"),
     pool.query("SELECT * FROM passos ORDER BY trilha, ordem, id"),
+    pool.query("SELECT * FROM golpes ORDER BY ordem, id"),
+    ipca.ler(),
   ]);
   const saida = {
     L: Object.fromEntries(fon.rows.map((f) => [f.id, [f.rotulo, f.url]])),
@@ -169,6 +179,13 @@ async function dados() {
         status: p.status, ls: p.fontes || [],
       })),
     })),
+    GOLPES: gol.rows.map((g) => ({
+      id: g.id, nome: g.nome, per: g.periodo, v: Number(g.valor), met: g.metrica, sit: g.situacao,
+      env: g.envolvidos || "", vtxt: g.valor_txt || "", txt: g.texto, stxt: g.situacao_txt || "",
+      ref: g.ref_mes || null, ls: g.fontes || [],
+    })),
+    /* serie mensal do IPCA [["AAAA-MM", %], ...]; fica fora do hash do "Atualizado em" */
+    IPCA: serie,
     atualizado: new Date().toISOString(),
   };
   saida.conteudoEm = await marcaConteudo(saida);
@@ -215,6 +232,9 @@ const TABELAS = {
   passo: { tabela: "passos", chave: "id", rotuloCampo: "info",
     campos: ["id", "trilha", "ordem", "de", "de_ref", "para", "para_ref", "valor", "data_txt", "info", "status", "fontes"],
     numericos: ["ordem"], arrays: ["fontes"] },
+  golpe: { tabela: "golpes", chave: "id", rotuloCampo: "nome",
+    campos: ["id", "nome", "periodo", "valor", "metrica", "situacao", "envolvidos", "valor_txt", "texto", "situacao_txt", "ref_mes", "fontes", "ordem"],
+    numericos: ["valor", "ordem"], arrays: ["fontes"] },
   resposta: { tabela: "respostas", chave: "id", rotuloCampo: "autor",
     campos: ["verbete", "autor", "tipo", "data_txt", "texto", "fonte", "url", "prioridade", "ordem"],
     numericos: ["ordem"], arrays: [], booleanos: ["prioridade"] },
@@ -276,7 +296,9 @@ async function salvar(entidade, chaveValor, entrada, motivo) {
       for (const c of campos) {
         const a = Array.isArray(antes[c]) ? antes[c].join(" ") : antes[c];
         const d = Array.isArray(dadosNovos[c]) ? dadosNovos[c].join(" ") : dadosNovos[c];
-        if (String(a ?? "") !== String(d ?? "")) {
+        /* NUMERIC volta do banco como texto ("1.500"): compara pelo numero */
+        const mudou = def.numericos.includes(c) ? Number(a) !== Number(d) : String(a ?? "") !== String(d ?? "");
+        if (mudou) {
           await registrarErrata(cli, { entidade, registro, rotulo, acao: "alterado", campo: c, antes: a, depois: d, motivo });
         }
       }

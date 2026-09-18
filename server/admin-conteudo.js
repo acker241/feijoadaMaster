@@ -55,7 +55,7 @@ function pagina(titulo, corpo) {
 const ENTIDADES = [
   ["verbete", "verbetes"], ["vinculo", "vínculos"], ["evento", "eventos"],
   ["resposta", "respostas"], ["glossario", "glossário"], ["trilha", "trilhas"], ["passo", "passos"],
-  ["fase", "fases"], ["fonte", "fontes"], ["barra", "barras"],
+  ["fase", "fases"], ["fonte", "fontes"], ["barra", "barras"], ["golpe", "golpes (escala)"],
 ];
 const TIPOS_RESPOSTA = ["Direito de resposta", "Nota oficial", "Manifestação da defesa",
   "Defesa apresentada ao STF", "Posição nos autos", "Recurso ao STF",
@@ -169,6 +169,24 @@ function campos(ent, r, o) {
     </div>
     <div class="campo full"><label>o que a fonte diz</label><textarea name="info" required>${esc(v("info"))}</textarea></div>
     <div class="campo larg"><label>fontes (ids separados por espaço)</label><input name="fontes" value="${esc(arr("fontes"))}"></div>`;
+  if (ent === "golpe") return `
+    <div class="linha">
+      <div class="campo"><label>id</label><input name="id" value="${esc(v("id"))}" ${r ? "readonly" : "required"} size="10"></div>
+      <div class="campo larg"><label>caso</label><input name="nome" value="${esc(v("nome"))}" required></div>
+      <div class="campo"><label>período</label><input name="periodo" value="${esc(v("periodo"))}" size="10" required></div>
+      <div class="campo"><label>ordem</label><input name="ordem" value="${esc(v("ordem"))}" size="4"></div>
+    </div>
+    <div class="linha">
+      <div class="campo"><label>valor (R$ bi, da época)</label><input name="valor" value="${esc(v("valor"))}" size="8" required></div>
+      <div class="campo"><label>mês do valor (AAAA-MM, para o IPCA)</label><input name="ref_mes" value="${esc(v("ref_mes"))}" size="8" pattern="[0-9]{4}-[0-9]{2}"></div>
+      <div class="campo larg"><label>métrica (rombo, valor desviado…)</label><input name="metrica" value="${esc(v("metrica"))}" required></div>
+      <div class="campo larg"><label>situação (curta)</label><input name="situacao" value="${esc(v("situacao"))}" required></div>
+    </div>
+    <div class="campo full"><label>envolvidos</label><input name="envolvidos" value="${esc(v("envolvidos"))}"></div>
+    <div class="campo full"><label>valor por extenso (como a fonte diz)</label><input name="valor_txt" value="${esc(v("valor_txt"))}"></div>
+    <div class="campo full"><label>o que aconteceu</label><textarea name="texto" required>${esc(v("texto"))}</textarea></div>
+    <div class="campo full"><label>situação na Justiça</label><textarea name="situacao_txt">${esc(v("situacao_txt"))}</textarea></div>
+    <div class="campo larg"><label>fontes (ids separados por espaço)</label><input name="fontes" value="${esc(arr("fontes"))}"></div>`;
   if (ent === "fonte") return `
     <div class="linha">
       <div class="campo"><label>id</label><input name="id" value="${esc(v("id"))}" ${r ? "readonly" : "required"} size="8"></div>
@@ -185,7 +203,7 @@ function campos(ent, r, o) {
 }
 
 exports.conteudo = (ent, rows, o, contagens, q, errata) => {
-  const def = { verbete: "id", vinculo: "id", evento: "id", fase: "ordem", fonte: "id", barra: "id",
+  const def = { verbete: "id", vinculo: "id", evento: "id", fase: "ordem", fonte: "id", barra: "id", golpe: "id",
     trilha: "id", passo: "id", glossario: "id", resposta: "id" }[ent] || "id";
   const tabs = ENTIDADES.map(([e, rot]) =>
     `<a class="tab ${e === ent ? "on" : ""}" href="/admin/conteudo?ent=${e}">${rot} <b>${contagens[e] ?? "?"}</b></a>`).join("");
