@@ -160,6 +160,31 @@ section+section{border-top:1px solid var(--rule)}
 input[type=search]{font-family:Karla,sans-serif;font-size:13.5px;padding:6px 12px;border:1px solid var(--rule-strong);
   border-radius:999px;background:var(--surface);color:var(--ink);width:195px}
 .hint{font-family:"DM Mono",monospace;font-size:11px;color:var(--ink-3)}
+.chip small.n{font-family:"DM Mono",monospace;font-size:10.5px;font-weight:400;opacity:.75}
+.chip.vazio{opacity:.45;border-style:dashed}
+/* opcoes da rede: tudo que filtra ou agrupa fica num painel so */
+#rede .wrap{position:relative}
+#g-opc .badge{font-family:"DM Mono",monospace;font-size:10.5px;background:var(--ink);color:var(--paper);border-radius:999px;
+  padding:0 6px;line-height:16px}
+#g-opc .badge:empty{display:none}
+#g-opc .seta{font-size:10px;transition:transform .15s}
+#g-opc[aria-expanded="true"] .seta{transform:rotate(180deg)}
+.g-painel{position:absolute;z-index:30;width:min(560px,calc(100vw - 32px));background:var(--surface);
+  border:1px solid var(--rule-strong);border-radius:6px;box-shadow:0 8px 28px rgba(0,0,0,.28);padding:6px 16px 14px}
+.g-painel[hidden]{display:none}
+.g-painel .gp-sec{padding-top:10px}
+.g-painel .gp-sec+.gp-sec{border-top:1px solid var(--rule);margin-top:10px}
+.g-painel h5{font-family:"DM Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-3);
+  margin:0 0 8px;font-weight:400}
+.g-painel .linha{display:flex;gap:7px;flex-wrap:wrap}
+.g-painel p.nota{font-size:12.5px;color:var(--ink-3);margin:8px 0 0;line-height:1.45}
+.g-painel .chip[disabled]{opacity:.4;cursor:default}
+/* agrupamento: manchas e setores */
+.gmancha{fill-opacity:.1;stroke-opacity:.55;stroke-width:1.5;stroke-linejoin:round;pointer-events:none}
+.gmancha-lab .sub{font-weight:400;font-size:.85em;opacity:.85}
+.gmancha-lab{font-weight:700;font-family:Karla,sans-serif;text-anchor:middle;paint-order:stroke;stroke:var(--paper);stroke-width:4px;pointer-events:none}
+.gsetor{fill-opacity:.07;pointer-events:none}
+.gsetor-lab{font-weight:700;font-family:Karla,sans-serif;paint-order:stroke;stroke:var(--paper);stroke-width:5px;pointer-events:none}
 
 /* linha do tempo */
 .phase{margin-top:38px}
@@ -369,6 +394,8 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
 
 #tip{position:fixed;z-index:60;pointer-events:none;opacity:0;transition:opacity .1s;background:var(--ink);color:var(--paper);
   font-family:Karla,sans-serif;font-size:12.5px;line-height:1.38;padding:9px 11px;max-width:290px;box-shadow:0 3px 12px rgba(0,0,0,.28)}
+.ficha-topo,.ficha-bar{display:none}
+#ficha-fundo{display:none;position:fixed;inset:0;z-index:65;background:rgba(0,0,0,.45)}
 #tip b{display:block;font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;opacity:.72;margin-bottom:4px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 @media (max-width:620px){.frow.two{grid-template-columns:1fr}}
@@ -396,14 +423,25 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
 @media (max-width:900px){
   .graph-shell{grid-template-columns:1fr}
   #stage{height:clamp(440px,64vh,660px)}
-  aside.ficha{border-left:0;border-top:1px solid var(--rule-strong);max-height:none}
-  /* em tela cheia no celular a ficha sobe por cima, sem empurrar o grafo */
-  .graph-shell.cheio{grid-template-columns:1fr;grid-template-rows:1fr}
-  .graph-shell.cheio aside.ficha{position:absolute;left:0;right:0;bottom:0;max-height:52%;
-    background:var(--surface);border-top:1px solid var(--rule-strong);box-shadow:0 -10px 24px rgba(0,0,0,.18)}
-  .graph-shell.cheio aside.ficha:empty{display:none}
-  /* com a ficha ocupando a parte de baixo, os controles sobem para o topo */
-  .graph-shell.cheio .zoomb{top:12px;right:12px;bottom:auto}
+  /* no celular a ficha sai do fluxo e abre por cima, pelo botao Detalhes */
+  aside.ficha{position:fixed;left:0;right:0;bottom:0;z-index:70;max-height:82vh;border:0;border-top:1px solid var(--rule-strong);
+    background:var(--surface);border-radius:12px 12px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.35);
+    padding:0 18px calc(22px + env(safe-area-inset-bottom,0px));transform:translateY(105%);visibility:hidden;
+    transition:transform .22s ease,visibility 0s .22s;overscroll-behavior:contain}
+  aside.ficha.aberta{transform:none;visibility:visible;transition:transform .22s ease}
+  .ficha-topo{display:flex;position:sticky;top:0;background:var(--surface);padding:12px 0 8px;margin-bottom:6px;
+    border-bottom:1px solid var(--rule);z-index:1}
+  #ficha-x{margin-left:auto;font:700 13px Karla,sans-serif;background:none;border:1px solid var(--rule-strong);
+    color:var(--ink-2);padding:6px 12px;border-radius:999px;cursor:pointer}
+  #ficha-fundo.on{display:block}
+  .ficha-bar{display:flex;align-items:center;gap:12px;border-top:1px solid var(--rule-strong);padding:10px 12px}
+  #ficha-nome{flex:1;min-width:0;font-size:14px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #ficha-nome b{color:var(--ink)}
+  #ficha-abre{font:700 13.5px Karla,sans-serif;background:var(--ink);color:var(--paper);border:0;padding:9px 16px;
+    border-radius:999px;cursor:pointer;white-space:nowrap}
+  /* tela cheia no celular: grafo em cima, barra de Detalhes embaixo; a ficha abre por cima */
+  .graph-shell.cheio{grid-template-columns:1fr;grid-template-rows:1fr auto}
+  .graph-shell.cheio aside.ficha{max-height:82vh}
   .ev{grid-template-columns:1fr;gap:5px}
   .bar-row,.axis{grid-template-columns:1fr;gap:5px}
 }
@@ -468,7 +506,7 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
 <section id="rede">
   <div class="wrap">
     <div class="sec-head"><span class="n">01</span><h2>Rede de relações</h2>
-      <p class="sec-note">Vorcaro no centro, 90 nós em cinco anéis de distância do fato. Passe o mouse em uma linha para ver o que liga os dois; clique para abrir a ficha com as fontes e deixar o destaque fixo. Clicar numa ligação acende os próximos nós; clique numa ligação acesa para seguir a trilha. Clique no fundo ou em <b>Limpar</b> para desfazer.</p>
+      <p class="sec-note">Vorcaro no centro, com os demais nós em anéis de distância do fato. Em <b>Opções da rede</b> dá para filtrar por categoria e agrupar os nós. Passe o mouse em uma linha para ver o que liga os dois; clique para abrir a ficha com as fontes e deixar o destaque fixo. Clicar numa ligação acende os próximos nós; clique numa ligação acesa para seguir a trilha. Clique no fundo ou em <b>Limpar</b> para desfazer.</p>
     </div>
     <div class="chips" id="g-filters"></div>
     <div class="graph-shell">
@@ -481,7 +519,14 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
           <button id="zmax" title="Abrir a rede em tela cheia" aria-label="Abrir a rede em tela cheia" aria-pressed="false"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4"/></svg></button>
         </div>
       </div>
-      <aside class="ficha" id="panel"></aside>
+      <div class="ficha-bar" id="ficha-bar">
+        <span id="ficha-nome"></span>
+        <button type="button" id="ficha-abre" aria-controls="ficha">Detalhes</button>
+      </div>
+      <aside class="ficha" id="ficha">
+        <div class="ficha-topo"><button type="button" id="ficha-x" aria-label="Fechar detalhes">Fechar ✕</button></div>
+        <div id="panel"></div>
+      </aside>
     </div>
   </div>
 </section>
@@ -660,6 +705,7 @@ footer{padding-block:34px 62px;font-family:"DM Mono",monospace;font-size:11.5px;
   </div>
 </footer>
 <div id="tip" role="status"></div>
+<div id="ficha-fundo"></div>
 <button id="voltar" type="button">← voltar <span id="voltar-de"></span></button>
 
 <script>
@@ -795,7 +841,7 @@ defs.append("marker").attr("id","seta").attr("viewBox","0 0 10 10")
   .attr("refX",9).attr("refY",5).attr("markerWidth",5).attr("markerHeight",5)
   .attr("orient","auto-start-reverse")
   .append("path").attr("d","M0,1 L9,5 L0,9 z").attr("fill","var(--c-mkt)");
-const gRings=gRoot.append("g"), gLink=gRoot.append("g"), gHit=gRoot.append("g"), gNode=gRoot.append("g");
+const gRings=gRoot.append("g"), gGrupos=gRoot.append("g"), gLink=gRoot.append("g"), gHit=gRoot.append("g"), gNode=gRoot.append("g");
 gRings.selectAll("circle").data([265,445,625,800]).join("circle").attr("class","ringc").attr("r",d=>d);
 gRings.selectAll("text").data([[265,RING[1]],[445,RING[2]],[625,RING[3]],[800,RING[4]]]).join("text")
   .attr("class","ringlab").attr("x",4).attr("y",d=>-d[0]+14).text(d=>d[1].toUpperCase());
@@ -822,7 +868,7 @@ const hit=gHit.selectAll("line").data(links).join("line").attr("class","hit")
  .on("mousemove",moveTip).on("mouseleave",()=>{hideTip();aplicaSel()})
  .on("click",(e,d)=>{
    selLig(d);
-   if(toque){ tipEdge(e,d); clearTimeout(tipTimer); tipTimer=setTimeout(hideTip,3500) }
+   if(toque&&!semDica()){ tipEdge(e,d); clearTimeout(tipTimer); tipTimer=setTimeout(hideTip,3500) }
  });
 
 const node=gNode.selectAll("g").data(N).join("g").attr("class","node")
@@ -844,12 +890,14 @@ node.append("text").attr("class","lab").attr("font-size",d=>d.t>=3?9.5:10.5)
 const valLab=gVal.selectAll("text").data(links.filter(l=>valorDe(l))).join("text")
   .attr("class","vlab").attr("text-anchor","middle").text(l=>valorDe(l));
 
-sim.on("tick",()=>{
+function desenhaRede(){
   link.attr("x1",d=>d.source.x).attr("y1",d=>d.source.y).attr("x2",d=>d.target.x).attr("y2",d=>d.target.y);
   hit.attr("x1",d=>d.source.x).attr("y1",d=>d.source.y).attr("x2",d=>d.target.x).attr("y2",d=>d.target.y);
   node.attr("transform",d=>`translate(${d.x},${d.y})`);
   valLab.attr("x",d=>(d.source.x+d.target.x)/2).attr("y",d=>(d.source.y+d.target.y)/2-5);
-});
+  desenhaManchas();
+}
+sim.on("tick",desenhaRede);
 
 /* os rotulos de quantia e a area de clique das ligacoes mantem o mesmo tamanho
    na tela em qualquer zoom (area mais larga em tela de toque) */
@@ -857,6 +905,7 @@ const larguraHit=matchMedia("(pointer:coarse)").matches?26:14;
 function escalaRotulos(k){
   valLab.attr("font-size",(11/k).toFixed(2)).attr("stroke-width",(3/k).toFixed(2));
   hit.style("stroke-width",(larguraHit/k).toFixed(2));
+  gGrupos.selectAll("text").attr("font-size",((gModo==="setores"?15:13)*(fichaMovel.matches?.75:1)/Math.min(k,1)).toFixed(2)).style("stroke-width",(4/Math.min(k,1)).toFixed(2));
 }
 const zoom=d3.zoom().scaleExtent([.14,3.2]).on("zoom",e=>{
   gRoot.attr("transform",e.transform);
@@ -987,12 +1036,16 @@ function limparSel(){ if(sel){ sel=null; aplicaSel(); panel.querySelector(".tril
 svg.on("click.sel",e=>{ if(!e.target.closest(".node,.hit")) limparSel() });
 
 const tip=document.getElementById("tip");
+/* no celular (ou tela sem mouse) a dica do grafo atrapalha: o toque ja abre a ficha */
+const semDica=()=>fichaMovel.matches||matchMedia("(hover:none)").matches;
 function tipEdge(e,d){
+  if(semDica()) return;
   const q=valorDe(d);
   tip.innerHTML=`<b>${RTYPE[d.k][0]}${q?" · "+q:""} · ${byId.get(d.source.id||d.source).n} ↔ ${byId.get(d.target.id||d.target).n}</b>${d.info}`;
   tip.style.opacity="1";moveTip(e);
 }
 function tipNode(e,d){
+  if(semDica()) return;
   const r=respostasDe(d.id).length?" · resposta do citado registrada":"";
   tip.innerHTML=`<b>${d.r}</b>${d.n} · ${deg.get(d.id)||0} ligações · ${RING[d.t]}${r}`;
   tip.style.opacity="1";moveTip(e);
@@ -1014,6 +1067,21 @@ addEventListener("blur",hideTip);
 document.addEventListener("mousemove",e=>{if(tip.style.opacity==="1"&&e.target.closest("[data-tip]"))moveTip(e)});
 
 const panel=document.getElementById("panel");
+const fichaEl=document.getElementById("ficha"), fichaFundo=document.getElementById("ficha-fundo");
+const fichaMovel=matchMedia("(max-width:900px)");
+/* o fundo escuro mora dentro da casca do grafo: em tela cheia ela vira outro contexto de empilhamento */
+document.querySelector(".graph-shell").appendChild(fichaFundo);
+function abreFicha(){ if(!fichaMovel.matches) return; fichaEl.classList.add("aberta"); fichaFundo.classList.add("on"); fichaEl.scrollTop=0 }
+function fechaFicha(){ fichaEl.classList.remove("aberta"); fichaFundo.classList.remove("on") }
+/* a barra abaixo do grafo diz o que esta selecionado; Detalhes abre a ficha */
+function fichaNome(html){ document.getElementById("ficha-nome").innerHTML=html }
+document.getElementById("ficha-abre").addEventListener("click",abreFicha);
+document.getElementById("ficha-x").addEventListener("click",fechaFicha);
+fichaFundo.addEventListener("click",fechaFicha);
+addEventListener("keydown",e=>{ if(e.key==="Escape"&&fichaEl.classList.contains("aberta")) fechaFicha() });
+fichaMovel.addEventListener("change",fechaFicha);
+/* links que levam a outra parte da pagina fecham a ficha */
+panel.addEventListener("click",e=>{ if(e.target.closest(".fix,button.tri,.tref,a[href^='#']")) fechaFicha() });
 function srcHtml(ids){return `<div class="srcl">${ids.map(i=>`<a href="${L[i][1]}" target="_blank" rel="noopener">${L[i][0]} ↗</a>`).join("")}</div>`}
 function respostasDe(id){ return (RESP && RESP[id]) ? RESP[id] : [] }
 function seloResp(id){ return respostasDe(id).length ? `<span class="selo">direito de resposta exercido</span>` : "" }
@@ -1054,18 +1122,8 @@ function showNode(d){
    <p class="warn">Investigado não é condenado. Prisões citadas são cautelares e nenhuma acusação aqui foi julgada.</p>`;
   panel.querySelectorAll(".conn button[data-i]").forEach(b=>b.onclick=()=>selLig(cs[+b.dataset.i].l));
   if(typeof marcarTermos==="function") marcarTermos(panel.querySelector(".txt")?.parentElement||panel);
-  panel.scrollTop=0;
-  verFicha();
-}
-/* no celular a ficha fica embaixo do grafo: leva o leitor ate ela */
-function verFicha(){
-  if(!matchMedia("(max-width:900px)").matches) return;
-  if(document.querySelector(".graph-shell.cheio")){
-    /* a ficha acabou de cobrir parte do palco: reenquadra no espaco que sobrou */
-    requestAnimationFrame(()=>fit(true));
-    return;
-  }
-  panel.scrollIntoView({behavior:"smooth",block:"nearest"});
+  fichaNome(`<b>${d.n}</b> · ${cs.length} ligações`);
+  fichaEl.scrollTop=0;
 }
 function blocoDinheiro(id){
   const l=passosDe(id);
@@ -1089,27 +1147,48 @@ function showEdge(d){
    <p class="warn">O vínculo descrito reflete o que consta de investigações em curso e de reportagens — não uma conclusão judicial.</p>`;
   panel.querySelector("#pa").onclick=()=>selNo(a);
   panel.querySelector("#pb").onclick=()=>selNo(b);
-  panel.scrollTop=0;
-  verFicha();
+  fichaNome(`<b>${a.n}</b> ↔ <b>${b.n}</b>`);
+  fichaEl.scrollTop=0;
 }
 showNode(byId.get("vorcaro"));
 
 const gf=document.getElementById("g-filters");
-gf.innerHTML=Object.entries(CATG).map(([k,v])=>
-  `<button class="chip" data-cat="${k}" aria-pressed="true" style="--d:${v.c}"><span class="dot"></span>${v.n}</button>`).join("")
- +`<button class="chip" id="g-far" aria-pressed="true">Anéis externos</button>`
- +`<button class="chip" id="g-din" aria-pressed="false" style="--d:var(--c-mkt)"><span class="dot"></span>Seguir o dinheiro</button>`
+gf.innerHTML=`<button class="chip" id="g-opc" type="button" aria-expanded="false" aria-controls="g-painel">Opções da rede <span class="badge" id="g-badge"></span><span class="seta">▾</span></button>`
  +`<button class="chip" id="g-reset" type="button" title="Desfaz seleção, filtros, busca e zoom">↺ Limpar</button>`
  +`<input type="search" id="g-q" placeholder="buscar nome…" aria-label="Buscar no grafo">`
- +`<span class="hint">${matchMedia("(pointer:coarse)").matches
+ +`<span class="hint"><span id="g-cont"></span> · ${matchMedia("(pointer:coarse)").matches
       ? "arraste para mover · pinça para zoom · o botão no canto abre em tela cheia"
-      : "arraste os nós · scroll para zoom · o botão no canto abre em tela cheia"}</span>`;
+      : "arraste os nós · scroll para zoom · o botão no canto abre em tela cheia"}</span>`
+ +`<div class="g-painel" id="g-painel" hidden>
+    <div class="gp-sec"><h5>Mostrar</h5><div class="linha">`
+ +Object.entries(CATG).map(([k,v])=>
+  `<button class="chip" data-cat="${k}" aria-pressed="true" style="--d:${v.c}"><span class="dot"></span>${v.n} <small class="n"></small></button>`).join("")
+ +`<button class="chip" id="g-far" aria-pressed="true" title="Órbita política e entorno citado (anéis 3 e 4)">Anéis externos <small class="n"></small></button>
+    </div></div>
+    <div class="gp-sec"><h5>Destacar</h5><div class="linha">
+      <button class="chip" id="g-din" aria-pressed="false" style="--d:var(--c-mkt)"><span class="dot"></span>Seguir o dinheiro</button>
+    </div></div>
+    <div class="gp-sec"><h5>Agrupar</h5><div class="linha">
+      <button class="chip" data-modo="nenhum" aria-pressed="true">Sem agrupamento</button>
+      <button class="chip" data-modo="manchas" aria-pressed="false">Manchas</button>
+      <button class="chip" data-modo="setores" aria-pressed="false">Setores nos anéis</button>
+    </div>
+    <h5 style="margin-top:12px">Critério</h5><div class="linha">
+      <button class="chip" data-por="sem" aria-pressed="true" disabled>Categoria e anel</button>
+      <button class="chip" data-por="auto" aria-pressed="false" disabled>Comunidade automática</button>
+    </div>
+    <p class="nota">Comunidade automática junta quem tem mais ligações entre si, sem contar o Vorcaro. É um cálculo sobre as ligações publicadas, não uma conclusão da apuração.</p>
+    </div>
+  </div>`;
 if(matchMedia("(pointer:coarse)").matches){
   const d=document.createElement("p");
   d.className="dica-grafo";
   d.textContent="arraste para mover · pinça para zoom";
   gf.after(d);
 }
+/* o painel sai da faixa de chips: no celular ela rola na horizontal e tem mascara, que cortariam o painel */
+gf.after(document.getElementById("g-painel"));
+const gArea=gf.parentElement;
 const gOff=new Set(); let gFar=true, soDin=false;
 const eDin=l=>l.k==="f"||!!valorDe(l);
 const noDin=new Set();
@@ -1127,19 +1206,61 @@ function gRender(){
   pinta(l=>soDin?(eDin(l)?"on":"apaga"):filtrando?"filtro":"");
   hit.style("display",l=>eVis(l)?null:"none");
   valLab.style("display",l=>soDin&&eVis(l)?null:"none");
+  /* anel sem nenhum no visivel some, com o rotulo */
+  const vis=N.filter(nVis), aneis=new Set(vis.map(d=>d.t));
+  gRings.selectAll("circle").style("display",r=>aneis.has(RAD.indexOf(r))?null:"none");
+  gRings.selectAll("text").style("display",d=>aneis.has(RAD.indexOf(d[0]))?null:"none");
+  /* contagem em cada chip: quantos nos a categoria tem dentro dos outros filtros.
+     Categoria ligada com zero (ex.: politica com os aneis externos desligados) fica tracejada */
+  gArea.querySelectorAll(".chip[data-cat]").forEach(b=>{
+    const k=b.dataset.cat;
+    const n=N.filter(d=>d.c===k&&d.id!=="vorcaro"&&(gFar||d.t<3)&&(!soDin||noDin.has(d.id))).length;
+    b.querySelector("small.n").textContent=n;
+    const vazio=n===0&&!gOff.has(k);
+    b.classList.toggle("vazio",vazio);
+    b.title=vazio?"Nenhum nó desta categoria com os filtros atuais (veja Anéis externos)":"";
+  });
+  const far=N.filter(d=>d.t>=3&&!gOff.has(d.c)&&(!soDin||noDin.has(d.id))).length;
+  document.querySelector("#g-far small.n").textContent=far;
+  const ativos=gOff.size+(gFar?0:1)+(soDin?1:0)+(gModo!=="nenhum"?1:0);
+  document.getElementById("g-badge").textContent=ativos||"";
+  document.getElementById("g-cont").textContent=vis.length===N.length?`${N.length} nós`:`${vis.length} de ${N.length} nós`;
 }
-gf.addEventListener("click",e=>{
-  const b=e.target.closest(".chip"); if(!b) return;
+/* depois de filtrar, enquadra so o que sobrou */
+function fitVis(para){
+  const ps=N.map((d,i)=>para?{d,x:para[i][0],y:para[i][1]}:{d,x:d.x,y:d.y}).filter(p=>nVis(p.d));
+  if(ps.length<2||ps.length===N.length&&gModo==="nenhum") return fit(true);
+  /* margem em pixels de tela: nos setores os rotulos ficam fora do ultimo anel, dos lados */
+  const {w,h}=stageBox(), pad=gModo==="setores"?90:60, mx=gModo==="setores"?Math.min(175,w*.24):20, my=20;
+  const x0=d3.min(ps,d=>d.x)-pad, x1=d3.max(ps,d=>d.x)+pad, y0=d3.min(ps,d=>d.y)-pad, y1=d3.max(ps,d=>d.y)+pad;
+  const k=Math.max(.16,Math.min((w-2*mx)/(x1-x0),(h-2*my)/(y1-y0),1.1));
+  svg.transition().duration(350).call(zoom.transform,d3.zoomIdentity.translate(w/2-k*(x0+x1)/2,h/2-k*(y0+y1)/2).scale(k));
+}
+gArea.addEventListener("click",e=>{
+  const b=e.target.closest("#g-filters .chip,#g-painel .chip"); if(!b) return;
   if(b.id==="g-reset") return resetRede();
+  if(b.id==="g-opc") return abrePainel(b.getAttribute("aria-expanded")!=="true");
+  if(b.dataset.modo||b.dataset.por){
+    if(b.disabled) return;
+    if(b.dataset.modo) gModo=b.dataset.modo; else gPor=b.dataset.por;
+    fmEv("agrupa",gModo+":"+gPor,true);
+    return aplicaGrupos();
+  }
   if(b.id==="g-far"){gFar=!gFar;b.setAttribute("aria-pressed",gFar)}
   else if(b.id==="g-din"){soDin=!soDin;b.setAttribute("aria-pressed",soDin)}
   else if(b.dataset.cat){const k=b.dataset.cat; gOff.has(k)?gOff.delete(k):gOff.add(k);
     b.setAttribute("aria-pressed",!gOff.has(k))}
+  /* selecao que ficou com no escondido e desfeita */
+  if(sel&&(sel.n?!nVis(sel.n):sel.nos.some(id=>!nVis(byId.get(id))))){
+    sel=null; panel.querySelector(".trilha-rede")?.remove(); showNode(byId.get("vorcaro"));
+  }
   aplicaSel();
+  desenhaManchas();
+  fitVis();
 });
 function resetRede(){
   sel=null; gOff.clear(); gFar=true; soDin=false;
-  gf.querySelectorAll(".chip[aria-pressed]").forEach(c=>c.setAttribute("aria-pressed",String(c.id!=="g-din")));
+  gArea.querySelectorAll(".chip[data-cat],#g-far,#g-din").forEach(c=>c.setAttribute("aria-pressed",String(c.id!=="g-din")));
   document.getElementById("g-q").value="";
   aplicaSel();
   showNode(byId.get("vorcaro"));
@@ -1149,11 +1270,168 @@ document.getElementById("g-q").addEventListener("input",e=>{
   fmEv("busca","rede",true);
   const q=e.target.value.trim().toLowerCase();
   if(!q){aplicaSel();return}
-  const hits=N.filter(d=>d.n.toLowerCase().includes(q)||d.r.toLowerCase().includes(q));
+  const hits=N.filter(d=>nVis(d)&&(d.n.toLowerCase().includes(q)||d.r.toLowerCase().includes(q)));
   node.classed("dim",d=>!hits.includes(d));
   pinta(l=>hits.includes(l.source)||hits.includes(l.target)?"on":"apaga");
   if(hits.length===1) selNo(hits[0]);
 });
+
+/* ---------- opcoes da rede: painel ---------- */
+const gPainel=document.getElementById("g-painel"), gOpc=document.getElementById("g-opc");
+function abrePainel(on){
+  if(on){ gPainel.style.top=(gf.offsetTop+gf.offsetHeight+6)+"px"; gPainel.style.left=gf.offsetLeft+"px" }
+  gPainel.hidden=!on; gOpc.setAttribute("aria-expanded",String(on));
+}
+document.addEventListener("click",e=>{ if(!gPainel.hidden&&!e.target.closest("#g-filters,#g-painel")) abrePainel(false) });
+addEventListener("keydown",e=>{ if(e.key==="Escape"&&!gPainel.hidden){ abrePainel(false); gOpc.focus() } });
+
+/* ---------- agrupamento: manchas ou setores ----------
+   Criterio "sem": categoria x anel. Criterio "auto": comunidades de Louvain sobre
+   as ligacoes, sem o Vorcaro (ele liga em quase todos e juntaria tudo). Grupo com
+   menos de 3 nos vai para "ligados so ao Vorcaro". */
+let gModo="nenhum", gPor="sem", GR=[], grupoDe=new Map();
+const GPAL=["#C0392B","#2E86C1","#D68910","#28B463","#8E44AD","#17A589","#CA6F1E","#7F8C8D","#AF7AC5","#1F618D","#B7950B","#922B21"];
+function louvain(ids,eds){
+  let membros=new Map(ids.map(n=>[n,[n]])), nos=ids.slice(), arestas=eds.map(([a,b])=>[a,b,1]);
+  for(let nivel=0;nivel<5;nivel++){
+    const adj=new Map(nos.map(n=>[n,new Map()])), k=new Map(nos.map(n=>[n,0])); let m2=0;
+    arestas.forEach(([a,b,w])=>{adj.get(a).set(b,(adj.get(a).get(b)||0)+w);adj.get(b).set(a,(adj.get(b).get(a)||0)+w);
+      k.set(a,k.get(a)+w);k.set(b,k.get(b)+w);m2+=2*w});
+    if(!m2) break;
+    const c=new Map(nos.map(n=>[n,n])), tot=new Map(nos.map(n=>[n,k.get(n)]));
+    let mudou=true, algum=false;
+    while(mudou){ mudou=false;
+      for(const n of nos){
+        const cn=c.get(n), peso=new Map();
+        for(const [o,w] of adj.get(n)) if(o!==n) peso.set(c.get(o),(peso.get(c.get(o))||0)+w);
+        tot.set(cn,tot.get(cn)-k.get(n));
+        let melhor=cn, ganho=(peso.get(cn)||0)-tot.get(cn)*k.get(n)/m2;
+        for(const [cc,w] of peso){ const g=w-tot.get(cc)*k.get(n)/m2; if(g>ganho+1e-9){ganho=g;melhor=cc} }
+        tot.set(melhor,tot.get(melhor)+k.get(n));
+        if(melhor!==cn){c.set(n,melhor);mudou=true;algum=true}
+      }
+    }
+    if(!algum) break;
+    const nm=new Map(); for(const n of nos){const cc=c.get(n); if(!nm.has(cc)) nm.set(cc,[]); nm.get(cc).push(...membros.get(n))}
+    const ag=new Map();
+    arestas.forEach(([a,b,w])=>{const ca=c.get(a),cb=c.get(b),ch=ca<cb?ca+"\t"+cb:cb+"\t"+ca; ag.set(ch,(ag.get(ch)||0)+w)});
+    membros=nm; nos=[...nm.keys()]; arestas=[...ag].map(([ch,w])=>{const [a,b]=ch.split("\t");return [a,b,w]});
+  }
+  return [...membros.values()];
+}
+function calcGrupos(){
+  const semV=N.filter(d=>d.id!=="vorcaro");
+  if(gPor==="auto"){
+    const eds=links.map(l=>[idDe(l.source),idDe(l.target)]).filter(([a,b])=>a!=="vorcaro"&&b!=="vorcaro");
+    const cs=louvain(semV.map(d=>d.id),eds), grandes=cs.filter(g=>g.length>=3).sort((a,b)=>b.length-a.length);
+    const soltos=cs.filter(g=>g.length<3).flat();
+    GR=grandes.map((ms,i)=>{
+      const lider=ms.slice().sort((a,b)=>(deg.get(b)||0)-(deg.get(a)||0))[0];
+      return {id:"a"+i,nome:byId.get(lider).n,ms,cor:GPAL[i%GPAL.length]};
+    });
+    if(soltos.length) GR.push({id:"solto",nome:"ligados só ao Vorcaro",ms:soltos,cor:"#8C8577"});
+  } else {
+    const m=new Map();
+    /* nos setores a fatia e a categoria; os aneis ja separam a distancia */
+    semV.forEach(d=>{const ch=d.c+"|"+(gModo==="setores"?0:d.t); if(!m.has(ch)) m.set(ch,[]); m.get(ch).push(d.id)});
+    GR=[...m].sort((a,b)=>(+a[0].split("|")[1])-(+b[0].split("|")[1])||b[1].length-a[1].length).map(([ch,ms])=>{
+      const [c,t]=ch.split("|");
+      return {id:"s"+ch,nome:CATG[c].n,sub:gModo==="setores"?"":RING[t].toLowerCase(),ms,cor:CATG[c].c};
+    });
+  }
+  grupoDe=new Map(); GR.forEach(g=>g.ms.forEach(id=>grupoDe.set(id,g)));
+}
+/* forcas de cada modo; "nenhum" e o layout original em aneis */
+function forcas(){
+  const g=d=>grupoDe.get(d.id);
+  if(gModo==="manchas"){
+    const alvo=new Map(GR.map((gr,i)=>{const a=i/GR.length*2*Math.PI-Math.PI/2; return [gr.id,[Math.cos(a)*560,Math.sin(a)*560]]}));
+    const pos=d=>d.id==="vorcaro"?[0,0]:alvo.get(g(d).id);
+    sim.force("r",null)
+      .force("link",d3.forceLink(links).id(d=>d.id).distance(l=>g(l.source)===g(l.target)?60:220).strength(.08))
+      .force("charge",d3.forceManyBody().strength(-260))
+      .force("collide",d3.forceCollide(d=>R(d)+12))
+      .force("x",d3.forceX(d=>pos(d)[0]).strength(.16)).force("y",d3.forceY(d=>pos(d)[1]).strength(.16));
+  } else if(gModo==="setores"){
+    /* fatia proporcional ao tamanho do grupo; dentro dela, cada no no seu anel */
+    const tot=d3.sum(GR,gr=>gr.ms.length); let acc=0; setores=new Map();
+    GR.forEach(gr=>{const a0=acc/tot*2*Math.PI; acc+=gr.ms.length; setores.set(gr.id,[a0,acc/tot*2*Math.PI])});
+    const alvo=new Map([["vorcaro",[0,0]]]);
+    GR.forEach(gr=>{const [a0,a1]=setores.get(gr.id);
+      d3.group(gr.ms.map(id=>byId.get(id)),d=>d.t).forEach(ns=>ns.forEach((d,i)=>{
+        const a=a0+(a1-a0)*(i+.5)/ns.length-Math.PI/2; alvo.set(d.id,[Math.cos(a)*RAD[d.t],Math.sin(a)*RAD[d.t]])}))});
+    sim.force("r",d3.forceRadial(d=>RAD[d.t],0,0).strength(.5))
+      .force("link",d3.forceLink(links).id(d=>d.id).strength(0))
+      .force("charge",d3.forceManyBody().strength(-60))
+      .force("collide",d3.forceCollide(d=>R(d)+8))
+      .force("x",d3.forceX(d=>alvo.get(d.id)[0]).strength(.5)).force("y",d3.forceY(d=>alvo.get(d.id)[1]).strength(.5));
+  } else {
+    sim.force("link",d3.forceLink(links).id(d=>d.id).distance(l=>70+Math.abs(RAD[l.target.t]-RAD[l.source.t])*.5).strength(.12))
+      .force("charge",d3.forceManyBody().strength(-540))
+      .force("r",d3.forceRadial(d=>RAD[d.t],0,0).strength(d=>d.t===0?1:.9))
+      .force("collide",d3.forceCollide(d=>R(d)+15))
+      .force("x",d3.forceX(0).strength(.02)).force("y",d3.forceY(0).strength(.02));
+  }
+}
+let setores=new Map();
+const linhaMancha=d3.line().curve(d3.curveCatmullRomClosed.alpha(.8));
+function desenhaManchas(){
+  if(gModo!=="manchas") return;
+  gGrupos.selectAll("path.gmancha").attr("d",gr=>{
+    const pts=[];
+    gr.ms.forEach(id=>{const d=byId.get(id); if(!nVis(d)) return; const r=R(d)+16;
+      for(let a=0;a<8;a++) pts.push([d.x+Math.cos(a*Math.PI/4)*r,d.y+Math.sin(a*Math.PI/4)*r])});
+    const h=pts.length>2&&d3.polygonHull(pts); return h?linhaMancha(h):null;
+  });
+  gGrupos.selectAll("text.gmancha-lab").each(function(gr){
+    const vs=gr.ms.map(id=>byId.get(id)).filter(nVis);
+    d3.select(this).style("display",vs.length?null:"none");
+    if(!vs.length) return;
+    const x=d3.mean(vs,d=>d.x);
+    d3.select(this).attr("x",x).attr("y",d3.min(vs,d=>d.y)-R(vs[0])-26).selectAll("tspan").attr("x",x);
+  });
+}
+/* o mesmo nome do grupo nos dois modos; nomes longos encurtam igual em ambos */
+function nomeCurto(n){ const max=22; return n.length>max?n.slice(0,max-1).trim()+"…":n }
+function desenhaGrupos(){
+  gGrupos.selectAll("*").remove();
+  gRings.style("display",gModo==="manchas"?"none":null);
+  if(gModo==="manchas"){
+    gGrupos.selectAll("path").data(GR).join("path").attr("class","gmancha").style("fill",d=>d.cor).style("stroke",d=>d.cor);
+    gGrupos.selectAll("text").data(GR).join("text").attr("class","gmancha-lab").style("fill",d=>d.cor)
+      .each(function(gr){ const t=d3.select(this);
+        t.append("tspan").attr("dy",gr.sub?"-1.1em":0).text(nomeCurto(gr.nome));
+        if(gr.sub) t.append("tspan").attr("class","sub").attr("dy","1.2em").text(gr.sub) });
+  } else if(gModo==="setores"){
+    const arco=d3.arc().innerRadius(60).outerRadius(RAD[4]+60);
+    gGrupos.selectAll("path").data(GR).join("path").attr("class","gsetor").style("fill",d=>d.cor)
+      .attr("d",gr=>{const [a0,a1]=setores.get(gr.id);return arco({startAngle:a0,endAngle:a1})});
+    gGrupos.selectAll("text").data(GR).join("text").attr("class","gsetor-lab").style("fill",d=>d.cor)
+      .each(function(gr){const [a0,a1]=setores.get(gr.id), a=(a0+a1)/2-Math.PI/2, r=RAD[4]+90;
+        d3.select(this).attr("x",Math.cos(a)*r).attr("y",Math.sin(a)*r+7).attr("text-anchor",Math.abs(Math.cos(a))<.2?"middle":Math.cos(a)<0?"end":"start")})
+      .text(d=>nomeCurto(d.nome));
+  }
+  gGrupos.selectAll("text").append("title").text(d=>d.nome+(d.sub?" · "+d.sub:"")+" · "+d.ms.length+" nós");
+  escalaRotulos(d3.zoomTransform(svg.node()).k);
+}
+/* troca de layout: calcula o destino fora da tela e anima dos pontos atuais ate ele */
+function aplicaGrupos(){
+  gArea.querySelectorAll(".chip[data-modo]").forEach(c=>c.setAttribute("aria-pressed",String(c.dataset.modo===gModo)));
+  gArea.querySelectorAll(".chip[data-por]").forEach(c=>{c.setAttribute("aria-pressed",String(c.dataset.por===gPor)); c.disabled=gModo==="nenhum"});
+  calcGrupos(); forcas(); desenhaGrupos();
+  const de=N.map(d=>[d.x,d.y]);
+  sim.stop(); sim.alpha(1); for(let i=0;i<260;i++) sim.tick();
+  const para=N.map(d=>[d.x,d.y]);
+  N.forEach((d,i)=>{d.x=de[i][0];d.y=de[i][1]});
+  fitVis(para);
+  const t=d3.timer(el=>{
+    const p=d3.easeCubicInOut(Math.min(1,el/650));
+    N.forEach((d,i)=>{d.x=de[i][0]+(para[i][0]-de[i][0])*p; d.y=de[i][1]+(para[i][1]-de[i][1])*p});
+    desenhaRede();
+    if(p>=1){ t.stop(); sim.alpha(.02).restart() }
+  });
+  gRender();
+}
 gRender();
 
 
