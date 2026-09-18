@@ -225,7 +225,7 @@ CREATE TABLE IF NOT EXISTS golpes (
   id            TEXT PRIMARY KEY,
   nome          TEXT NOT NULL,
   periodo       TEXT NOT NULL,
-  valor         NUMERIC(12,3) NOT NULL,
+  valor         NUMERIC(14,4) NOT NULL,
   metrica       TEXT NOT NULL,
   situacao      TEXT NOT NULL,
   envolvidos    TEXT,
