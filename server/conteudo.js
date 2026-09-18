@@ -95,6 +95,27 @@ async function semear() {
 let cache = null;
 function invalidar() { cache = null; }
 
+/* "Atualizado em" do site: data da ultima mudanca real no conteudo publicado.
+   As tabelas nao tem data de alteracao e a semeadura nao grava errata, entao
+   guarda em meta um hash do conteudo; quando o hash muda, a data vira agora.
+   Na primeira vez, usa a errata publica mais recente como ponto de partida. */
+async function marcaConteudo(saida) {
+  const { atualizado, ...conteudo } = saida;
+  const hash = require("node:crypto").createHash("sha1").update(JSON.stringify(conteudo)).digest("hex");
+  const r = await pool.query("SELECT chave, valor FROM meta WHERE chave IN ('conteudo_hash','conteudo_em')");
+  const m = Object.fromEntries(r.rows.map((x) => [x.chave, x.valor]));
+  if (m.conteudo_hash === hash && m.conteudo_em) return m.conteudo_em;
+  let em = new Date();
+  if (!m.conteudo_hash) {
+    const e = await pool.query("SELECT max(criado_em) AS em FROM errata WHERE publico AND coalesce(campo,'') <> 'ordem'");
+    if (e.rows[0].em) em = e.rows[0].em;
+  }
+  em = new Date(em).toISOString();
+  for (const [chave, valor] of [["conteudo_hash", hash], ["conteudo_em", em]])
+    await pool.query("INSERT INTO meta (chave, valor) VALUES ($1, $2) ON CONFLICT (chave) DO UPDATE SET valor = EXCLUDED.valor", [chave, valor]);
+  return em;
+}
+
 async function dados() {
   if (cache) return cache;
   const [fon, cat, ane, tip, bar, fas, eve, ver, vin, err, resp, glo, tri, pas] = await Promise.all([
@@ -150,6 +171,7 @@ async function dados() {
     })),
     atualizado: new Date().toISOString(),
   };
+  saida.conteudoEm = await marcaConteudo(saida);
   const corpo = JSON.stringify(saida);
   cache = { corpo, etag: '"' + require("node:crypto").createHash("sha1").update(corpo).digest("hex").slice(0, 16) + '"' };
   return cache;
